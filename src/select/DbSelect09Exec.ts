@@ -1,7 +1,7 @@
 import {AliasedTable, NOT_REFERENCED, ScalarSubQueryAllowsOnlyOneColumn, Value} from "../Types";
-import {Db} from "../Db";
 import {SqlExpression} from "../SqlExpression";
 import {DbSelect} from "./DbSelect";
+import {DbUtility} from "../DbUtility";
 
 const TAB = "  ";
 
@@ -12,7 +12,7 @@ export class DbSelect09Exec<Result, UsedTables, LastType> extends DbSelect {
     }
 
     public as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result, NOT_REFERENCED> {
-        return Db.defineDbTable<"(SUBQUERY)", Alias, Result>("(\n" + this.builder.toString(TAB + TAB) + TAB + ")" as "(SUBQUERY)", alias, this.builder.getColumnStruct())
+        return DbUtility.defineDbTable<"(SUBQUERY)", Alias, Result>("(\n" + this.builder.toString(TAB + TAB) + TAB + ")" as "(SUBQUERY)", alias, this.builder.getColumnStruct())
     }
 
     public toString(): string {

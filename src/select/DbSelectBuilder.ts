@@ -60,7 +60,7 @@ export class DbSelectBuilder {
         const columns = cols as unknown as SqlExpression<string, string, any>[]
         for (let i = 0; i < columns.length; i++) {
             const col = columns[i];
-            this._columns.push(col.toString());
+            this._columns.push(col.expression + (col.nameAs ? " as " + SQL.escapeId(col.nameAs) : ""));
             (this._columnStruct as any)[col.nameAs] = true;
         }
     }

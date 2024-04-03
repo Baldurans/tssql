@@ -4,12 +4,15 @@ export type TrueRecord<Alias extends string> = Record<Alias, true>;
 
 export type Value<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> = symbol & {
     tableRef: TableRef
-    nameAs: Name
     type: Type
+} & RuntimeValue<TableRef, Name, Type>
+
+export type RuntimeValue<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> = {
+    nameAs: Name
     expression: string
+
     cast: <CastType extends string | number>() => Value<TableRef, Name, CastType>
     as: <T extends string>(name: T) => Value<TableRef, T, Type>
-
     ISNULL: () => Value<TableRef, unknown, SQL_BOOL>
     NOTNULL: () => Value<TableRef, unknown, SQL_BOOL>
     EQ: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
@@ -19,15 +22,6 @@ export type Value<TableRef extends string, Name extends string | unknown, Type e
     LIKE_SUF: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
     LIKE_WILD: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
 }
-
-/**
- * YYYY-MM-DD
- */
-export type vDate = string
-/**
- * YYYY-MM-DD HH:II:SS
- */
-export type vDateTime = string
 
 export type AnyBoolValue<TableRef extends string> = Value<TableRef, string | unknown, SQL_BOOL>;
 
@@ -46,6 +40,15 @@ export type AnyAliasedTableDef = AliasedTable<string, string, {}, string | NOT_R
 export type NOT_REFERENCED = { __not_referenced: true }
 
 export type SQL_BOOL = 0 | 1;
+
+/**
+ * YYYY-MM-DD
+ */
+export type vDate = string
+/**
+ * YYYY-MM-DD HH:II:SS
+ */
+export type vDateTime = string
 
 /**
  * Check if Alias ("c") already exists in UsedAliases=(R<"c"> & ...)

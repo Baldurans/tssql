@@ -1,12 +1,12 @@
-import {SQL_BOOL, Value} from "./Types";
+import {RuntimeValue, SQL_BOOL, Value} from "./Types";
 import {SQL} from "./SQL";
 
-export class SqlExpression<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> {
+export class SqlExpression<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> implements RuntimeValue<TableRef, Name, Type> {
 
     public readonly expression: string;
-    public readonly nameAs: string | undefined;
+    public readonly nameAs: Name | undefined;
 
-    constructor(expression: string, nameAs: string) {
+    constructor(expression: string, nameAs: Name) {
         this.expression = expression;
         this.nameAs = nameAs;
         Object.freeze(this);
@@ -24,40 +24,36 @@ export class SqlExpression<TableRef extends string, Name extends string | unknow
         return new SqlExpression<TableRef, T, Type>(this.expression, name) as any;
     }
 
-    public ISNULL<TableRef extends string>(): Value<TableRef, unknown, SQL_BOOL> {
+    public ISNULL(): Value<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(this.expression + " IS NULL");
     }
 
-    public ISNOTNULL<TableRef extends string, Type extends string | number>(value: Type): Value<TableRef, unknown, Type> {
+    public NOTNULL(): Value<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(this.expression + " IS NOT NULL");
     }
 
-    public EQ<TableRef extends string, Type extends string | number>(value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(this.expression + " = " + SQL.escape(value));
+    public EQ(value: Type): Value<TableRef, unknown, SQL_BOOL> {
+        return SqlExpression.create(this.expression + " = " + SQL.escape(String(value)));
     }
 
-    public EQC<TableRef1 extends string, TableRef2 extends string, Type1>(col: Value<TableRef2, string, Type1>): Value<TableRef1 | TableRef2, unknown, SQL_BOOL> {
+    public EQC<TableRef2 extends string, Type1>(col: Value<TableRef2, string, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
         return SqlExpression.create(this.expression + " = " + col.expression);
     }
 
-    public LIKE<TableRef extends string>(value: string): Value<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(this.expression + " LIKE " + SQL.escape(value));
+    public LIKE(value: Type): Value<TableRef, unknown, SQL_BOOL> {
+        return SqlExpression.create(this.expression + " LIKE " + SQL.escape(String(value)));
     }
 
-    public LIKE_WILD<TableRef extends string>(value: string): Value<TableRef, unknown, SQL_BOOL> {
+    public LIKE_WILD(value: Type): Value<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(this.expression + " LIKE " + SQL.escape("%" + value + "%"));
     }
 
-    public LIKE_PRE<TableRef extends string>(value: string): Value<TableRef, unknown, SQL_BOOL> {
+    public LIKE_PRE(value: Type): Value<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(this.expression + " LIKE " + SQL.escape("%" + value));
     }
 
-    public LIKE_SUF<TableRef extends string>(value: string): Value<TableRef, unknown, SQL_BOOL> {
+    public LIKE_SUF(value: Type): Value<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(this.expression + " LIKE " + SQL.escape(value + "%"));
-    }
-
-    public toString() {
-        return this.expression + (this.nameAs ? " as " + SQL.escapeId(this.nameAs) : "")
     }
 
 }
