@@ -1,4 +1,4 @@
-import {Db} from "./Db";
+import {Db} from "../Db";
 import {DbSelectParts} from "./DbSelectParts";
 
 /**

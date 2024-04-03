@@ -1,5 +1,5 @@
-import {CheckForDuplicateColumns, ExtractObj, Value} from "./Types";
-import {SqlExpression} from "./SqlExpression";
+import {CheckForDuplicateColumns, ExtractObj, Value} from "../Types";
+import {SqlExpression} from "../SqlExpression";
 import {DbSelectWhere} from "./DbSelectWhere";
 import {DbSelect} from "./DbSelect";
 

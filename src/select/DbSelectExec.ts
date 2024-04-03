@@ -1,6 +1,6 @@
-import {AliasedTable, NOT_REFERENCED, ScalarSubQueryAllowsOnlyOneColumn, Value} from "./Types";
-import {Db} from "./Db";
-import {SqlExpression} from "./SqlExpression";
+import {AliasedTable, NOT_REFERENCED, ScalarSubQueryAllowsOnlyOneColumn, Value} from "../Types";
+import {Db} from "../Db";
+import {SqlExpression} from "../SqlExpression";
 import {DbSelect} from "./DbSelect";
 
 const TAB = "  ";

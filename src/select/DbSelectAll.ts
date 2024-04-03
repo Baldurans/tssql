@@ -11,10 +11,10 @@ import {
     ScalarSubQueryAllowsOnlyOneColumn,
     SQL_BOOL,
     Value
-} from "./Types";
-import {SQL} from "./SQL";
-import {Db} from "./Db";
-import {SqlExpression} from "./SqlExpression";
+} from "../Types";
+import {SQL} from "../SQL";
+import {Db} from "../Db";
+import {SqlExpression} from "../SqlExpression";
 import {DbSelectParts} from "./DbSelectParts";
 
 const TAB = "  ";

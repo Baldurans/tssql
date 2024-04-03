@@ -1,4 +1,4 @@
-import {CheckIfAliasedTablesAreReferenced, R, SQL_BOOL, Value} from "./Types";
+import {CheckIfAliasedTablesAreReferenced, R, SQL_BOOL, Value} from "../Types";
 import {DbSelectOrderBy} from "./DbSelectOrderBy";
 
 export class DbSelectHaving<Result, Tables, UsedTables, LastType> extends DbSelectOrderBy<Result, Tables, UsedTables, LastType> {

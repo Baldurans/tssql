@@ -1,4 +1,4 @@
-import {CheckIfAliasedTablesAreReferenced, R, SQL_BOOL, Value} from "./Types";
+import {CheckIfAliasedTablesAreReferenced, R, SQL_BOOL, Value} from "../Types";
 import {DbSelect} from "./DbSelect";
 import {DbSelectGroupBy} from "./DbSelectGroupBy";
 

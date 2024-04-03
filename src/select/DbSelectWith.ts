@@ -1,11 +1,11 @@
-import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "./Types";
-import {Db} from "./Db";
-import {SQL} from "./SQL";
+import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "../Types";
+import {Db} from "../Db";
+import {SQL} from "../SQL";
 import {DbSelectFrom} from "./DbSelectFrom";
 import {DbSelectParts} from "./DbSelectParts";
 
 
-export class DbWith<UsedAliases, UsedTables> {
+export class DbSelectWith<UsedAliases, UsedTables> {
 
     private parts = new DbSelectParts()
     private readonly db: Db;
@@ -21,7 +21,7 @@ export class DbWith<UsedAliases, UsedTables> {
         Columns
     >(
         table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>
-    ): DbWith<UsedAliases & R<Alias>, UsedTables & R<TableRef>> {
+    ): DbSelectWith<UsedAliases & R<Alias>, UsedTables & R<TableRef>> {
         if (typeof table === "string") {
             throw new Error("Invalid table argument!")
         }

@@ -1,10 +1,10 @@
 import {SQL} from "./SQL";
 import {AliasedTable, NOT_REFERENCED, R} from "./Types";
 import {SqlExpression} from "./SqlExpression";
-import {DbUses} from "./DbUses";
-import {DbWith} from "./DbWith";
-import {DbSelectFrom} from "./DbSelectFrom";
-import {DbSelectParts} from "./DbSelectParts";
+import {DbSelectUses} from "./select/DbSelectUses";
+import {DbSelectWith} from "./select/DbSelectWith";
+import {DbSelectFrom} from "./select/DbSelectFrom";
+import {DbSelectParts} from "./select/DbSelectParts";
 
 
 export abstract class Db {
@@ -26,8 +26,8 @@ export abstract class Db {
         Columns
     >(
         table: AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>
-    ): DbUses<R<Alias>, R<TableRef>> {
-        return new DbUses(this);
+    ): DbSelectUses<R<Alias>, R<TableRef>> {
+        return new DbSelectUses(this);
     }
 
     public with<
@@ -37,8 +37,8 @@ export abstract class Db {
         Columns
     >(
         table: AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>
-    ): DbWith<R<Alias>, R<TableRef>> {
-        return new DbWith(this).with(table as any);
+    ): DbSelectWith<R<Alias>, R<TableRef>> {
+        return new DbSelectWith(this).with(table as any);
     }
 
     public static createRef<

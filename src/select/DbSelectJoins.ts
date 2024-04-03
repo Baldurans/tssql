@@ -1,6 +1,6 @@
-import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R, Value} from "./Types";
-import {SQL} from "./SQL";
-import {Db} from "./Db";
+import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R, Value} from "../Types";
+import {SQL} from "../SQL";
+import {Db} from "../Db";
 import {DbSelectColumns} from "./DbSelectColumns";
 
 export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables> extends DbSelectColumns<{}, UsedAliases, WithAliases, Tables, UsedTables> {

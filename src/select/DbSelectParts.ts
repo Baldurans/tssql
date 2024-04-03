@@ -1,4 +1,4 @@
-import {DbTableDefinition} from "./Db";
+import {DbTableDefinition} from "../Db";
 
 const TAB = "  ";
 

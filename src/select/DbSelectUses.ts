@@ -1,10 +1,10 @@
-import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "./Types";
-import {Db} from "./Db";
+import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "../Types";
+import {Db} from "../Db";
 import {DbSelectFrom} from "./DbSelectFrom";
 import {DbSelectParts} from "./DbSelectParts";
 
 
-export class DbUses<UsedAliases, UsedTables> {
+export class DbSelectUses<UsedAliases, UsedTables> {
 
     private readonly db: Db;
 
@@ -19,7 +19,7 @@ export class DbUses<UsedAliases, UsedTables> {
         Columns
     >(
         table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>
-    ): DbUses<UsedAliases & R<Alias>, UsedTables & R<TableRef>>
+    ): DbSelectUses<UsedAliases & R<Alias>, UsedTables & R<TableRef>>
     public uses(table: any): any {
         // This does nothing, it used only for Typescript type referencing.
         return this;

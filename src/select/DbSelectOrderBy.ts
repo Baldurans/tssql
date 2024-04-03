@@ -1,5 +1,5 @@
-import {OrderByStructure, Value} from "./Types";
-import {SQL} from "./SQL";
+import {OrderByStructure, Value} from "../Types";
+import {SQL} from "../SQL";
 import {DbSelectLimit} from "./DbSelectLimit";
 
 export class DbSelectOrderBy<Result, Tables, UsedTables, LastType> extends DbSelectLimit<Result, UsedTables, LastType> {

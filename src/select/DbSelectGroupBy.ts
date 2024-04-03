@@ -1,4 +1,4 @@
-import {Value} from "./Types";
+import {Value} from "../Types";
 import {DbSelectOrderBy} from "./DbSelectOrderBy";
 import {DbSelectHaving} from "./DbSelectHaving";
 

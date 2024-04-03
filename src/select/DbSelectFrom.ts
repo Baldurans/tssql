@@ -1,6 +1,6 @@
-import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "./Types";
-import {SQL} from "./SQL";
-import {Db} from "./Db";
+import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "../Types";
+import {SQL} from "../SQL";
+import {Db} from "../Db";
 import {DbSelectJoin} from "./DbSelectJoins";
 import {DbSelect} from "./DbSelect";
 
