@@ -1,10 +1,11 @@
 import {SQL} from "./SQL";
 import {AliasedTable, NOT_REFERENCED, R} from "./Types";
 import {SqlExpression} from "./SqlExpression";
-import {DbSelectUses} from "./select/DbSelectUses";
-import {DbSelectWith} from "./select/DbSelectWith";
-import {DbSelectFrom} from "./select/DbSelectFrom";
-import {DbSelectParts} from "./select/DbSelectParts";
+import {DbSelect00Uses} from "./select/DbSelect00Uses";
+import {DbSelect00With} from "./select/DbSelect00With";
+import {DbSelectBuilder} from "./select/DbSelectBuilder";
+import {IDbSelectFrom} from "./selectI/ISelectStruct";
+import {DbSelect01From} from "./select/DbSelect01From";
 
 
 export abstract class Db {
@@ -15,8 +16,8 @@ export abstract class Db {
 
     public abstract query(sql: string): any;
 
-    public select(): DbSelectFrom<{}, {}, {}, {}> {
-        return new DbSelectFrom(this, new DbSelectParts())
+    public select(): IDbSelectFrom<{}, {}, {}, {}> {
+        return new DbSelect01From(new DbSelectBuilder(this)) as any
     }
 
     public uses<
@@ -26,8 +27,8 @@ export abstract class Db {
         Columns
     >(
         table: AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>
-    ): DbSelectUses<R<Alias>, R<TableRef>> {
-        return new DbSelectUses(this);
+    ): DbSelect00Uses<R<Alias>, R<TableRef>> {
+        return new DbSelect00Uses(new DbSelectBuilder(this));
     }
 
     public with<
@@ -37,8 +38,8 @@ export abstract class Db {
         Columns
     >(
         table: AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>
-    ): DbSelectWith<R<Alias>, R<TableRef>> {
-        return new DbSelectWith(this).with(table as any);
+    ): DbSelect00With<R<Alias>, R<TableRef>> {
+        return new DbSelect00With(new DbSelectBuilder(this)).with(table as any);
     }
 
     public static createRef<

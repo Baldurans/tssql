@@ -1,9 +1,9 @@
 import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R, Value} from "../Types";
 import {SQL} from "../SQL";
 import {Db} from "../Db";
-import {DbSelectColumns} from "./DbSelectColumns";
+import {DbSelect03Columns} from "./DbSelect03Columns";
 
-export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables> extends DbSelectColumns<{}, UsedAliases, WithAliases, Tables, UsedTables> {
+export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables> extends DbSelect03Columns<{}, UsedAliases, WithAliases, Tables, UsedTables> {
 
     public join<
         Alias extends string,

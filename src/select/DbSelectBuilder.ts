@@ -1,8 +1,10 @@
-import {DbTableDefinition} from "../Db";
+import {Db, DbTableDefinition} from "../Db";
 
 const TAB = "  ";
 
-export class DbSelectParts {
+export class DbSelectBuilder {
+
+    public readonly db: Db;
 
     public _withQueries: Map<string, string>
     public _from: string;
@@ -18,6 +20,9 @@ export class DbSelectParts {
     public _distinct: boolean = false;
     public _forUpdate: boolean = false;
 
+    constructor(db: Db) {
+        this.db = db;
+    }
 
     public toString(tabs: string = ""): string {
         return (this._withQueries.size > 0 ? tabs + "WITH\n" + TAB + Array.from(this._withQueries.values()).join(",\n\n" + TAB) + "\n\n" : "") +
@@ -31,5 +36,13 @@ export class DbSelectParts {
             (this._orderBy.length > 0 ? tabs + "ORDER BY " + this._orderBy.join(", ") + "\n" : "") +
             (this._limit ? tabs + "LIMIT " + this._limit + "\n" : "") +
             (this._forUpdate ? tabs + " FOR UPDATE\n" : "");
+    }
+
+    public async exec(): Promise<any[]> {
+        return this.db.query(this.toString());
+    }
+
+    public async execOne(): Promise<any> {
+        return (await this.db.query(this.toString()))?.[0];
     }
 }

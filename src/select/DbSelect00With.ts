@@ -1,10 +1,10 @@
 import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "../Types";
 import {Db} from "../Db";
 import {SQL} from "../SQL";
-import {DbSelectFrom} from "./DbSelectFrom";
+import {DbSelect01From} from "./DbSelect01From";
 import {DbSelect} from "./DbSelect";
 
-export class DbSelectWith<UsedAliases, UsedTables> extends DbSelect {
+export class DbSelect00With<UsedAliases, UsedTables> extends DbSelect {
 
     public with<
         Alias extends string,
@@ -13,7 +13,7 @@ export class DbSelectWith<UsedAliases, UsedTables> extends DbSelect {
         Columns
     >(
         table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>
-    ): DbSelectWith<UsedAliases & R<Alias>, UsedTables & R<TableRef>> {
+    ): DbSelect00With<UsedAliases & R<Alias>, UsedTables & R<TableRef>> {
         if (typeof table === "string") {
             throw new Error("Invalid table argument!")
         }
@@ -22,8 +22,8 @@ export class DbSelectWith<UsedAliases, UsedTables> extends DbSelect {
         return this as any;
     }
 
-    public select(): DbSelectFrom<{}, UsedAliases, {}, UsedTables> {
-        return new DbSelectFrom(this.db, this.parts)
+    public select(): DbSelect01From<{}, UsedAliases, {}, UsedTables> {
+        return new DbSelect01From(this.parts)
     }
 
 }

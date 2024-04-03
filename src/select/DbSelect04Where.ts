@@ -1,11 +1,11 @@
 import {CheckIfAliasedTablesAreReferenced, R, SQL_BOOL, Value} from "../Types";
 import {DbSelect} from "./DbSelect";
-import {DbSelectGroupBy} from "./DbSelectGroupBy";
+import {DbSelect05GroupBy} from "./DbSelect05GroupBy";
 
-export class DbSelectWhere<Result, UsedAliases, WithAliases, Tables, UsedTables, LastType> extends DbSelect {
+export class DbSelect04Where<Result, UsedAliases, WithAliases, Tables, UsedTables, LastType> extends DbSelect {
 
-    public noWhere(): DbSelectGroupBy<Result, Tables, UsedTables, LastType> {
-        return new DbSelectGroupBy(this.db, this.parts)
+    public noWhere(): DbSelect05GroupBy<Result, Tables, UsedTables, LastType> {
+        return new DbSelect05GroupBy(this.parts)
     }
 
     public where<
@@ -19,12 +19,12 @@ export class DbSelectWhere<Result, UsedAliases, WithAliases, Tables, UsedTables,
         if (col !== undefined) {
             this.parts._where.push(col.toString())
         }
-        return new DbSelectWhere2(this.db, this.parts)
+        return new DbSelectWhere2(this.parts)
     }
 
 }
 
-export class DbSelectWhere2<Result, UsedAliases, WithAliases, Tables, UsedTables, LastType> extends DbSelectGroupBy<Result, Tables, UsedTables, LastType> {
+export class DbSelectWhere2<Result, UsedAliases, WithAliases, Tables, UsedTables, LastType> extends DbSelect05GroupBy<Result, Tables, UsedTables, LastType> {
 
     public where<
         UsedTables2 extends string
@@ -37,7 +37,7 @@ export class DbSelectWhere2<Result, UsedAliases, WithAliases, Tables, UsedTables
         if (col !== undefined) {
             this.parts._where.push(col.toString())
         }
-        return new DbSelectWhere2(this.db, this.parts)
+        return new DbSelectWhere2(this.parts)
     }
 
 }

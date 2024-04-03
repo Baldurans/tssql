@@ -1,10 +1,10 @@
 import {SQL} from "../SQL";
 import {Db} from "../Db";
-import {DbSelectJoin} from "./DbSelectJoins";
+import {DbSelectJoin} from "./DbSelect02Joins";
 import {DbSelect} from "./DbSelect";
 import {AliasedTable, NOT_REFERENCED, R} from "../Types";
 
-export class DbSelectFrom<UsedAliases, WithAliases, Tables, UsedTables> extends DbSelect {
+export class DbSelect01From<UsedAliases, WithAliases, Tables, UsedTables> extends DbSelect {
 
     public from<
         Alias extends string,
@@ -18,7 +18,7 @@ export class DbSelectFrom<UsedAliases, WithAliases, Tables, UsedTables> extends 
             throw new Error("Invalid argument! Got '" + typeof table + "'")
         }
         this.parts._from = table[Db.SQL_EXPRESSION] + " as " + SQL.escapeId(table[Db.SQL_ALIAS]);
-        return new DbSelectJoin(this.db, this.parts);
+        return new DbSelectJoin(this.parts);
     }
 
     public forUpdate(): this {

@@ -15,7 +15,8 @@ import {
 import {SQL} from "../SQL";
 import {Db} from "../Db";
 import {SqlExpression} from "../SqlExpression";
-import {DbSelectParts} from "./DbSelectParts";
+import {DbSelectBuilder} from "../select/DbSelectBuilder";
+import {IDbSelectJoin, IDbSelectWhere1, IDbSelectWhere2} from "./ISelectStruct";
 
 const TAB = "  ";
 
@@ -26,13 +27,13 @@ const TAB = "  ";
  * Format of Result: {} & Record<"a.user", true> & Record<"b.company", true> & ...
  * LastType is just lastType that was seen via column calls. It has a specific usecase :)
  */
-export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, LastType> {
+export class DbSelectAll<Result, UsedAliases, WithAliases, Tables, UsedTables, LastType> {
 
-    private readonly parts: DbSelectParts
+    private readonly parts: DbSelectBuilder
 
     private readonly db: Db;
 
-    constructor(db: Db, parts: DbSelectParts) {
+    constructor(db: Db, parts: DbSelectBuilder) {
         this.db = db;
         this.parts = parts;
     }
@@ -54,7 +55,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         Columns
     >(
         table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>
-    ): DbSelect<Result, UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables, LastType> {
+    ): IDbSelectJoin<UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables> {
         if (typeof table === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof table + "'")
         }
@@ -78,7 +79,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         table: CheckIfAliasIsAlreadyUsed<UsedAliases & WithAliases, Alias, AliasedTable<Alias, TableRef, Columns, RefAlias>>,
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
-    ): DbSelect<Result, UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables, LastType> {
+    ): IDbSelectJoin<UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables> {
         if (typeof table === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof table + "'")
         }
@@ -102,7 +103,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         table: CheckIfAliasIsAlreadyUsed<UsedAliases & WithAliases, Alias, AliasedTable<Alias, TableRef, Columns, RefAlias>>,
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
-    ): DbSelect<Result, UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables, LastType> {
+    ): IDbSelectJoin<UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables> {
         return this._join("JOIN", table, field1, field2)
     }
 
@@ -121,7 +122,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         table: CheckIfAliasIsAlreadyUsed<UsedAliases & WithAliases, Alias, AliasedTable<Alias, TableRef, Columns, RefAlias>>,
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
-    ): DbSelect<Result, UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables, LastType> {
+    ): IDbSelectJoin<UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables> {
         return this._join("LEFT JOIN", table as any, field1, field2)
     }
 
@@ -131,7 +132,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
     >(
         //...columns: Columns - this will enable seeing sources of Result object properties.
         ...columns: CheckForDuplicateColumns<Columns, Result>
-    ): DbSelect<Result & ExtractObj<Columns>, UsedAliases, WithAliases, Tables, UsedTables, Columns[number]["type"]> {
+    ): IDbSelectWhere1<Result & ExtractObj<Columns>, UsedAliases, WithAliases, Tables, UsedTables, Columns[number]["type"]> {
         for (let i = 0; i < columns.length; i++) {
             const col = columns[i] as unknown as SqlExpression<string, string, any>;
             this.parts._columns.push(col.toString());
@@ -144,14 +145,14 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         UsedTables2 extends string
     >(
         col: CheckIfAliasedTablesAreReferenced<Tables, R<UsedTables2>, Value<UsedTables2, unknown, SQL_BOOL>>
-    ): this {
+    ): IDbSelectWhere2<Result, UsedAliases, WithAliases, Tables, UsedTables, LastType> {
         if (typeof col === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof col + "'")
         }
         if (col !== undefined) {
             this.parts._where.push(col.toString())
         }
-        return this
+        return this as any
     }
 
     public whereEq<
