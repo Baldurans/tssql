@@ -1,9 +1,8 @@
-import {AnyBoolValue, COMPARISONS, RawValue, SQL_BOOL, Value} from "./Types";
+import {AnyBoolValue, COMPARISONS, SQL_BOOL, Value, vDate, vDateTime} from "./Types";
 import mysql from "mysql";
 import {SqlExpression} from "./SqlExpression";
-import {vDate, vDateTime} from "./CustomTypes";
 
-export function clone<TableRef extends string, Name, Type, Type2>(column: Value<TableRef, Name, Type>, overrides: Partial<RawValue<TableRef, Name, Type2>>): Value<TableRef, Name, Type2> {
+export function clone<TableRef extends string, Name, Type, Type2>(column: Value<TableRef, Name, Type>, overrides: Partial<Value<TableRef, Name, Type2>>): Value<TableRef, Name, Type2> {
     return {...(column as any), ...overrides} as any;
 }
 
@@ -21,10 +20,6 @@ export class SQL {
         return SqlExpression.create(expr.map(e => typeof e === "string" ? e : e.expression).join(""))
     }
 
-    public static NULL<Type = null>(): Value<null, unknown, Type> {
-        return SqlExpression.create("NULL")
-    }
-
     public static DATE<TableRef extends string, Name, Type extends vDate | vDateTime>(field: Value<TableRef, Name, Type>): Value<TableRef, Name, vDate> {
         return SqlExpression.create("DATE(" + field.expression + ")")
     }
@@ -33,8 +28,16 @@ export class SQL {
         return SqlExpression.create("DATETIME(" + field.expression + ")")
     }
 
+    public static NULL<Type = null>(): Value<null, unknown, Type> {
+        return SqlExpression.create("NULL")
+    }
+
     public static ISNULL<TableRef extends string, Name, Type extends string | number>(col: Value<TableRef, Name, Type>): Value<TableRef, Name, SQL_BOOL> {
-        return SqlExpression.create<TableRef, Name, SQL_BOOL>(col.expression + " = NULL")
+        return SqlExpression.create<TableRef, Name, SQL_BOOL>(col.expression + " IS NULL")
+    }
+
+    public static NOTNULL<TableRef extends string, Name, Type extends string | number>(col: Value<TableRef, Name, Type>): Value<TableRef, Name, SQL_BOOL> {
+        return SqlExpression.create<TableRef, Name, SQL_BOOL>(col.expression + " IS NOT NULL")
     }
 
     /**

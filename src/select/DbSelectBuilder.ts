@@ -2,6 +2,7 @@ import {Db, DbTableDefinition} from "../Db";
 import {SQL} from "../SQL";
 import {SqlExpression} from "../SqlExpression";
 import {AnyAliasedTableDef, AnyValue, OrderByStructure} from "../Types";
+import {DbUtility} from "../DbUtility";
 
 const TAB = "  ";
 
@@ -33,12 +34,12 @@ export class DbSelectBuilder {
     }
 
     public with(table: AnyAliasedTableDef): void {
-        const alias = table[Db.SQL_ALIAS]
-        this._withQueries.set(alias, SQL.escapeId(alias) + " AS " + table[Db.SQL_EXPRESSION])
+        const alias = table[DbUtility.SQL_ALIAS]
+        this._withQueries.set(alias, SQL.escapeId(alias) + " AS " + table[DbUtility.SQL_EXPRESSION])
     }
 
     public from(table: AnyAliasedTableDef): void {
-        this._from = table[Db.SQL_EXPRESSION] + " as " + SQL.escapeId(table[Db.SQL_ALIAS]);
+        this._from = table[DbUtility.SQL_EXPRESSION] + " as " + SQL.escapeId(table[DbUtility.SQL_ALIAS]);
     }
 
     public forUpdate() {
@@ -46,7 +47,7 @@ export class DbSelectBuilder {
     }
 
     public join(joinType: "JOIN" | "LEFT JOIN", table: AnyAliasedTableDef, field1: AnyValue, field2: AnyValue): void {
-        const sql = this._withQueries.has(table[Db.SQL_ALIAS]) ? SQL.escapeId(table[Db.SQL_ALIAS]) : table[Db.SQL_EXPRESSION] + " as " + SQL.escapeId(table[Db.SQL_ALIAS])
+        const sql = this._withQueries.has(table[DbUtility.SQL_ALIAS]) ? SQL.escapeId(table[DbUtility.SQL_ALIAS]) : table[DbUtility.SQL_EXPRESSION] + " as " + SQL.escapeId(table[DbUtility.SQL_ALIAS])
         this._joins.push(joinType + " " + sql + " ON (" + field1.expression + " = " + field2.expression + ")")
         return this as any;
     }
@@ -56,7 +57,7 @@ export class DbSelectBuilder {
     }
 
     public columns(cols: AnyValue[]): void {
-        const columns = cols as SqlExpression<string, string, any>[]
+        const columns = cols as unknown as SqlExpression<string, string, any>[]
         for (let i = 0; i < columns.length; i++) {
             const col = columns[i];
             this._columns.push(col.toString());

@@ -1,4 +1,4 @@
-import {vDateTime} from "../../src/CustomTypes";
+import {vDateTime} from "../../src";
 
 
 export type tUserId = number & { tUserId: true };

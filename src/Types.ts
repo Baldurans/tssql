@@ -1,15 +1,8 @@
-import {Db} from "./Db";
+import {DbUtility} from "./DbUtility";
 
-export type R<Alias extends string> = Record<Alias, true>;
+export type TrueRecord<Alias extends string> = Record<Alias, true>;
 
-export type Value<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> = symbol & RawValue<TableRef, Name, Type>
-
-export type AnyBoolValue<TableRef extends string> = Value<TableRef, string | unknown, SQL_BOOL>;
-
-export type AnyValue = RawValue<string, string | unknown, string | number | unknown>
-
-
-export type RawValue<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> = {
+export type Value<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> = symbol & {
     tableRef: TableRef
     nameAs: Name
     type: Type
@@ -18,26 +11,37 @@ export type RawValue<TableRef extends string, Name extends string | unknown, Typ
     as: <T extends string>(name: T) => Value<TableRef, T, Type>
 
     ISNULL: () => Value<TableRef, unknown, SQL_BOOL>
-    ISNOTNULL: () => Value<TableRef, unknown, SQL_BOOL>
+    NOTNULL: () => Value<TableRef, unknown, SQL_BOOL>
     EQ: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
     EQC: <TableRef2 extends string>(value: Value<TableRef2, string, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
     LIKE: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
     LIKE_PRE: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
     LIKE_SUF: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
     LIKE_WILD: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
-};
-
-export type AliasedTableDef<Alias extends string, TableRef extends string, RefAlias extends string | NOT_REFERENCED> = {
-    [Db.SQL_EXPRESSION]: TableRef
-    [Db.SQL_ALIAS]: Alias
-    [Db.SQL_REF_ALIAS]: RefAlias
 }
 
-export type AliasedTable<Alias extends string, TableRef extends string, Entity, RefAlias extends string | NOT_REFERENCED> = AliasedTableDef<Alias, TableRef, RefAlias> & {
+/**
+ * YYYY-MM-DD
+ */
+export type vDate = string
+/**
+ * YYYY-MM-DD HH:II:SS
+ */
+export type vDateTime = string
+
+export type AnyBoolValue<TableRef extends string> = Value<TableRef, string | unknown, SQL_BOOL>;
+
+export type AnyValue = Value<string, string | unknown, string | number | unknown>
+
+export type AliasedTable<Alias extends string, TableRef extends string, Entity, RefAlias extends string | NOT_REFERENCED> = {
+    [DbUtility.SQL_EXPRESSION]: TableRef
+    [DbUtility.SQL_ALIAS]: Alias
+    [DbUtility.SQL_REF_ALIAS]: RefAlias
+} & {
     [K in keyof Entity]: Value<TableRef, K, Entity[K]>
 }
 
-export type AnyAliasedTableDef = AliasedTableDef<string, string, string | NOT_REFERENCED>
+export type AnyAliasedTableDef = AliasedTable<string, string, {}, string | NOT_REFERENCED>
 
 export type NOT_REFERENCED = { __not_referenced: true }
 

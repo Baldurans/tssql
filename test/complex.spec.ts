@@ -1,8 +1,7 @@
 import {tUserId} from "./tables/User";
-import {vDate} from "../src/CustomTypes";
 import {SQL} from "../src/SQL";
 import {MyDb} from "./tables/MyDb";
-import {SQL_BOOL} from "../src";
+import {SQL_BOOL, vDate} from "../src";
 
 test("complex", async () => {
 

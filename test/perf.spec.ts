@@ -32,12 +32,12 @@ test("simple", async () => {
                 ).as("userIdFromIf"),
                 SQL.OR(
                     c.username.ISNULL(),
-                    c.username.ISNOTNULL(),
+                    c.username.NOTNULL(),
                     c.username.ISNULL()
                 ).as("or"),
                 SQL.AND(
                     c.username.ISNULL(),
-                    c.username.ISNOTNULL(),
+                    c.username.NOTNULL(),
                     c2.username.ISNULL()
                 ).as("and")
             )
@@ -45,7 +45,7 @@ test("simple", async () => {
                 c.id.EQ(input.userId),
                 c.username.ISNULL(),
                 c.username.ISNULL(),
-                c.username.ISNOTNULL()
+                c.username.NOTNULL()
             ))
             .groupBy("renamedId", c.id)
             .orderBy("renamedId", c.id)
