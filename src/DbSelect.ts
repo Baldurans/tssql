@@ -23,7 +23,7 @@ const TAB = "  ";
  * Format of Result: {} & Record<"a.user", true> & Record<"b.company", true> & ...
  * LastType is just lastType that was seen via column calls. It has a specific usecase :)
  */
-export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
+export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, LastType> {
 
     private _withQueries: Map<string, string>
     private _from: string;
@@ -63,26 +63,13 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
         Columns
     >(
         table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns>>
-    ): DbSelect<Result, UsedAliases & R<Alias>, Tables & R<TableRef>, UsedTables, LastType> {
+    ): DbSelect<Result, UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables, LastType> {
         if (typeof table === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof table + "'")
         }
         this._from = table[Db.SQL_EXPRESSION] + " as " + SQL.escapeId(table[Db.SQL_ALIAS]);
         return this as any;
     }
-
-    // public uses<
-    //     Alias extends string,
-    //     TableName extends string,
-    //     TableRef extends `${TableName} as ${Alias}`,
-    //     Columns
-    // >(
-    //     table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns>>
-    // ): DbSelect<Result, UsedAliases & R<Alias>, Tables & R<TableRef>, UsedTables & R<TableRef>, LastType>
-    // public uses(table: any): any {
-    //     // This does nothing, it used only for Typescript type referencing.
-    //     return this;
-    // }
 
     public _join<
         Alias extends string,
@@ -99,7 +86,7 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
         table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns>>,
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
-    ): DbSelect<Result, UsedAliases & R<Alias>, Tables & R<TableRef>, UsedTables, LastType> {
+    ): DbSelect<Result, UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables, LastType> {
         if (typeof table === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof table + "'")
         }
@@ -122,7 +109,7 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
         table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns>>,
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
-    ): DbSelect<Result, UsedAliases & R<Alias>, Tables & R<TableRef>, UsedTables, LastType> {
+    ): DbSelect<Result, UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables, LastType> {
         return this._join("JOIN", table, field1, field2)
     }
 
@@ -140,8 +127,8 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
         table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns>>,
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
-    ): DbSelect<Result, UsedAliases & R<Alias>, Tables & R<TableRef>, UsedTables, LastType> {
-        return this._join("LEFT JOIN", table, field1, field2)
+    ): DbSelect<Result, UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables, LastType> {
+        return this._join("LEFT JOIN", table as any, field1, field2)
     }
 
     public columns_WITH_CTRL_CLICK_CAPABILITY_BUT_WITHOUT_DUPLICATE_CHECK<
@@ -149,7 +136,7 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
         Columns extends Value<TableRef, string, string | number>[]
     >(
         ...columns: Columns
-    ): DbSelect<Result & ExtractObj<Columns>, UsedAliases, Tables, UsedTables, Columns[number]["type"]> {
+    ): DbSelect<Result & ExtractObj<Columns>, UsedAliases, WithAliases, Tables, UsedTables, Columns[number]["type"]> {
         for (let i = 0; i < columns.length; i++) {
             const col = columns[i] as unknown as SqlExpression<string, string, any>;
             this._columns.push(col.toString());
@@ -163,7 +150,7 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
         Columns extends Value<TableRef, string, string | number>[]
     >(
         ...columns: CheckForDuplicateColumns<Columns, Result>
-    ): DbSelect<Result & ExtractObj<Columns>, UsedAliases, Tables, UsedTables, Columns[number]["type"]> {
+    ): DbSelect<Result & ExtractObj<Columns>, UsedAliases, WithAliases, Tables, UsedTables, Columns[number]["type"]> {
         for (let i = 0; i < columns.length; i++) {
             const col = columns[i] as unknown as SqlExpression<string, string, any>;
             this._columns.push(col.toString());
@@ -253,10 +240,6 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
 
     public asColumn<Alias extends string>(alias: Alias & ScalarSubQueryAllowsOnlyOneColumn<Alias, Result> extends never ? "Scalar subquery allows only 1 column!" : Alias): Value<keyof UsedTables & string, Alias, LastType> {
         return SqlExpression.create("(\n" + this.toString(TAB + TAB) + TAB + ")", alias);
-    }
-
-    public asWith<Alias extends string>(alias: Alias): AliasedTable<Alias, `(WITHQUERY) as ${Alias}`, Result> {
-        return Db.defineDbTable<"(WITHQUERY)", Alias, Result>("(\n" + this.toString(TAB + TAB) + TAB + ")" as "(WITHQUERY)", alias, this._columnStruct)
     }
 
     public as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result> {

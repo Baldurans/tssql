@@ -12,8 +12,8 @@ export class DbUses<UsedAliases, UsedTables> {
     }
 
     public uses<
-        Alias extends string,
         TableName extends string,
+        Alias extends string,
         TableRef extends `${TableName} as ${Alias}`,
         Columns
     >(
@@ -24,7 +24,7 @@ export class DbUses<UsedAliases, UsedTables> {
         return this;
     }
 
-    public select(): DbSelect<{}, UsedAliases, UsedTables, UsedTables, unknown> {
+    public select(): DbSelect<{}, UsedAliases, {}, UsedTables, UsedTables, unknown> {
         return new DbSelect(this.db)
     }
 

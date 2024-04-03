@@ -14,16 +14,17 @@ export abstract class Db {
 
     public abstract query(sql: string): any;
 
-    public select(): DbSelect<{}, {}, {}, {}, unknown> {
+    public select(): DbSelect<{}, {}, {}, {}, {}, unknown> {
         return new DbSelect(this)
     }
 
     public uses<
         Alias extends string,
         TableName extends string,
-        TableRef extends `${TableName} as ${Alias}`
+        TableRef extends `${TableName} as ${Alias}`,
+        Columns
     >(
-        table: AliasedTable<Alias, TableRef, any>
+        table: AliasedTable<Alias, TableRef, Columns>
     ): DbUses<R<Alias>, R<TableRef>> {
         return new DbUses(this);
     }
@@ -31,11 +32,26 @@ export abstract class Db {
     public with<
         Alias extends string,
         TableName extends string,
-        TableRef extends `${TableName} as ${Alias}`
+        TableRef extends `${TableName} as ${Alias}`,
+        Columns
     >(
-        table: AliasedTable<Alias, TableRef, any>
-    ): DbWith<{}, R<TableRef>> {
+        table: AliasedTable<Alias, TableRef, Columns>
+    ): DbWith<R<Alias>, R<TableRef>> {
         return new DbWith(this).with(table as any);
+    }
+
+    public static createRef<
+        Alias extends string,
+        TableName extends string,
+        TableRef extends `${TableName} as ${Alias}`,
+        Entity,
+        NewAlias extends string
+    >(table: AliasedTable<Alias, TableRef, Entity>, newAlias: NewAlias): AliasedTable<NewAlias, `${TableName} as ${NewAlias}`, Entity> {
+        const definition: DbTableDefinition<Entity> = {} as any;
+        for (const k in table) {
+            (definition as any)[k] = (table as any)[k];
+        }
+        return Db.defineDbTable(SQL.escapeId(table[Db.SQL_ALIAS]), newAlias, definition) as any;
     }
 
     protected getDbTableAliasFunction<TableName extends string, Entity>(
@@ -48,12 +64,12 @@ export abstract class Db {
     public static defineDbTable<TableName extends string, Alias extends string, Entity>(
         escapedExpression: TableName,
         alias: string,
-        columns: DbTableDefinition<Entity>,
-        withExpression?: string
+        columns: DbTableDefinition<Entity>
     ): AliasedTable<Alias, `${TableName} as ${Alias}`, Entity> {
         const tbl: AliasedTable<Alias, `${TableName} as ${Alias}`, Entity> = {
             [Db.SQL_EXPRESSION]: escapedExpression,
-            [Db.SQL_ALIAS]: alias
+            [Db.SQL_ALIAS]: alias,
+            createRef: (table: any, newAlias: any) => this.createRef(table, newAlias)
         } as any;
         for (const columnName in columns) {
             (tbl as any)[columnName] = new SqlExpression(SQL.escapeId(alias) + "." + SQL.escapeId(columnName), columnName)

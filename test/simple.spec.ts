@@ -86,6 +86,7 @@ test("simple", async () => {
         .columns(s.id.as("subIdRenamed"))
         .where(s.id.EQ(10 as tUserId))
         .as("withSub")
+    const withSubSub1 = withSub.createRef("withSubSub1");
 
     const withSub2 = db
         .select()
@@ -107,13 +108,14 @@ test("simple", async () => {
         .as("joinSub")
 
     const query = db
-        .with(withSub)
-        .with(withSub2)
+       // .with(withSub)
+        //.with(withSub2)
         .select()
         .from(c)
         .join(c2, c2.id, c.id)
         .leftJoin(joinSub, joinSub.id, c.id)
         .leftJoin(withSub, withSub.id, c.id)
+        .leftJoin(withSubSub1, withSubSub1.id, c.id)
         .leftJoin(withSub2, withSub2.id, c.id)
         .columns(
             db.uses(c).select().from(s).columns(s.id).where(s.id.EQC(c.id)).asColumn("subColumn"),
@@ -126,6 +128,7 @@ test("simple", async () => {
             SQL.IF(c.id.EQ(10 as tUserId), c.id, c2.id).as("userIdFromIf"),
             joinSub.id.as("subId"),
             withSub.subIdRenamed.as("withSubId"),
+            withSubSub1.subIdRenamed.as("withSubSub1"),
             withSub2.subIdRenamed.as("withSubId2")
         )
         .whereEq(c.id, input.userId) // c.id = 10

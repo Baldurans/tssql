@@ -20,6 +20,11 @@ export type RawValue<TableRef extends string, Name extends string | unknown, Typ
 export type AliasedTable<Alias extends string, TableRef extends string, Columns> = {
     [Db.SQL_EXPRESSION]: TableRef
     [Db.SQL_ALIAS]: string
+    createRef<
+        TableName extends string,
+        OldTableRef extends `${TableName} as ${Alias}`,
+        NewAlias extends string
+    >(newAlias: NewAlias): AliasedTable<NewAlias, `${TableName} as ${NewAlias}`, Columns>
 } & {
     [K in keyof Columns]: Value<TableRef, K, Columns[K]>
 }
