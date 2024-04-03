@@ -23,6 +23,7 @@
   },
   "scripts": {
     "test": "jest",
+    "dev": "tsc --build ./src/ -watch",
     "build": "tsc --build ./src/"
   },
   "engines": {
