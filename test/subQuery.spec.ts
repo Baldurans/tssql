@@ -1,5 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
+import {SQL} from "../src";
 
 test("simple", async () => {
 
@@ -17,7 +18,8 @@ test("simple", async () => {
         .from(s)
         .columns(s.id, s.id.as("subIdRenamed"))
         .where(s.id.EQC(c.id))
-        .where(c2.id.EQC(s.id))
+        .limitGetAll()
+        //.where(c2.id.EQC(s.id))
         .as("joinSub")
 
     const query = db
@@ -28,11 +30,13 @@ test("simple", async () => {
         .columns(
             c.id,
             joinSub.id.as("subId"),
-            db.uses(c).select().from(s).columns(s.id).where(s.id.EQC(c.id)).asColumn("subColumn"),
+            db.uses(c).select().from(s).columns(s.id).where(s.id.EQC(c.id)).limitGetAll().asScalar("subColumn"),
         )
-        .whereEq(c.id, input.userId) // c.id = 10
-        .where(c.id.EQ(input.userId)) // c.id = 10
-        .whereEq(c.username, null) // c.id IS NULL
+        .where(SQL.AND(
+            c.id.EQ(input.userId),
+            c.username.ISNULL()
+        ))
+        .limitGetAll()
 
     console.log(query.toString())
 

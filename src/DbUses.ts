@@ -1,6 +1,7 @@
 import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "./Types";
-import {DbSelect} from "./DbSelect";
 import {Db} from "./Db";
+import {DbSelectFrom} from "./DbSelectFrom";
+import {DbSelectParts} from "./DbSelectParts";
 
 
 export class DbUses<UsedAliases, UsedTables> {
@@ -24,8 +25,8 @@ export class DbUses<UsedAliases, UsedTables> {
         return this;
     }
 
-    public select(): DbSelect<{}, UsedAliases, {}, UsedTables, UsedTables, unknown> {
-        return new DbSelect(this.db)
+    public select(): DbSelectFrom<{}, UsedAliases, {}, UsedTables, UsedTables, unknown> {
+        return new DbSelectFrom(this.db, new DbSelectParts())
     }
 
 }

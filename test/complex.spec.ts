@@ -23,9 +23,9 @@ test("complex", async () => {
     const withSub = db
         .select()
         .from(s)
-        .columns(s.id, s.created, s.username, s.age)
-        .columns(s.id.as("subIdRenamed"))
+        .columns(s.id, s.created, s.username, s.age, s.id.as("subIdRenamed"))
         .where(s.id.EQ(10 as tUserId))
+        .limitGetAll()
         .as("withSub")
     const withSubSub1 = MyDb.createRef(withSub, "withSubSub1");
     const withSubSub2 = MyDb.createRef(withSub, "withSubSub2");
@@ -33,9 +33,9 @@ test("complex", async () => {
     const withSub2 = db
         .select()
         .from(s)
-        .columns(s.id, s.created, s.username, s.age)
-        .columns(s.id.as("subIdRenamed"))
+        .columns(s.id, s.created, s.username, s.age, s.id.as("subIdRenamed"))
         .where(s.id.EQ(10 as tUserId))
+        .limit([0, 50])
         .as("withSub2")
     const withSub2Sub1 = MyDb.createRef(withSub2, "withSub2Sub1")
     String(withSub2Sub1)
@@ -44,13 +44,18 @@ test("complex", async () => {
         .uses(c)
         .select()
         .from(s)
-        .columns(s.id, s.username)
-        //.columns(s.name.as("id")) // ____ERROR: id already used
-        .columns(s.id.as("subIdRenamed"))
+        .columns(
+            s.id,
+            s.username,
+            s.id.as("subIdRenamed"),
+            //s.username.as("id"),// ____ERROR: id already used
+        )
         .where(SQL.EQC(s.id, c.id))
+        .limitGetAll()
         .as("sub")
 
     const expr = SQL.EXPRESSION("IF(", c.username, " > ", c2.username, ",", c.id, ",", c2.id, ")").cast<tUserId>();
+
 
     const query = db
         .with(withSub)
@@ -72,7 +77,7 @@ test("complex", async () => {
         //.leftJoin(withSub2Sub1, withSub2Sub1.id, c.id) // ____ERROR, not referenced in with part.
 
         .columns(
-            db.uses(c).select().from(s).columns(s.id).where(SQL.EQC(c.id, s.id)).asColumn("someItem"),
+            db.uses(c).select().from(s).columns(s.id).where(SQL.EQC(c.id, s.id)).limitGetAll().asScalar("someItem"),
             c.username,
             c.id,
             subQueryTable.id.as("sId"),
@@ -92,7 +97,7 @@ test("complex", async () => {
                 .from(s)
                 .columns(s.id)
                 // .columns_WITH_CTRL_CLICK_CAPABILITY_BUT_WITHOUT_DUPLICATE_CHECK(s.name) // ___ERROR - Scalar subquery allows only 1 column!
-                .where(SQL.EQC(s.id, c.id)).asColumn("subColumn"),
+                .where(SQL.EQC(s.id, c.id)).limitGetAll().asScalar("subColumn"),
 
             //c.id, // ____ERROR, can't add same field twice!
             //subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
@@ -103,8 +108,8 @@ test("complex", async () => {
 
         //.columns( c.name ) // ____ERROR, Can't add same field twice!
 
-        .whereEq(c.id, 10 as tUserId) // c.id = 10
-        .whereEq(SQL.DATE(c.created), "2024.03.09" as vDate)
+        .where(c.id.EQ(10 as tUserId)) // c.id = 10
+        .where(SQL.DATE(c.created).EQ("2024.03.09" as vDate))
 
         //.whereEq(SQL.DATE(c2.name), "2024.03.09" as vDate) // ____ERROR - wrong type DATE(c.name) = '2024.03.09'
         //.whereEq(c.id, 10) // ____ERROR, 10 is not tUser
@@ -126,6 +131,7 @@ test("complex", async () => {
         .groupBy(c.id, c.username, "expr2")
 
         .orderBy(c.id, "asc", c.id, c.username, "expr2", "desc")
+        .limitGetAll()
 
     console.log(query.toString())
 

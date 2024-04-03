@@ -1,12 +1,13 @@
 import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "./Types";
-import {DbSelect} from "./DbSelect";
 import {Db} from "./Db";
 import {SQL} from "./SQL";
+import {DbSelectFrom} from "./DbSelectFrom";
+import {DbSelectParts} from "./DbSelectParts";
 
 
 export class DbWith<UsedAliases, UsedTables> {
 
-    private _withQueries: Map<string, string> = new Map()
+    private parts = new DbSelectParts()
     private readonly db: Db;
 
     constructor(db: Db) {
@@ -25,12 +26,12 @@ export class DbWith<UsedAliases, UsedTables> {
             throw new Error("Invalid table argument!")
         }
         const alias = table[Db.SQL_ALIAS]
-        this._withQueries.set(alias, SQL.escapeId(alias) + " AS " + table[Db.SQL_EXPRESSION])
+        this.parts._withQueries.set(alias, SQL.escapeId(alias) + " AS " + table[Db.SQL_EXPRESSION])
         return this as any;
     }
 
-    public select(): DbSelect<{}, {}, UsedAliases, {}, UsedTables, unknown> {
-        return new DbSelect(this.db, this._withQueries)
+    public select(): DbSelectFrom<{}, {}, UsedAliases, {}, UsedTables, unknown> {
+        return new DbSelectFrom(this.db, this.parts)
     }
 
 }

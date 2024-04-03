@@ -1,5 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
+import {SQL} from "../src";
 
 test("with", async () => {
 
@@ -15,6 +16,7 @@ test("with", async () => {
         .from(s)
         .columns(s.id, s.id.as("subIdRenamed"))
         .where(s.id.EQ(10 as tUserId))
+        .limitGetAll()
         .as("part1")
     const pA1 = MyDb.createRef(part1, "part1Sub1");
     const pA2 = MyDb.createRef(part1, "part1Sub2");
@@ -23,6 +25,7 @@ test("with", async () => {
         .select()
         .from(s)
         .columns(s.id)
+        .whereAccessFullTable()
         .as("part2")
     const pB1 = MyDb.createRef(part2, "part2Sub1")
 
@@ -42,9 +45,12 @@ test("with", async () => {
             pA2.id.as("aa2"),
             pB1.id.as("aa3"),
         )
-        .whereEq(c.id, input.userId) // c.id = 10
-        .where(c.id.EQ(input.userId)) // c.id = 10
-        .whereEq(c.username, null) // c.id IS NULL
+        .where(SQL.AND(
+            c.id.EQ(input.userId),
+            pB1.id.EQ(input.userId)
+        ))
+        .limitGetAll()
+
 
     console.log(query.toString())
 

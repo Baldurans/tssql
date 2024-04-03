@@ -1,9 +1,10 @@
-import {DbSelect} from "./DbSelect";
 import {SQL} from "./SQL";
 import {AliasedTable, NOT_REFERENCED, R} from "./Types";
 import {SqlExpression} from "./SqlExpression";
 import {DbUses} from "./DbUses";
 import {DbWith} from "./DbWith";
+import {DbSelectFrom} from "./DbSelectFrom";
+import {DbSelectParts} from "./DbSelectParts";
 
 
 export abstract class Db {
@@ -14,8 +15,8 @@ export abstract class Db {
 
     public abstract query(sql: string): any;
 
-    public select(): DbSelect<{}, {}, {}, {}, {}, unknown> {
-        return new DbSelect(this)
+    public select(): DbSelectFrom<{}, {}, {}, {}, {}, unknown> {
+        return new DbSelectFrom(this, new DbSelectParts())
     }
 
     public uses<

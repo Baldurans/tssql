@@ -1,6 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {SQL} from "../src/SQL";
+import {SQL} from "../src";
 
 test("simple", async () => {
 
@@ -17,7 +17,7 @@ test("simple", async () => {
         .from(c)
         .join(c2, c2.id, c.id)
         .columns(
-            db.uses(c).select().from(s).columns(s.id).where(s.id.EQC(c.id)).asColumn("subColumn"),
+            db.uses(c).select().from(s).columns(s.id).where(s.id.EQC(c.id)).limit(10).asScalar("subColumn"),
             c.username,
             c.id,
             c.id.as("renamedId"),
@@ -44,7 +44,8 @@ test("simple", async () => {
             c.username.ISNULL(),
             val && c.username.ISNULL(),
             c.username.ISNOTNULL()
-        )) // c.id = 10
+        ))
+        .limitGetAll()
 
     console.log(query.toString())
     expect(query.toString()).toEqual('SELECT \n' +
