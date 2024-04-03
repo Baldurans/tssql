@@ -2,6 +2,7 @@ import {tUserId} from "./tables/User";
 import {vDate} from "../src/CustomTypes";
 import {SQL} from "../src/SQL";
 import {MyDb} from "./tables/MyDb";
+import {SQL_BOOL} from "../src";
 
 test("complex", async () => {
 
@@ -49,7 +50,7 @@ test("complex", async () => {
         .where(SQL.EQC(s.id, c.id))
         .as("sub")
 
-    const expr = SQL.EXPR("IF(", c.id, " > ", c2.id, ",", c.name, ",", c2.name, ")").cast<string>();
+    const expr = SQL.EXPRESSION("IF(", c.name, " > ", c2.name, ",", c.id, ",", c2.id, ")").cast<tUserId>();
 
     const query = db
         .with(withSub)
@@ -70,25 +71,17 @@ test("complex", async () => {
         .leftJoin(withSubSub2, withSubSub2.id, c.id)
         //.leftJoin(withSub2Sub1, withSub2Sub1.id, c.id) // ____ERROR, not referenced in with part.
 
-        .columns(db
-            .uses(c)
-            .select()
-            .from(s)
-            .columns(s.id)
-            .where(SQL.EQC(c.id, s.id))
-            .asColumn("someItem")
-        )
-
         .columns(
+            db.uses(c).select().from(s).columns(s.id).where(SQL.EQC(c.id, s.id)).asColumn("someItem"),
             c.name,
             c.id,
             subQueryTable.id.as("sId"),
             subQueryTable.subIdRenamed.as("subIdRenamedAgain"),
             c.id.as("renamedId"),
             SQL.DATE(c.created).as("myDate"),
-            SQL.BOOL(c.id, " > ", c2.id).as("expr1"),
-            SQL.BOOL(c.id, " > ", c2.id).as("expr2"),
-            SQL.BOOL(expr, " > 'haha'").as("expr3"),
+            SQL.COMPAREC(c.id, ">", c2.id).as("expr1"),
+            SQL.COMPAREC(c.id, ">", c2.id).as("expr2"),
+            SQL.COMPAREC(c.id, "=", expr).as("expr3"),
             SQL.IF(c.id.EQC(c2.id), c.name, c2.name).cast<string>().as("expr4"),
 
             withSubSub1.subIdRenamed.as("withSubSub1"),
@@ -127,8 +120,7 @@ test("complex", async () => {
         .where(SQL.COMPAREC(c.id, ">=", c2.id))
         //.where(SQL.COMPAREC(c.id, ">", c3.id)) // ____ERROR, c3 is not referenced. Should be error.
 
-        .where(SQL.EXPR(c.id, " > ", c2.id))
-        .where(SQL.BOOL(c.id, " > ", c2.id))
+        .where(SQL.EXPRESSION(c.id, " > ", c2.id).cast<SQL_BOOL>())
         .where(SQL.ISNULL(c.id))
 
         .groupBy(c.id, c.name, "expr2")

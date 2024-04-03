@@ -4,6 +4,8 @@ export type R<Alias extends string> = Record<Alias, true>;
 
 export type Value<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> = symbol & RawValue<TableRef, Name, Type>
 
+export type AnyBoolValue<TableRef extends string> = Value<TableRef, string | unknown, SQL_BOOL>;
+
 export type RawValue<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> = {
     tableRef: TableRef
     nameAs: Name
@@ -12,11 +14,11 @@ export type RawValue<TableRef extends string, Name extends string | unknown, Typ
     cast: <CastType extends string | number>() => Value<TableRef, Name, CastType>
     as: <T extends string>(name: T) => Value<TableRef, T, Type>
 
-    ISNULL: () => Value<TableRef, unknown, 0 | 1>
-    ISNOTNULL: () => Value<TableRef, unknown, 0 | 1>
-    EQ: (value: Type) => Value<TableRef, unknown, 0 | 1>
-    EQC: <TableRef2 extends string>(value: Value<TableRef2, string, Type>) => Value<TableRef | TableRef2, unknown, 0 | 1>
-    LIKE: (value: Type) => Value<TableRef, unknown, 0 | 1>
+    ISNULL: () => Value<TableRef, unknown, SQL_BOOL>
+    ISNOTNULL: () => Value<TableRef, unknown, SQL_BOOL>
+    EQ: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
+    EQC: <TableRef2 extends string>(value: Value<TableRef2, string, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
+    LIKE: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
 };
 
 export type AliasedTable<Alias extends string, TableRef extends string, Entity, RefAlias extends string | NOT_REFERENCED> = {
@@ -33,6 +35,8 @@ export type AliasedTable<Alias extends string, TableRef extends string, Entity, 
 }
 
 export type NOT_REFERENCED = { __not_referenced: true }
+
+export type SQL_BOOL = 0 | 1;
 
 /**
  * Check if Alias ("c") already exists in UsedAliases=(R<"c"> & ...)

@@ -1,5 +1,5 @@
 import {
-    AliasedTable,
+    AliasedTable, SQL_BOOL,
     CheckForDuplicateColumns,
     CheckIfAliasedTablesAreReferenced,
     CheckIfAliasIsAlreadyUsed,
@@ -166,7 +166,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
     public where<
         UsedTables2 extends string
     >(
-        col: CheckIfAliasedTablesAreReferenced<Tables, R<UsedTables2>, Value<UsedTables2, unknown, 0 | 1>>
+        col: CheckIfAliasedTablesAreReferenced<Tables, R<UsedTables2>, Value<UsedTables2, unknown, SQL_BOOL>>
     ): this {
         if (typeof col === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof col + "'")

@@ -23,10 +23,14 @@ test("simple", async () => {
             SQL.NULL<string>().as("emptyValue"),
             SQL.DATE(c.created).as("myDate"),
             SQL.IF(c.id.EQ(10 as tUserId), c.id, c2.id).as("userIdFromIf"),
+            SQL.OR(c.name.ISNULL(), c.name.ISNOTNULL(), c.name.ISNULL()).as("or"),
+            SQL.AND(c.name.ISNULL(), c.name.ISNOTNULL(), c2.name.ISNULL()).as("and")
         )
-        .where(c.id.EQ(input.userId)) // c.id = 10
-        .where(c.name.ISNULL()) // c.id IS NULL
-        .where(c.name.ISNOTNULL())
+        .where(SQL.AND(
+            c.id.EQ(input.userId),
+            c.name.ISNULL(),
+            c.name.ISNOTNULL()
+        )) // c.id = 10
 
     console.log(query.toString())
 
@@ -38,7 +42,9 @@ test("simple", async () => {
         res.renamedId,  // type tUserId
         res.myDate, // type vDateTime
         res.emptyValue,
-        res.userIdFromIf
+        res.userIdFromIf,
+        res.or,
+        res.and
     )
 
 });
