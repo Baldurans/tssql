@@ -1,5 +1,4 @@
 import {OrderByStructure, Value} from "../Types";
-import {SQL} from "../SQL";
 import {DbSelect08Limit} from "./DbSelect08Limit";
 
 export class DbSelect07OrderBy<Result, Tables, UsedTables, LastType> extends DbSelect08Limit<Result, UsedTables, LastType> {
@@ -10,16 +9,7 @@ export class DbSelect07OrderBy<Result, Tables, UsedTables, LastType> extends DbS
     >(
         ...items: OrderByStructure<(Str | Value<TableRef, string | unknown, string | number>), "asc" | "ASC" | "desc" | "DESC">
     ): DbSelect08Limit<Result, UsedTables, LastType> {
-        for (let i = 0; i < items.length; i++) {
-            const item = items[i];
-            if (item === "asc" || item === "ASC" || item === "desc" || item === "DESC") {
-                this.builder._orderBy[this.builder._orderBy.length - 1] += " " + item;
-            } else if (typeof item === "string") {
-                this.builder._orderBy.push(item)
-            } else {
-                this.builder._orderBy.push(item.nameAs ? SQL.escapeId(item.nameAs as any) : item.expression)
-            }
-        }
-        return new DbSelect08Limit( this.builder);
+        this.builder.orderBy(items);
+        return new DbSelect08Limit(this.builder);
     }
 }

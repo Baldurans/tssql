@@ -6,6 +6,9 @@ export type Value<TableRef extends string, Name extends string | unknown, Type e
 
 export type AnyBoolValue<TableRef extends string> = Value<TableRef, string | unknown, SQL_BOOL>;
 
+export type AnyValue = RawValue<string, string | unknown, string | number | unknown>
+
+
 export type RawValue<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> = {
     tableRef: TableRef
     nameAs: Name
@@ -24,18 +27,17 @@ export type RawValue<TableRef extends string, Name extends string | unknown, Typ
     LIKE_WILD: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
 };
 
-export type AliasedTable<Alias extends string, TableRef extends string, Entity, RefAlias extends string | NOT_REFERENCED> = {
+export type AliasedTableDef<Alias extends string, TableRef extends string, RefAlias extends string | NOT_REFERENCED> = {
     [Db.SQL_EXPRESSION]: TableRef
     [Db.SQL_ALIAS]: Alias
     [Db.SQL_REF_ALIAS]: RefAlias
-    // createRef<
-    //     TableName extends string,
-    //     OldTableRef extends `${TableName} as ${Alias}`,
-    //     NewAlias extends string
-    // >(newAlias: NewAlias): AliasedTable<NewAlias, `${TableName} as ${NewAlias}`, Entity, Alias>
-} & {
+}
+
+export type AliasedTable<Alias extends string, TableRef extends string, Entity, RefAlias extends string | NOT_REFERENCED> = AliasedTableDef<Alias, TableRef, RefAlias> & {
     [K in keyof Entity]: Value<TableRef, K, Entity[K]>
 }
+
+export type AnyAliasedTableDef = AliasedTableDef<string, string, string | NOT_REFERENCED>
 
 export type NOT_REFERENCED = { __not_referenced: true }
 

@@ -54,7 +54,7 @@ test("simple", async () => {
     console.log(query.toString())
     expect(query.toString()).toEqual('SELECT \n' +
         '  (\n' +
-        '    SELECT \n' +
+        '    SELECT DISTINCT \n' +
         '      `s`.`id` as `id`\n' +
         '    FROM `user` as `s`\n' +
         '    WHERE `s`.`id` = `c`.`id`\n' +

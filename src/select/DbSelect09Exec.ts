@@ -12,7 +12,7 @@ export class DbSelect09Exec<Result, UsedTables, LastType> extends DbSelect {
     }
 
     public as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result, NOT_REFERENCED> {
-        return Db.defineDbTable<"(SUBQUERY)", Alias, Result>("(\n" + this.builder.toString(TAB + TAB) + TAB + ")" as "(SUBQUERY)", alias, this.builder._columnStruct)
+        return Db.defineDbTable<"(SUBQUERY)", Alias, Result>("(\n" + this.builder.toString(TAB + TAB) + TAB + ")" as "(SUBQUERY)", alias, this.builder.getColumnStruct())
     }
 
     public toString(): string {

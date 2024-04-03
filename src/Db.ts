@@ -4,7 +4,6 @@ import {SqlExpression} from "./SqlExpression";
 import {DbSelect00Uses} from "./select/DbSelect00Uses";
 import {DbSelect00With} from "./select/DbSelect00With";
 import {DbSelectBuilder} from "./select/DbSelectBuilder";
-import {IDbSelectFrom} from "./selectI/ISelectStruct";
 import {DbSelect01From} from "./select/DbSelect01From";
 
 
@@ -16,7 +15,7 @@ export abstract class Db {
 
     public abstract query(sql: string): any;
 
-    public select(): IDbSelectFrom<{}, {}, {}, {}> {
+    public select(): DbSelect01From<{}, {}, {}, {}> {
         return new DbSelect01From(new DbSelectBuilder(this)) as any
     }
 

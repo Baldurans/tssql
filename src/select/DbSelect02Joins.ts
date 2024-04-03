@@ -1,14 +1,7 @@
-import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R, Value} from "../Types";
-import {SQL} from "../SQL";
-import {Db} from "../Db";
+import {AliasedTable, AnyAliasedTableDef, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R, Value} from "../Types";
 import {DbSelect03Columns} from "./DbSelect03Columns";
-import {DbSelectBuilder} from "./DbSelectBuilder";
 
 export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables> extends DbSelect03Columns<{}, UsedAliases, WithAliases, Tables, UsedTables> {
-
-    constructor(builder: DbSelectBuilder) {
-        super(builder);
-    }
 
     public join<
         Alias extends string,
@@ -26,7 +19,8 @@ export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables> extends 
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
     ): DbSelectJoin<UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables> {
-        return this._join("JOIN", table, field1, field2)
+        this.builder.join("JOIN", table as AnyAliasedTableDef, field1, field2)
+        return this as any;
     }
 
     public leftJoin<
@@ -45,31 +39,7 @@ export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables> extends 
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
     ): DbSelectJoin<UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables> {
-        return this._join("LEFT JOIN", table as any, field1, field2)
-    }
-
-    private _join<
-        Alias extends string,
-        TableName extends string,
-        TableRef extends `${TableName} as ${Alias}`,
-        RefAlias extends NOT_REFERENCED | string & keyof WithAliases,
-        Columns,
-        Field1Type extends string | number,
-        Field2Alias extends string & keyof UsedAliases,
-        Field2TableName extends string,
-        Field2TableRef extends `${Field2TableName} as ${Field2Alias}`,
-        Field2Type extends Field1Type
-    >(
-        joinType: "JOIN" | "LEFT JOIN",
-        table: CheckIfAliasIsAlreadyUsed<UsedAliases & WithAliases, Alias, AliasedTable<Alias, TableRef, Columns, RefAlias>>,
-        field1: Value<TableRef, string, Field1Type>,
-        field2: Value<Field2TableRef, string, Field2Type>
-    ): DbSelectJoin<UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables> {
-        if (typeof table === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
-            throw new Error("Invalid argument! Got '" + typeof table + "'")
-        }
-        const sql = this.builder._withQueries.has(table[Db.SQL_ALIAS]) ? SQL.escapeId(table[Db.SQL_ALIAS]) : table[Db.SQL_EXPRESSION] + " as " + SQL.escapeId(table[Db.SQL_ALIAS])
-        this.builder._joins.push(joinType + " " + sql + " ON (" + field1.expression + " = " + field2.expression + ")")
+        this.builder.join("LEFT JOIN", table as AnyAliasedTableDef, field1, field2)
         return this as any;
     }
 

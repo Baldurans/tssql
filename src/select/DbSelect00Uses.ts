@@ -2,7 +2,6 @@ import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "../Typ
 import {DbSelect01From} from "./DbSelect01From";
 import {DbSelect} from "./DbSelect";
 
-
 export class DbSelect00Uses<UsedAliases, UsedTables> extends DbSelect {
 
     public uses<
