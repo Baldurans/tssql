@@ -2,7 +2,7 @@ import {AnyValue, CheckForDuplicateColumns, ExtractObj, Value} from "../Types";
 import {DbSelect04Where} from "./DbSelect04Where";
 import {DbSelect} from "./DbSelect";
 
-export class DbSelect03Columns<Result, UsedAliases, WithAliases, Tables, UsedTables> extends DbSelect {
+export class DbSelect03Columns<Result, UsedAliases, WithAliases, Tables, UsedTables, CTX> extends DbSelect<CTX> {
     public distinct(): this {
         this.builder.distinct();
         return this;
@@ -14,7 +14,7 @@ export class DbSelect03Columns<Result, UsedAliases, WithAliases, Tables, UsedTab
     >(
         //...columns: Columns - this will enable seeing sources of Result object properties.
         ...columns: CheckForDuplicateColumns<Columns, Result>
-    ): DbSelect04Where<Result & ExtractObj<Columns>, UsedAliases, WithAliases, Tables, UsedTables, Columns[number]["type"]> {
+    ): DbSelect04Where<Result & ExtractObj<Columns>, UsedAliases, WithAliases, Tables, UsedTables, Columns[number]["type"], CTX> {
         this.builder.columns(columns as AnyValue[]);
         return new DbSelect04Where(this.builder);
     }

@@ -2,7 +2,14 @@ import {User} from "./User";
 import {Company} from "./Company";
 import {Db} from "../../src/Db";
 
-export class MyDb extends Db {
+export class MyDb extends Db<undefined> {
+
+
+    constructor() {
+        super(async (sql: string) => {
+            return [{}]
+        });
+    }
 
     public readonly tables = {
         user: this.getDbTableAliasFunction<"user", User>("user", {
@@ -18,8 +25,5 @@ export class MyDb extends Db {
         }),
     };
 
-    public async query(query: string): Promise<any> {
-        return [{}]
-    }
 
 }

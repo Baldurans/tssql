@@ -1,7 +1,7 @@
 import {AliasedTable, AnyAliasedTableDef, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, TrueRecord, Value} from "../Types";
 import {DbSelect03Columns} from "./DbSelect03Columns";
 
-export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables> extends DbSelect03Columns<{}, UsedAliases, WithAliases, Tables, UsedTables> {
+export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables, CTX> extends DbSelect03Columns<{}, UsedAliases, WithAliases, Tables, UsedTables, CTX> {
 
     public join<
         Alias extends string,
@@ -18,7 +18,7 @@ export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables> extends 
         table: CheckIfAliasIsAlreadyUsed<UsedAliases & WithAliases, Alias, AliasedTable<Alias, TableRef, Columns, RefAlias>>,
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
-    ): DbSelectJoin<UsedAliases & TrueRecord<Alias>, WithAliases, Tables & TrueRecord<TableRef>, UsedTables> {
+    ): DbSelectJoin<UsedAliases & TrueRecord<Alias>, WithAliases, Tables & TrueRecord<TableRef>, UsedTables, CTX> {
         this.builder.join("JOIN", table as AnyAliasedTableDef, field1, field2)
         return this as any;
     }
@@ -38,7 +38,7 @@ export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables> extends 
         table: CheckIfAliasIsAlreadyUsed<UsedAliases & WithAliases, Alias, AliasedTable<Alias, TableRef, Columns, RefAlias>>,
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
-    ): DbSelectJoin<UsedAliases & TrueRecord<Alias>, WithAliases, Tables & TrueRecord<TableRef>, UsedTables> {
+    ): DbSelectJoin<UsedAliases & TrueRecord<Alias>, WithAliases, Tables & TrueRecord<TableRef>, UsedTables, CTX> {
         this.builder.join("LEFT JOIN", table as AnyAliasedTableDef, field1, field2)
         return this as any;
     }

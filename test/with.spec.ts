@@ -55,7 +55,7 @@ test("with", async () => {
 
     console.log(query.toString())
 
-    const res = await query.execOne();
+    const res = await query.execOne(undefined);
     console.log(
         res.id,  // type tUserId
         res.aa1X,

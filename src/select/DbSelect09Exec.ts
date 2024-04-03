@@ -6,7 +6,7 @@ import {DbTableDefinition} from "../Db";
 
 const TAB = "  ";
 
-export class DbSelect09Exec<Result, UsedTables, LastType> extends DbSelect {
+export class DbSelect09Exec<Result, UsedTables, LastType, CTX> extends DbSelect<CTX> {
 
     public asScalar<Alias extends string>(alias: Alias & ScalarSubQueryAllowsOnlyOneColumn<Alias, Result> extends never ? "Scalar subquery allows only 1 column!" : Alias): Value<keyof UsedTables & string, Alias, LastType> {
         return SqlExpression.create("(\n" + this.builder.toString(2) + TAB + ")", alias);
@@ -24,11 +24,11 @@ export class DbSelect09Exec<Result, UsedTables, LastType> extends DbSelect {
         return this.builder.getColumnStruct();
     }
 
-    public async exec(): Promise<Result[]> {
-        return this.builder.exec();
+    public async exec(ctx: CTX): Promise<Result[]> {
+        return this.builder.exec(ctx);
     }
 
-    public async execOne<ExpectedResult>(): Promise<Result> {
-        return this.builder.execOne()
+    public async execOne<ExpectedResult>(ctx: CTX): Promise<Result> {
+        return this.builder.execOne(ctx)
     }
 }

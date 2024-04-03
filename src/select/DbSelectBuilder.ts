@@ -1,4 +1,4 @@
-import {Db, DbTableDefinition} from "../Db";
+import {DbTableDefinition} from "../Db";
 import {SQL} from "../SQL";
 import {SqlExpression} from "../SqlExpression";
 import {AnyAliasedTableDef, AnyValue, OrderByStructure} from "../Types";
@@ -7,9 +7,9 @@ import {DbUtility} from "../DbUtility";
 const TAB = "  ";
 
 
-export class DbSelectBuilder {
+export class DbSelectBuilder<CTX> {
 
-    private readonly db: Db;
+    private readonly _exec: (ctx: CTX, query: string) => Promise<any[]>
 
     private _withQueries: Map<string, string> = new Map()
     private _from: string;
@@ -29,8 +29,8 @@ export class DbSelectBuilder {
     private _distinct: boolean = false;
     private _forUpdate: boolean = false;
 
-    constructor(db: Db) {
-        this.db = db;
+    constructor(exec: (ctx: CTX, query: string) => Promise<any[]>) {
+        this._exec = exec;
     }
 
     public getColumnStruct(): DbTableDefinition<any> {
@@ -157,11 +157,11 @@ export class DbSelectBuilder {
             (this._forUpdate && this.unions.length === 0 ? tabs + " FOR UPDATE\n" : "");
     }
 
-    public async exec(): Promise<any[]> {
-        return this.db.query(this.toString());
+    public async exec(ctx: CTX): Promise<any[]> {
+        return this._exec(ctx, this.toString());
     }
 
-    public async execOne(): Promise<any> {
-        return (await this.db.query(this.toString()))?.[0];
+    public async execOne(ctx: CTX): Promise<any> {
+        return (await this._exec(ctx, this.toString()))?.[0];
     }
 }

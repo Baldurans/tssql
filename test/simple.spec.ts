@@ -71,7 +71,7 @@ test("simple", async () => {
         'JOIN `user` as `c2` ON (`c2`.`id` = `c`.`id`)\n' +
         'WHERE (`c`.`id` = 10 AND `c`.`username` IS NULL AND `c`.`username` IS NOT NULL)\n')
 
-    const res = await query.execOne();
+    const res = await query.execOne(undefined);
     console.log(
         res.subColumn, // type tUserId
         res.id,  // type tUserId

@@ -9,13 +9,15 @@ import {DbSelect00Union} from "./select/DbSelect00Union";
 import {DbSelect09Exec} from "./select/DbSelect09Exec";
 
 
-export abstract class Db {
+export abstract class Db<CTX> {
 
 
-    public abstract query(sql: string): any;
+    constructor(private readonly exec: (ctx: CTX, sql: string) => Promise<any[]>) {
 
-    public select(): DbSelect01From<{}, {}, {}, {}> {
-        return new DbSelect01From(new DbSelectBuilder(this)) as any
+    }
+
+    public select(): DbSelect01From<{}, {}, {}, {}, CTX> {
+        return new DbSelect01From(new DbSelectBuilder<CTX>(this.exec)) as any
     }
 
     public uses<
@@ -25,8 +27,8 @@ export abstract class Db {
         Columns
     >(
         table: AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>
-    ): DbSelect00Uses<TrueRecord<Alias>, TrueRecord<TableRef>> {
-        return new DbSelect00Uses(new DbSelectBuilder(this));
+    ): DbSelect00Uses<TrueRecord<Alias>, TrueRecord<TableRef>, CTX> {
+        return new DbSelect00Uses(new DbSelectBuilder<CTX>(this.exec));
     }
 
     public with<
@@ -36,12 +38,12 @@ export abstract class Db {
         Columns
     >(
         table: AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>
-    ): DbSelect00With<TrueRecord<Alias>, TrueRecord<TableRef>> {
-        return new DbSelect00With(new DbSelectBuilder(this)).with(table as any);
+    ): DbSelect00With<TrueRecord<Alias>, TrueRecord<TableRef>, CTX> {
+        return new DbSelect00With(new DbSelectBuilder<CTX>(this.exec)).with(table as any);
     }
 
-    public union<Result>(table: DbSelect09Exec<Result, any, any>): DbSelect00Union<Result, unknown, unknown, {}, unknown> {
-        return new DbSelect00Union<Result, unknown, unknown, {}, unknown>(new DbSelectBuilder(this)).all(table as any);
+    public union<Result>(table: DbSelect09Exec<Result, any, any, CTX>): DbSelect00Union<Result, unknown, unknown, {}, unknown, CTX> {
+        return new DbSelect00Union<Result, unknown, unknown, {}, unknown, CTX>(new DbSelectBuilder<CTX>(this.exec)).all(table as any);
     }
 
     public static createRef<

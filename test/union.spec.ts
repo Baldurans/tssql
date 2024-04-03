@@ -29,7 +29,7 @@ test("with", async () => {
 
     console.log(b.toString())
 
-    const res = await b.execOne();
+    const res = await b.execOne(undefined);
     console.log(
         res.id,  // type tUserId
     )
