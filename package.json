@@ -1,6 +1,6 @@
 {
-  "name": "tssql",
-  "version": "1.0.0",
+  "name": "ts-sql-lang",
+  "version": "1.0.1",
   "description": "Types SQL query writing",
   "author": "Oliver Leisalu",
   "license": "proprietary",
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Baldurans/ByteArrayJs.git"
+    "url": "git+https://github.com/Baldurans/tssql.git"
   },
   "scripts": {
     "test": "jest",
