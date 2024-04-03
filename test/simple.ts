@@ -28,9 +28,6 @@ test("simple", async () => {
         .where(c.name.ISNULL()) // c.id IS NULL
         .where(c.name.ISNOTNULL())
 
-    //SQL.union( select1, select2) // vaata, et select1 ja select2 väljad oleks samad
-    //SQL.unionAll( select1, select2) // vaata, et select1 ja select2 väljad oleks samad
-
     console.log(query.toString())
 
     const res = await query.execOne();
