@@ -46,8 +46,7 @@ test("complex", async () => {
         .columns(
             s.id,
             s.username,
-            s.id.as("subIdRenamed"),
-            //s.username.as("id"),// ____ERROR: id already used
+            s.id.as("subIdRenamed")
         )
         .where(SQL.EQC(s.id, c.id))
         .noLimit()
@@ -60,20 +59,17 @@ test("complex", async () => {
         .with(withSub)
         .select()
         .from(c)
-
         .join(c2, c2.id, c.id)
-
-        // .join(cFake, cFake.id, c.id) // ____ERROR, alias c is already used!
-        // .join(c2, c2.id, c.id) // ____ERROR, c2 already joined
-        // .join(c4, c.id, c.id) // ____ERROR, invalid join condition (second argument must be from c4)
-        // .join(c5, c5.id, c.name) // ____ERROR, c5.id type != c2.name type
-
         .join(subQueryTable, subQueryTable.subIdRenamed, c.id)
-        //.join(subQueryTable, subQueryTable.subIdRenamed, c.id) // ____ERROR, alias is already used!
-
-        //.leftJoin(withSub, withSub.id, c.id) // ____ERROR, alias is already in use.
         .leftJoin(withSubSub1, withSubSub1.id, c.id)
         .leftJoin(withSubSub2, withSubSub2.id, c.id)
+
+        //.join(cFake, cFake.id, c.id) // ____ERROR, alias c is already used!
+        //.join(c2, c2.id, c.id) // ____ERROR, c2 already joined
+        //.join(c4, c.id, c.id) // ____ERROR, invalid join condition (second argument must be from c4)
+        //.join(c5, c5.id, c.username) // ____ERROR, c5.id type != c2.name type
+        //.join(subQueryTable, subQueryTable.subIdRenamed, c.id) // ____ERROR, alias is already used!
+        //.leftJoin(withSub, withSub.id, c.id) // ____ERROR, alias is already in use.
         //.leftJoin(withSub2Sub1, withSub2Sub1.id, c.id) // ____ERROR, not referenced in with part.
 
         .columns(
@@ -101,34 +97,32 @@ test("complex", async () => {
 
             //c.id, // ____ERROR, can't add same field twice!
             //subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
-            //SQL.EXPR(c.id, " > ", c3.id).as("expr2"), // ____ERROR, c3 is not referenced!
+            //SQL.EXPRESSION(c.id, " > ", c3.id).as("expr2"), // ____ERROR, c3 is not referenced!
             //cFake.name, // ____ERROR, table name does not match!
-            //c3.name // ____ERROR, c3 is not referenced
+            //c3.username // ____ERROR, c3 is not referenced
+
         )
 
         //.columns( c.name ) // ____ERROR, Can't add same field twice!
 
         .where(c.id.EQ(10 as tUserId)) // c.id = 10
         .where(SQL.DATE(c.created).EQ("2024.03.09" as vDate))
-
-        //.whereEq(SQL.DATE(c2.name), "2024.03.09" as vDate) // ____ERROR - wrong type DATE(c.name) = '2024.03.09'
-        //.whereEq(c.id, 10) // ____ERROR, 10 is not tUser
-
         .where(SQL.EQ(c.id, 10 as tUserId)) // c.id = 10
-
-        // .where(SQL.EQ(c.id, 10)) // ____ERROR, as 10 is not tUserId
-        // .where(SQL.EQ(c3.name, "aa")) // ____ERROR, c3 is not referenced
-
         .where(SQL.EQC(c.id, c2.id)) // c.id = 10
-        // .where(SQL.EQC(c.id, c.name)) // ____ERROR, as tUserId != string
-
         .where(SQL.COMPAREC(c.id, ">=", c2.id))
-        //.where(SQL.COMPAREC(c.id, ">", c3.id)) // ____ERROR, c3 is not referenced. Should be error.
-
         .where(SQL.EXPRESSION(c.id, " > ", c2.id).cast<SQL_BOOL>())
         .where(SQL.ISNULL(c.id))
 
+        //.where(SQL.EQ(SQL.DATE(c2.username), "2024.03.09" as vDate)) // ____ERROR - wrong type DATE(c.name) = '2024.03.09'
+        //.whereEq(c.id, 10) // ____ERROR, 10 is not tUser
+        //.where(SQL.EQ(c.id, 10)) // ____ERROR, as 10 is not tUserId
+        //.where(SQL.EQ(c3.username, "aa")) // ____ERROR, c3 is not referenced
+        //.where(SQL.EQC(c.id, c.username)) // ____ERROR, as tUserId != string
+        //.where(SQL.COMPAREC(c.id, ">", c3.id)) // ____ERROR, c3 is not referenced. Should be error.
+
         .groupBy(c.id, c.username, "expr2")
+        //.groupBy(c3.id, c.username, "expr2") // ____ERROR, c3 is not referenced
+        //.groupBy(c.id, c.username, "notDefined") // ____ERROR, notDefined does not exist
 
         .orderBy(c.id, "asc", c.id, c.username, "expr2", "desc")
         .noLimit()

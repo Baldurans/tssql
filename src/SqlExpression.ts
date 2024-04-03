@@ -24,36 +24,40 @@ export class SqlExpression<TableRef extends string, Name extends string | unknow
         return new SqlExpression<TableRef, T, Type>(this.expression, name) as any;
     }
 
+    private asValue(): Value<TableRef, any, any> {
+        return this as any;
+    }
+
     public ISNULL(): Value<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(this.expression + " IS NULL");
+        return SQL.ISNULL(this.asValue());
     }
 
     public NOTNULL(): Value<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(this.expression + " IS NOT NULL");
+        return SQL.NOTNULL(this.asValue());
     }
 
     public EQ(value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(this.expression + " = " + SQL.escape(String(value)));
+        return SQL.EQ(this.asValue(), value);
     }
 
     public EQC<TableRef2 extends string, Type1>(col: Value<TableRef2, string, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return SqlExpression.create(this.expression + " = " + col.expression);
+        return SQL.EQC(this.asValue(), col);
     }
 
-    public LIKE(value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(this.expression + " LIKE " + SQL.escape(String(value)));
+    public LIKE(value: string): Value<TableRef, unknown, SQL_BOOL> {
+        return SQL.LIKE(this.asValue(), value);
     }
 
-    public LIKE_WILD(value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(this.expression + " LIKE " + SQL.escape("%" + value + "%"));
+    public LIKE_WILD(value: string): Value<TableRef, unknown, SQL_BOOL> {
+        return SQL.LIKE_WILD(this.asValue(), value);
     }
 
-    public LIKE_PRE(value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(this.expression + " LIKE " + SQL.escape("%" + value));
+    public LIKE_PRE(value: string): Value<TableRef, unknown, SQL_BOOL> {
+        return SQL.LIKE_PRE(this.asValue(), value);
     }
 
-    public LIKE_SUF(value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(this.expression + " LIKE " + SQL.escape(value + "%"));
+    public LIKE_SUF(value: string): Value<TableRef, unknown, SQL_BOOL> {
+        return SQL.LIKE_SUF(this.asValue(), value);
     }
 
 }

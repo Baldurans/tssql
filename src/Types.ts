@@ -13,14 +13,15 @@ export type RuntimeValue<TableRef extends string, Name extends string | unknown,
 
     cast: <CastType extends string | number>() => Value<TableRef, Name, CastType>
     as: <T extends string>(name: T) => Value<TableRef, T, Type>
+
     ISNULL: () => Value<TableRef, unknown, SQL_BOOL>
     NOTNULL: () => Value<TableRef, unknown, SQL_BOOL>
     EQ: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
     EQC: <TableRef2 extends string>(value: Value<TableRef2, string, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
-    LIKE: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
-    LIKE_PRE: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
-    LIKE_SUF: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
-    LIKE_WILD: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
+    LIKE: (value: string) => Value<TableRef, unknown, SQL_BOOL>
+    LIKE_PRE: (value: string) => Value<TableRef, unknown, SQL_BOOL>
+    LIKE_SUF: (value: string) => Value<TableRef, unknown, SQL_BOOL>
+    LIKE_WILD: (value: string) => Value<TableRef, unknown, SQL_BOOL>
 }
 
 export type AnyBoolValue<TableRef extends string> = Value<TableRef, string | unknown, SQL_BOOL>;
@@ -44,11 +45,11 @@ export type SQL_BOOL = 0 | 1;
 /**
  * YYYY-MM-DD
  */
-export type vDate = string
+export type vDate = string & { vDate: true }
 /**
  * YYYY-MM-DD HH:II:SS
  */
-export type vDateTime = string
+export type vDateTime = string & { vDateTime: true }
 
 /**
  * Check if Alias ("c") already exists in UsedAliases=(R<"c"> & ...)
