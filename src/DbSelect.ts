@@ -5,6 +5,7 @@ import {
     CheckIfAliasIsAlreadyUsed,
     COMPARISONS,
     ExtractObj,
+    NOT_REFERENCED,
     OrderByStructure,
     R,
     ScalarSubQueryAllowsOnlyOneColumn,
@@ -62,7 +63,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         TableRef extends `${TableName} as ${Alias}`,
         Columns
     >(
-        table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns>>
+        table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>
     ): DbSelect<Result, UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables, LastType> {
         if (typeof table === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof table + "'")
@@ -75,6 +76,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         Alias extends string,
         TableName extends string,
         TableRef extends `${TableName} as ${Alias}`,
+        RefAlias extends NOT_REFERENCED | string & keyof WithAliases,
         Columns,
         Field1Type extends string | number,
         Field2Alias extends string & keyof UsedAliases,
@@ -83,7 +85,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         Field2Type extends Field1Type
     >(
         joinType: "JOIN" | "LEFT JOIN",
-        table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns>>,
+        table: CheckIfAliasIsAlreadyUsed<UsedAliases & WithAliases, Alias, AliasedTable<Alias, TableRef, Columns, RefAlias>>,
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
     ): DbSelect<Result, UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables, LastType> {
@@ -99,6 +101,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         Alias extends string,
         TableName extends string,
         TableRef extends `${TableName} as ${Alias}`,
+        RefAlias extends NOT_REFERENCED | string & keyof WithAliases,
         Columns,
         Field1Type extends string | number,
         Field2Alias extends string & keyof UsedAliases,
@@ -106,7 +109,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         Field2TableRef extends `${Field2TableName} as ${Field2Alias}`,
         Field2Type extends Field1Type
     >(
-        table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns>>,
+        table: CheckIfAliasIsAlreadyUsed<UsedAliases & WithAliases, Alias, AliasedTable<Alias, TableRef, Columns, RefAlias>>,
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
     ): DbSelect<Result, UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables, LastType> {
@@ -117,6 +120,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         Alias extends string,
         TableName extends string,
         TableRef extends `${TableName} as ${Alias}`,
+        RefAlias extends NOT_REFERENCED | string & keyof WithAliases,
         Columns,
         Field1Type extends string | number,
         Field2Alias extends string & keyof UsedAliases,
@@ -124,7 +128,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         Field2TableRef extends `${Field2TableName} as ${Field2Alias}`,
         Field2Type extends Field1Type
     >(
-        table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns>>,
+        table: CheckIfAliasIsAlreadyUsed<UsedAliases & WithAliases, Alias, AliasedTable<Alias, TableRef, Columns, RefAlias>>,
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
     ): DbSelect<Result, UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables, LastType> {
@@ -162,7 +166,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
     public where<
         UsedTables2 extends string
     >(
-        col: CheckIfAliasedTablesAreReferenced<Tables, R<UsedTables2>, Value<UsedTables2, unknown, string | number>>
+        col: CheckIfAliasedTablesAreReferenced<Tables, R<UsedTables2>, Value<UsedTables2, unknown, 0 | 1>>
     ): this {
         if (typeof col === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof col + "'")
@@ -242,7 +246,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         return SqlExpression.create("(\n" + this.toString(TAB + TAB) + TAB + ")", alias);
     }
 
-    public as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result> {
+    public as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result, NOT_REFERENCED> {
         return Db.defineDbTable<"(SUBQUERY)", Alias, Result>("(\n" + this.toString(TAB + TAB) + TAB + ")" as "(SUBQUERY)", alias, this._columnStruct)
     }
 

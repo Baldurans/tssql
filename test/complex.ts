@@ -3,7 +3,7 @@ import {vDate} from "../src/CustomTypes";
 import {SQL} from "../src/SQL";
 import {MyDb} from "./tables/MyDb";
 
-test("simple", async () => {
+test("complex", async () => {
 
     const db = new MyDb();
 
@@ -19,6 +19,26 @@ test("simple", async () => {
 
     // NOTICE: It is very hard to mess up field names, as it most certainly means some hacking as you always reference fields from table objects.
 
+    const withSub = db
+        .select()
+        .from(s)
+        .columns(s.id, s.created, s.name, s.age)
+        .columns(s.id.as("subIdRenamed"))
+        .where(s.id.EQ(10 as tUserId))
+        .as("withSub")
+    const withSubSub1 = MyDb.createRef(withSub, "withSubSub1");
+    const withSubSub2 = MyDb.createRef(withSub, "withSubSub2");
+
+    const withSub2 = db
+        .select()
+        .from(s)
+        .columns(s.id, s.created, s.name, s.age)
+        .columns(s.id.as("subIdRenamed"))
+        .where(s.id.EQ(10 as tUserId))
+        .as("withSub2")
+    const withSub2Sub1 = MyDb.createRef(withSub2, "withSub2Sub1")
+    String(withSub2Sub1)
+
     const subQueryTable = db
         .uses(c)
         .select()
@@ -31,7 +51,9 @@ test("simple", async () => {
 
     const expr = SQL.EXPR("IF(", c.id, " > ", c2.id, ",", c.name, ",", c2.name, ")").cast<string>();
 
-    const query = db.select()
+    const query = db
+        .with(withSub)
+        .select()
         .from(c)
         .join(c2, c2.id, c.id)
 
@@ -42,6 +64,11 @@ test("simple", async () => {
 
         .join(subQueryTable, subQueryTable.subIdRenamed, c.id)
         //.join(subQueryTable, subQueryTable.subIdRenamed, c.id) // ____ERROR, alias is already used!
+
+        //.leftJoin(withSub, withSub.id, c.id) // ____ERROR, alias is already in use.
+        .leftJoin(withSubSub1, withSubSub1.id, c.id)
+        .leftJoin(withSubSub2, withSubSub2.id, c.id)
+        //.leftJoin(withSub2Sub1, withSub2Sub1.id, c.id) // ____ERROR, not referenced in with part.
 
         .columns(db
             .uses(c)
@@ -55,20 +82,17 @@ test("simple", async () => {
         .columns(
             c.name,
             c.id,
-
             subQueryTable.id.as("sId"),
-
             subQueryTable.subIdRenamed.as("subIdRenamedAgain"),
             c.id.as("renamedId"),
             SQL.DATE(c.created).as("myDate"),
-
             SQL.BOOL(c.id, " > ", c2.id).as("expr1"),
-
             SQL.BOOL(c.id, " > ", c2.id).as("expr2"),
-
             SQL.BOOL(expr, " > 'haha'").as("expr3"),
+            SQL.IF(c.id.EQC(c2.id), c.name, c2.name).cast<string>().as("expr4"),
 
-            SQL.EXPR("IF(", c.id, " > ", c2.id, ",", c.name, ",", c2.name, ")").cast<string>().as("expr4"),
+            withSubSub1.subIdRenamed.as("withSubSub1"),
+            withSubSub2.subIdRenamed.as("withSubSub2"),
 
             db.uses(c)
                 .select()
@@ -126,7 +150,8 @@ test("simple", async () => {
         res.expr2,
         res.expr3,
         res.expr4,
-
+        res.withSubSub1,
+        res.withSubSub2,
         // res.name2,  // ____ERROR - no such field returned. (it shows white because upper query has errors, would be red otherwise.)
     )
 

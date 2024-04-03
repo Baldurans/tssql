@@ -37,15 +37,15 @@ export class SQL {
         return SqlExpression.create("DATETIME(" + field.expression + ")")
     }
 
-    public static ISNULL<TableRef extends string, Name, Type extends string | number>(col: Value<TableRef, Name, Type>): Value<TableRef, 0 | 1, Type> {
-        return SqlExpression.create<TableRef, 0 | 1, Type>(col.expression + " = NULL")
+    public static ISNULL<TableRef extends string, Name, Type extends string | number>(col: Value<TableRef, Name, Type>): Value<TableRef, Name, 0 | 1> {
+        return SqlExpression.create<TableRef, Name, 0 | 1>(col.expression + " = NULL")
     }
 
     /**
      * Column OPERATION value (If you want to compare column with another column, use COMPAREC method.)
      */
-    public static COMPARE<TableRef extends string, Type extends string | number>(col: Value<TableRef, string, Type>, op: COMPARISONS, value: Type): Value<TableRef, unknown, Type> {
-        return SqlExpression.create<TableRef, unknown, Type>(col.expression + " " + op + " " + SQL.escape(value))
+    public static COMPARE<TableRef extends string, Type extends string | number>(col: Value<TableRef, string, Type>, op: COMPARISONS, value: Type): Value<TableRef, unknown, 0 | 1> {
+        return SqlExpression.create<TableRef, unknown, 0 | 1>(col.expression + " " + op + " " + SQL.escape(value))
     }
 
     public static IF<
@@ -66,15 +66,15 @@ export class SQL {
     /**
      * Column = value (If you want to compare column with another column, use EQC method.
      */
-    public static EQ<TableRef extends string, Type extends string | number>(col: Value<TableRef, string, Type>, value: Type): Value<TableRef, unknown, Type> {
+    public static EQ<TableRef extends string, Type extends string | number>(col: Value<TableRef, string, Type>, value: Type): Value<TableRef, unknown, 0 | 1> {
         return SQL.COMPARE(col, "=", value);
     }
 
-    public static COMPAREC<TableRef1 extends string, TableRef2 extends string, Type1>(col1: Value<TableRef1, string, Type1>, op: COMPARISONS, col2: Value<TableRef2, string, Type1>): Value<TableRef1 | TableRef2, unknown, Type1> {
+    public static COMPAREC<TableRef1 extends string, TableRef2 extends string, Type1>(col1: Value<TableRef1, string, Type1>, op: COMPARISONS, col2: Value<TableRef2, string, Type1>): Value<TableRef1 | TableRef2, unknown, 0 | 1> {
         return SqlExpression.create(col1.expression + " " + op + " " + col2.expression)
     }
 
-    public static EQC<TableRef1 extends string, TableRef2 extends string, Type1>(col1: Value<TableRef1, string, Type1>, col2: Value<TableRef2, string, Type1>): Value<TableRef1 | TableRef2, unknown, Type1> {
+    public static EQC<TableRef1 extends string, TableRef2 extends string, Type1>(col1: Value<TableRef1, string, Type1>, col2: Value<TableRef2, string, Type1>): Value<TableRef1 | TableRef2, unknown, 0 | 1> {
         return SQL.COMPAREC(col1, "=", col2);
     }
 

@@ -1,4 +1,4 @@
-import {AliasedTable, CheckIfAliasIsAlreadyUsed, R} from "./Types";
+import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "./Types";
 import {DbSelect} from "./DbSelect";
 import {Db} from "./Db";
 
@@ -17,7 +17,7 @@ export class DbUses<UsedAliases, UsedTables> {
         TableRef extends `${TableName} as ${Alias}`,
         Columns
     >(
-        table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns>>
+        table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>
     ): DbUses<UsedAliases & R<Alias>, UsedTables & R<TableRef>>
     public uses(table: any): any {
         // This does nothing, it used only for Typescript type referencing.

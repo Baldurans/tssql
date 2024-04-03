@@ -12,22 +12,27 @@ export type RawValue<TableRef extends string, Name extends string | unknown, Typ
     cast: <CastType extends string | number>() => Value<TableRef, Name, CastType>
     as: <T extends string>(name: T) => Value<TableRef, T, Type>
 
+    ISNULL: () => Value<TableRef, unknown, 0 | 1>
+    ISNOTNULL: () => Value<TableRef, unknown, 0 | 1>
     EQ: (value: Type) => Value<TableRef, unknown, 0 | 1>
-    EQC: <TableRef2 extends string>(value: Value<TableRef2, string, Type>) => Value<TableRef | TableRef2, unknown, Type>
+    EQC: <TableRef2 extends string>(value: Value<TableRef2, string, Type>) => Value<TableRef | TableRef2, unknown, 0 | 1>
     LIKE: (value: Type) => Value<TableRef, unknown, 0 | 1>
 };
 
-export type AliasedTable<Alias extends string, TableRef extends string, Columns> = {
+export type AliasedTable<Alias extends string, TableRef extends string, Entity, RefAlias extends string | NOT_REFERENCED> = {
     [Db.SQL_EXPRESSION]: TableRef
-    [Db.SQL_ALIAS]: string
-    createRef<
-        TableName extends string,
-        OldTableRef extends `${TableName} as ${Alias}`,
-        NewAlias extends string
-    >(newAlias: NewAlias): AliasedTable<NewAlias, `${TableName} as ${NewAlias}`, Columns>
+    [Db.SQL_ALIAS]: Alias
+    [Db.SQL_REF_ALIAS]: RefAlias
+    // createRef<
+    //     TableName extends string,
+    //     OldTableRef extends `${TableName} as ${Alias}`,
+    //     NewAlias extends string
+    // >(newAlias: NewAlias): AliasedTable<NewAlias, `${TableName} as ${NewAlias}`, Entity, Alias>
 } & {
-    [K in keyof Columns]: Value<TableRef, K, Columns[K]>
+    [K in keyof Entity]: Value<TableRef, K, Entity[K]>
 }
+
+export type NOT_REFERENCED = { __not_referenced: true }
 
 /**
  * Check if Alias ("c") already exists in UsedAliases=(R<"c"> & ...)

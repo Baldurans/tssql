@@ -1,4 +1,4 @@
-import {AliasedTable, CheckIfAliasIsAlreadyUsed, R} from "./Types";
+import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "./Types";
 import {DbSelect} from "./DbSelect";
 import {Db} from "./Db";
 import {SQL} from "./SQL";
@@ -19,7 +19,7 @@ export class DbWith<UsedAliases, UsedTables> {
         TableRef extends `${TableName} as ${Alias}`,
         Columns
     >(
-        table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns>>
+        table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>
     ): DbWith<UsedAliases & R<Alias>, UsedTables & R<TableRef>> {
         if (typeof table === "string") {
             throw new Error("Invalid table argument!")
