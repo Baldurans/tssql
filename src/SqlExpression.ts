@@ -24,6 +24,18 @@ export class SqlExpression<TableRef extends string, Name extends string | unknow
         return new SqlExpression<TableRef, T, Type>(this.expression, name) as any;
     }
 
+    public EQ<TableRef extends string, Type extends string | number>(value: Type): Value<TableRef, unknown, Type> {
+        return SqlExpression.create(this.expression + " = " + SQL.escape(value));
+    }
+
+    public EQC<TableRef1 extends string, TableRef2 extends string, Type1>(col: Value<TableRef2, string, Type1>): Value<TableRef1 | TableRef2, unknown, Type1> {
+        return SqlExpression.create(this.expression + " = " + col.expression);
+    }
+
+    public LIKE<TableRef extends string>(value: string): Value<TableRef, unknown, string> {
+        return SqlExpression.create(this.expression + " LIKE " + SQL.escape(value));
+    }
+
     public toString() {
         return this.expression + (this.nameAs ? " as " + SQL.escapeId(this.nameAs) : "")
     }

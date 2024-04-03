@@ -18,4 +18,8 @@ export class MyDb extends Db {
         }),
     };
 
+    public async query(query: string): Promise<any> {
+        return [{}]
+    }
+
 }

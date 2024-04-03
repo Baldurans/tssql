@@ -11,10 +11,15 @@ export type RawValue<TableRef extends string, Name extends string | unknown, Typ
     expression: string
     cast: <CastType extends string | number>() => Value<TableRef, Name, CastType>
     as: <T extends string>(name: T) => Value<TableRef, T, Type>
+
+    EQ: (value: Type) => Value<TableRef, unknown, 0 | 1>
+    EQC: <TableRef2 extends string>(value: Value<TableRef2, string, Type>) => Value<TableRef | TableRef2, unknown, Type>
+    LIKE: (value: Type) => Value<TableRef, unknown, 0 | 1>
 };
 
 export type AliasedTable<Alias extends string, TableRef extends string, Columns> = {
     [Db.SQL_EXPRESSION]: TableRef
+    [Db.SQL_ALIAS]: string
 } & {
     [K in keyof Columns]: Value<TableRef, K, Columns[K]>
 }
@@ -45,7 +50,7 @@ export type ExtractObj<Columns extends Value<any, string, string | number>[]> = 
     [K in Columns[number]['nameAs']]: Extract<Columns[number], { nameAs: K }>['type']
 };
 
-export type COMPARISONS = "=" | ">=" | ">" | "<" | "<="
+export type COMPARISONS = "=" | ">=" | ">" | "<" | "<=" | "LIKE"
 
 /**
  * Anyone finds a better way, please write it. Rules are as follows:

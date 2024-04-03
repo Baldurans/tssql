@@ -25,6 +25,10 @@ export class SQL {
         return SqlExpression.create(expr.map(e => typeof e === "string" ? e : e.expression).join(""))
     }
 
+    public static NULL<Type>(): Value<null, unknown, Type> {
+        return SqlExpression.create("NULL")
+    }
+
     public static DATE<TableRef extends string, Name, Type extends vDate | vDateTime>(field: Value<TableRef, Name, Type>): Value<TableRef, Name, vDate> {
         return SqlExpression.create("DATE(" + field.expression + ")")
     }
@@ -44,6 +48,21 @@ export class SQL {
         return SqlExpression.create<TableRef, unknown, Type>(col.expression + " " + op + " " + SQL.escape(value))
     }
 
+    public static IF<
+        TableRef1 extends string,
+        Type1,
+        TableRef2 extends string,
+        Type2,
+        TableRef3 extends string,
+        Type3,
+    >(
+        col: Value<TableRef1, string | unknown, Type1>,
+        col2: Value<TableRef2, string | unknown, Type2>,
+        col3: Value<TableRef3, string | unknown, Type3>
+    ): Value<TableRef1 & TableRef2 & TableRef3, unknown, (Type2 extends Type3 ? Type3 extends Type2 ? Type2 : unknown : unknown)> {
+        return SqlExpression.create<any, unknown, any>("IF(" + col.expression + "," + col2.expression + "," + col3.expression + ")")
+    }
+
     /**
      * Column = value (If you want to compare column with another column, use EQC method.
      */
@@ -59,8 +78,16 @@ export class SQL {
         return SQL.COMPAREC(col1, "=", col2);
     }
 
+    public static TRIM<Type extends string, TableRef extends string>(value: string): Value<TableRef, unknown, Type> {
+        return SqlExpression.create("TRIM(" + SQL.escape(value) + ")")
+    }
+
+    public static LIKE<TableRef extends string>(col: (Value<TableRef, string | unknown, string | unknown>), value: string): Value<TableRef, unknown, string> {
+        return SqlExpression.create(col.expression + " LIKE " + SQL.escape(value));
+    }
+
     public static CONCAT<TableRef extends string>(...expr: (string | Value<TableRef, string | unknown, string | number | unknown>)[]): Value<TableRef, unknown, string> {
-        return undefined // @TODO
+        return SqlExpression.create("CONCAT(" + expr.map(e => typeof e === "string" ? e : e.expression) + ")")
     }
 
     public static MIN<Type, TableRef extends string>(col: Value<TableRef, string | unknown, Type>): Value<TableRef, unknown, Type> {

@@ -25,6 +25,7 @@ const TAB = "  ";
  */
 export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
 
+    private _withQueries: Map<string, string>
     private _from: string;
     private readonly _columns: string[] = [];
     private readonly _columnStruct: DbTableDefinition<Result> = {} as any;
@@ -37,6 +38,13 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
 
     private _distinct: boolean = false;
     private _forUpdate: boolean = false;
+
+    private readonly db: Db;
+
+    constructor(db: Db, withQueries?: Map<string, string>) {
+        this.db = db;
+        this._withQueries = withQueries || new Map()
+    }
 
     public distinct(): this {
         this._distinct = true;
@@ -59,22 +67,22 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
         if (typeof table === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof table + "'")
         }
-        this._from = table[Db.SQL_EXPRESSION];
+        this._from = table[Db.SQL_EXPRESSION] + " as " + SQL.escapeId(table[Db.SQL_ALIAS]);
         return this as any;
     }
 
-    public uses<
-        Alias extends string,
-        TableName extends string,
-        TableRef extends `${TableName} as ${Alias}`,
-        Columns
-    >(
-        table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns>>
-    ): DbSelect<Result, UsedAliases & R<Alias>, Tables & R<TableRef>, UsedTables & R<TableRef>, LastType>
-    public uses(table: any): any {
-        // This does nothing, it used only for Typescript type referencing.
-        return this;
-    }
+    // public uses<
+    //     Alias extends string,
+    //     TableName extends string,
+    //     TableRef extends `${TableName} as ${Alias}`,
+    //     Columns
+    // >(
+    //     table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns>>
+    // ): DbSelect<Result, UsedAliases & R<Alias>, Tables & R<TableRef>, UsedTables & R<TableRef>, LastType>
+    // public uses(table: any): any {
+    //     // This does nothing, it used only for Typescript type referencing.
+    //     return this;
+    // }
 
     public _join<
         Alias extends string,
@@ -95,7 +103,8 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
         if (typeof table === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof table + "'")
         }
-        this._joins.push(joinType + " " + table[Db.SQL_EXPRESSION] + " ON (" + field1.expression + " = " + field2.expression + ")")
+        const sql = this._withQueries.has(table[Db.SQL_ALIAS]) ? SQL.escapeId(table[Db.SQL_ALIAS]) : table[Db.SQL_EXPRESSION] + " as " + SQL.escapeId(table[Db.SQL_ALIAS])
+        this._joins.push(joinType + " " + sql + " ON (" + field1.expression + " = " + field2.expression + ")")
         return this as any;
     }
 
@@ -142,21 +151,21 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
         ...columns: Columns
     ): DbSelect<Result & ExtractObj<Columns>, UsedAliases, Tables, UsedTables, Columns[number]["type"]> {
         for (let i = 0; i < columns.length; i++) {
-            const col = columns[i] as SqlExpression<string, string, any>;
+            const col = columns[i] as unknown as SqlExpression<string, string, any>;
             this._columns.push(col.toString());
             (this._columnStruct as any)[col.nameAs] = true;
         }
         return this as any;
     }
 
-    public columns_WITH_DUPLICATE_CHECK<
+    public columns<
         TableRef extends string & keyof Tables,
         Columns extends Value<TableRef, string, string | number>[]
     >(
         ...columns: CheckForDuplicateColumns<Columns, Result>
     ): DbSelect<Result & ExtractObj<Columns>, UsedAliases, Tables, UsedTables, Columns[number]["type"]> {
         for (let i = 0; i < columns.length; i++) {
-            const col = columns[i] as SqlExpression<string, string, any>;
+            const col = columns[i] as unknown as SqlExpression<string, string, any>;
             this._columns.push(col.toString());
             (this._columnStruct as any)[col.nameAs] = true;
         }
@@ -171,7 +180,9 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
         if (typeof col === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof col + "'")
         }
-        this._where.push(col.toString())
+        if (col !== undefined) {
+            this._where.push(col.toString())
+        }
         return this
     }
 
@@ -179,21 +190,27 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
         TableRef extends string & keyof Tables,
         Type extends string | number,
     >(
-        field: Value<TableRef, string, Type>,
+        col: Value<TableRef, string, Type>,
         value: Type
     ): this {
-        return this.where(SQL.COMPARE<any, Type>(field, "=", value));
+        if (col !== undefined) {
+            this.where(SQL.COMPARE<any, Type>(col, "=", value));
+        }
+        return this
     }
 
     public whereCompare<
         TableRef extends string & keyof Tables,
         Type extends string | number,
     >(
-        field: Value<TableRef, string, Type>,
+        col: Value<TableRef, string, Type>,
         op: COMPARISONS,
         value: Type
     ): this {
-        return this.where(SQL.COMPARE<any, Type>(field, op, value));
+        if (col !== undefined) {
+            this.where(SQL.COMPARE<any, Type>(col, op, value));
+        }
+        return this
     }
 
     public groupBy<
@@ -238,12 +255,17 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
         return SqlExpression.create("(\n" + this.toString(TAB + TAB) + TAB + ")", alias);
     }
 
+    public asWith<Alias extends string>(alias: Alias): AliasedTable<Alias, `(WITHQUERY) as ${Alias}`, Result> {
+        return Db.defineDbTable<"(WITHQUERY)", Alias, Result>("(\n" + this.toString(TAB + TAB) + TAB + ")" as "(WITHQUERY)", alias, this._columnStruct)
+    }
+
     public as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result> {
         return Db.defineDbTable<"(SUBQUERY)", Alias, Result>("(\n" + this.toString(TAB + TAB) + TAB + ")" as "(SUBQUERY)", alias, this._columnStruct)
     }
 
     public toString(tabs: string = ""): string {
-        return tabs + "SELECT " + (this._distinct ? " DISTINCT " : "") + "\n" +
+        return (this._withQueries.size > 0 ? tabs + "WITH\n" + TAB + Array.from(this._withQueries.values()).join(",\n\n" + TAB) + "\n\n" : "") +
+            tabs + "SELECT " + (this._distinct ? " DISTINCT " : "") + "\n" +
             tabs + TAB + this._columns.join(",\n" + tabs + TAB) + "\n" +
             tabs + "FROM " + this._from + "\n" +
             (this._joins.length > 0 ? tabs + this._joins.join("\n") + "\n" : "") +
@@ -255,13 +277,11 @@ export class DbSelect<Result, UsedAliases, Tables, UsedTables, LastType> {
             (this._forUpdate ? tabs + " FOR UPDATE\n" : "");
     }
 
-    public exec(): Promise<Result[]> {
-        // @TODO
-        return undefined;
+    public async exec(): Promise<Result[]> {
+        return this.db.query(this.toString());
     }
 
-    public execOne<ExpectedResult>(): Promise<Result> {
-        console.log(this.toString())
-        return {} as any; // @TODO
+    public async execOne<ExpectedResult>(): Promise<Result> {
+        return (await this.db.query(this.toString()))?.[0];
     }
 }

@@ -19,12 +19,13 @@ test("simple", async () => {
 
     // NOTICE: It is very hard to mess up field names, as it most certainly means some hacking as you always reference fields from table objects.
 
-    const subQueryTable = db.select()
-        .from(s)
+    const subQueryTable = db
         .uses(c)
-        .columns_WITH_DUPLICATE_CHECK(s.id, s.name)
+        .select()
+        .from(s)
+        .columns(s.id, s.name)
         //.columns(s.name.as("id")) // ____ERROR: id already used
-        .columns_WITH_DUPLICATE_CHECK(s.id.as("subIdRenamed"))
+        .columns(s.id.as("subIdRenamed"))
         .where(SQL.EQC(s.id, c.id))
         .as("sub")
 
@@ -42,15 +43,16 @@ test("simple", async () => {
         .join(subQueryTable, subQueryTable.subIdRenamed, c.id)
         //.join(subQueryTable, subQueryTable.subIdRenamed, c.id) // ____ERROR, alias is already used!
 
-        .columns_WITH_DUPLICATE_CHECK(db.select()
-            .from(s)
+        .columns(db
             .uses(c)
-            .columns_WITH_DUPLICATE_CHECK(s.id)
+            .select()
+            .from(s)
+            .columns(s.id)
             .where(SQL.EQC(c.id, s.id))
             .asColumn("someItem")
         )
 
-        .columns_WITH_CTRL_CLICK_CAPABILITY_BUT_WITHOUT_DUPLICATE_CHECK(
+        .columns(
             c.name,
             c.id,
 
@@ -68,10 +70,10 @@ test("simple", async () => {
 
             SQL.EXPR("IF(", c.id, " > ", c2.id, ",", c.name, ",", c2.name, ")").cast<string>().as("expr4"),
 
-            db.select()
+            db.uses(c)
+                .select()
                 .from(s)
-                .uses(c)
-                .columns_WITH_CTRL_CLICK_CAPABILITY_BUT_WITHOUT_DUPLICATE_CHECK(s.id)
+                .columns(s.id)
                 // .columns_WITH_CTRL_CLICK_CAPABILITY_BUT_WITHOUT_DUPLICATE_CHECK(s.name) // ___ERROR - Scalar subquery allows only 1 column!
                 .where(SQL.EQC(s.id, c.id)).asColumn("subColumn"),
 

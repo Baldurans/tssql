@@ -1,15 +1,41 @@
 import {DbSelect} from "./DbSelect";
 import {SQL} from "./SQL";
-import {AliasedTable} from "./Types";
+import {AliasedTable, R} from "./Types";
 import {SqlExpression} from "./SqlExpression";
+import {DbUses} from "./DbUses";
+import {DbWith} from "./DbWith";
 
 
-export class Db {
+export abstract class Db {
 
     public static readonly SQL_EXPRESSION = Symbol("Table expression")
+    public static readonly SQL_ALIAS = Symbol("Alias")
+    public static readonly SQL_WITH_EXPRESSION = Symbol("Table expression")
+
+    public abstract query(sql: string): any;
 
     public select(): DbSelect<{}, {}, {}, {}, unknown> {
-        return new DbSelect()
+        return new DbSelect(this)
+    }
+
+    public uses<
+        Alias extends string,
+        TableName extends string,
+        TableRef extends `${TableName} as ${Alias}`
+    >(
+        table: AliasedTable<Alias, TableRef, any>
+    ): DbUses<R<Alias>, R<TableRef>> {
+        return new DbUses(this);
+    }
+
+    public with<
+        Alias extends string,
+        TableName extends string,
+        TableRef extends `${TableName} as ${Alias}`
+    >(
+        table: AliasedTable<Alias, TableRef, any>
+    ): DbWith<{}, R<TableRef>> {
+        return new DbWith(this).with(table as any);
     }
 
     protected getDbTableAliasFunction<TableName extends string, Entity>(
@@ -20,12 +46,14 @@ export class Db {
     }
 
     public static defineDbTable<TableName extends string, Alias extends string, Entity>(
-        escapedTableName: TableName,
+        escapedExpression: TableName,
         alias: string,
-        columns: DbTableDefinition<Entity>
+        columns: DbTableDefinition<Entity>,
+        withExpression?: string
     ): AliasedTable<Alias, `${TableName} as ${Alias}`, Entity> {
         const tbl: AliasedTable<Alias, `${TableName} as ${Alias}`, Entity> = {
-            [Db.SQL_EXPRESSION]: escapedTableName + " as " + SQL.escapeId(alias)
+            [Db.SQL_EXPRESSION]: escapedExpression,
+            [Db.SQL_ALIAS]: alias
         } as any;
         for (const columnName in columns) {
             (tbl as any)[columnName] = new SqlExpression(SQL.escapeId(alias) + "." + SQL.escapeId(columnName), columnName)
