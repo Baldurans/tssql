@@ -22,6 +22,8 @@ export class DbSelectBuilder {
     private readonly _orderBy: string[] = []
     private _limit: string = ""
 
+    private readonly unions: string[] = [];
+
     private _distinct: boolean = false;
     private _forUpdate: boolean = false;
 
@@ -31,6 +33,14 @@ export class DbSelectBuilder {
 
     public getColumnStruct(): DbTableDefinition<any> {
         return this._columnStruct;
+    }
+
+    public union(type: "ALL" | "", sql: string): void {
+        if (this.unions.length === 0) {
+            this.unions.push("(\n" + sql + ") ")
+        } else {
+            this.unions.push("UNION " + (type === "" ? "" : "ALL ") + "(\n" + sql + ") ")
+        }
     }
 
     public with(table: AnyAliasedTableDef): void {
@@ -67,19 +77,20 @@ export class DbSelectBuilder {
 
     public where(col: AnyValue): void {
         if (col !== undefined) {
-            this._where.push(String(col))
+            this._where.push(col.expression)
         }
     }
 
     public groupBy(items: (string | AnyValue)[]): void {
         for (let i = 0; i < items.length; i++) {
-            this._groupBy.push(String(items[i]))
+            const item = items[i];
+            this._groupBy.push(typeof item === "string" ? item : item.expression)
         }
     }
 
     public having(col: AnyValue): void {
         if (col !== undefined) {
-            this._having.push(col.toString())
+            this._having.push(col.expression)
         }
     }
 
@@ -104,18 +115,26 @@ export class DbSelectBuilder {
         }
     }
 
-    public toString(tabs: string = ""): string {
-        return (this._withQueries.size > 0 ? tabs + "WITH\n" + TAB + Array.from(this._withQueries.values()).join(",\n\n" + TAB) + "\n\n" : "") +
-            tabs + "SELECT " + (this._distinct ? " DISTINCT " : "") + "\n" +
-            tabs + TAB + this._columns.join(",\n" + tabs + TAB) + "\n" +
-            tabs + "FROM " + this._from + "\n" +
-            (this._joins.length > 0 ? tabs + this._joins.join("\n") + "\n" : "") +
-            (this._where.length > 0 ? tabs + "WHERE " + this._where.join("\n" + TAB + " AND ") + "\n" : "") +
+    public toString(lvl: number = 0): string {
+        const tabs = TAB.repeat(lvl);
+        let base: string;
+        if (this.unions.length > 0) {
+            base = this.unions.join("") + "\n";
+        } else {
+            base = (this._withQueries.size > 0 ? tabs + "WITH\n" + TAB + Array.from(this._withQueries.values()).join(",\n\n" + TAB) + "\n\n" : "") +
+                tabs + "SELECT " + (this._distinct ? " DISTINCT " : "") + "\n" +
+                tabs + TAB + this._columns.join(",\n" + tabs + TAB) + "\n" +
+                tabs + "FROM " + this._from + "\n" +
+                (this._joins.length > 0 ? tabs + this._joins.join("\n") + "\n" : "") +
+                (this._where.length > 0 ? tabs + "WHERE " + this._where.join("\n" + TAB + " AND ") + "\n" : "")
+        }
+
+        return base +
             (this._groupBy.length > 0 ? tabs + "GROUP BY " + this._groupBy.join(", ") + "\n" : "") +
             (this._having.length > 0 ? tabs + "HAVING " + this._having.join("\n" + TAB + " AND ") + "\n" : "") +
             (this._orderBy.length > 0 ? tabs + "ORDER BY " + this._orderBy.join(", ") + "\n" : "") +
             (this._limit ? tabs + "LIMIT " + this._limit + "\n" : "") +
-            (this._forUpdate ? tabs + " FOR UPDATE\n" : "");
+            (this._forUpdate && this.unions.length === 0 ? tabs + " FOR UPDATE\n" : "");
     }
 
     public async exec(): Promise<any[]> {

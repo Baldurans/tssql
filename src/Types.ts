@@ -147,3 +147,11 @@ export type CheckForDuplicateColumns<Columns, Result> = Columns extends [...(inf
             ]
         : never
     : Columns;
+
+// --------------------------------------------------------------------
+
+export type CompareObjects<Result1, Result2, Res> = Result1 extends Result2
+    ? Result2 extends Result1
+        ? Res
+        : "Existing structure has more fields and does not match added structure."
+    : "Added structure has more fields and does not match existing query structure"

@@ -1,6 +1,7 @@
-import {AnyBoolValue, COMPARISONS, SQL_BOOL, Value, vDate, vDateTime} from "./Types";
+import {AliasedTable, AnyBoolValue, COMPARISONS, NOT_REFERENCED, SQL_BOOL, Value, vDate, vDateTime} from "./Types";
 import mysql from "mysql";
 import {SqlExpression} from "./SqlExpression";
+import {DbUtility} from "./DbUtility";
 
 export function clone<TableRef extends string, Name, Type, Type2>(column: Value<TableRef, Name, Type>, overrides: Partial<Value<TableRef, Name, Type2>>): Value<TableRef, Name, Type2> {
     return {...(column as any), ...overrides} as any;
@@ -38,6 +39,23 @@ export class SQL {
 
     public static NOTNULL<TableRef extends string, Name, Type extends string | number>(col: Value<TableRef, Name, Type>): Value<TableRef, Name, SQL_BOOL> {
         return SqlExpression.create<TableRef, Name, SQL_BOOL>(col.expression + " IS NOT NULL")
+    }
+
+
+    public static UNION<
+        Alias extends string,
+        TableRef1 extends string,
+        Entity1,
+        TableRef2 extends string,
+        Entity2,
+    >(
+        alias: Alias,
+        table1: AliasedTable<TableRef1, any, Entity1, any>,
+        table2: Entity1 extends Entity2 ? Entity2 extends Entity1 ? AliasedTable<TableRef2, any, Entity2, any> : "Must have same structure!" : "Must have same structure!"
+    ): AliasedTable<Alias, "(UNION)", Entity2, NOT_REFERENCED>
+    public static UNION(alias: string, ...tables: any[]): any {
+        console.log(tables);
+        return DbUtility.defineDbTable("(" + tables.filter(e => e).map(e => e.expression).join(") UNION (") + ")", alias, tables[0]);
     }
 
     /**
