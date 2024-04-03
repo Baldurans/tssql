@@ -2,8 +2,13 @@ import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R, Value} from 
 import {SQL} from "../SQL";
 import {Db} from "../Db";
 import {DbSelect03Columns} from "./DbSelect03Columns";
+import {DbSelectBuilder} from "./DbSelectBuilder";
 
 export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables> extends DbSelect03Columns<{}, UsedAliases, WithAliases, Tables, UsedTables> {
+
+    constructor(builder: DbSelectBuilder) {
+        super(builder);
+    }
 
     public join<
         Alias extends string,
@@ -63,8 +68,8 @@ export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables> extends 
         if (typeof table === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof table + "'")
         }
-        const sql = this.parts._withQueries.has(table[Db.SQL_ALIAS]) ? SQL.escapeId(table[Db.SQL_ALIAS]) : table[Db.SQL_EXPRESSION] + " as " + SQL.escapeId(table[Db.SQL_ALIAS])
-        this.parts._joins.push(joinType + " " + sql + " ON (" + field1.expression + " = " + field2.expression + ")")
+        const sql = this.builder._withQueries.has(table[Db.SQL_ALIAS]) ? SQL.escapeId(table[Db.SQL_ALIAS]) : table[Db.SQL_EXPRESSION] + " as " + SQL.escapeId(table[Db.SQL_ALIAS])
+        this.builder._joins.push(joinType + " " + sql + " ON (" + field1.expression + " = " + field2.expression + ")")
         return this as any;
     }
 

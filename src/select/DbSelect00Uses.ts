@@ -18,7 +18,7 @@ export class DbSelect00Uses<UsedAliases, UsedTables> extends DbSelect {
     }
 
     public select(): DbSelect01From<UsedAliases, {}, UsedTables, {}> {
-        return new DbSelect01From(this.parts)
+        return new DbSelect01From(this.builder)
     }
 
 }

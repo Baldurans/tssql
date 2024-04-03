@@ -11,9 +11,9 @@ export class DbSelect05GroupBy<Result, Tables, UsedTables, LastType> extends DbS
         ...items: (Str | Value<TableRef, string | unknown, string | number>)[]
     ): DbSelect06Having<Result, Tables, UsedTables, LastType> {
         for (let i = 0; i < items.length; i++) {
-            this.parts._groupBy.push(String(items[i]))
+            this.builder._groupBy.push(String(items[i]))
         }
-        return new DbSelect06Having(this.parts);
+        return new DbSelect06Having(this.builder);
     }
 
 }

@@ -13,13 +13,13 @@ export class DbSelect07OrderBy<Result, Tables, UsedTables, LastType> extends DbS
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
             if (item === "asc" || item === "ASC" || item === "desc" || item === "DESC") {
-                this.parts._orderBy[this.parts._orderBy.length - 1] += " " + item;
+                this.builder._orderBy[this.builder._orderBy.length - 1] += " " + item;
             } else if (typeof item === "string") {
-                this.parts._orderBy.push(item)
+                this.builder._orderBy.push(item)
             } else {
-                this.parts._orderBy.push(item.nameAs ? SQL.escapeId(item.nameAs as any) : item.expression)
+                this.builder._orderBy.push(item.nameAs ? SQL.escapeId(item.nameAs as any) : item.expression)
             }
         }
-        return new DbSelect08Limit( this.parts);
+        return new DbSelect08Limit( this.builder);
     }
 }

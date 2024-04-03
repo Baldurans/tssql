@@ -5,7 +5,7 @@ import {DbSelect05GroupBy} from "./DbSelect05GroupBy";
 export class DbSelect04Where<Result, UsedAliases, WithAliases, Tables, UsedTables, LastType> extends DbSelect {
 
     public noWhere(): DbSelect05GroupBy<Result, Tables, UsedTables, LastType> {
-        return new DbSelect05GroupBy(this.parts)
+        return new DbSelect05GroupBy(this.builder)
     }
 
     public where<
@@ -17,9 +17,9 @@ export class DbSelect04Where<Result, UsedAliases, WithAliases, Tables, UsedTable
             throw new Error("Invalid argument! Got '" + typeof col + "'")
         }
         if (col !== undefined) {
-            this.parts._where.push(col.toString())
+            this.builder._where.push(col.toString())
         }
-        return new DbSelectWhere2(this.parts)
+        return new DbSelectWhere2(this.builder)
     }
 
 }
@@ -35,9 +35,9 @@ export class DbSelectWhere2<Result, UsedAliases, WithAliases, Tables, UsedTables
             throw new Error("Invalid argument! Got '" + typeof col + "'")
         }
         if (col !== undefined) {
-            this.parts._where.push(col.toString())
+            this.builder._where.push(col.toString())
         }
-        return new DbSelectWhere2(this.parts)
+        return new DbSelectWhere2(this.builder)
     }
 
 }

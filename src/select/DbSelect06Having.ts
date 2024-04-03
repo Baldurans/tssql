@@ -12,9 +12,9 @@ export class DbSelect06Having<Result, Tables, UsedTables, LastType> extends DbSe
             throw new Error("Invalid argument! Got '" + typeof col + "'")
         }
         if (col !== undefined) {
-            this.parts._having.push(col.toString())
+            this.builder._having.push(col.toString())
         }
-        return new DbSelect07OrderBy(this.parts)
+        return new DbSelect07OrderBy(this.builder)
     }
 
 }

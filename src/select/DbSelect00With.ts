@@ -18,12 +18,12 @@ export class DbSelect00With<UsedAliases, UsedTables> extends DbSelect {
             throw new Error("Invalid table argument!")
         }
         const alias = table[Db.SQL_ALIAS]
-        this.parts._withQueries.set(alias, SQL.escapeId(alias) + " AS " + table[Db.SQL_EXPRESSION])
+        this.builder._withQueries.set(alias, SQL.escapeId(alias) + " AS " + table[Db.SQL_EXPRESSION])
         return this as any;
     }
 
     public select(): DbSelect01From<{}, UsedAliases, {}, UsedTables> {
-        return new DbSelect01From(this.parts)
+        return new DbSelect01From(this.builder)
     }
 
 }

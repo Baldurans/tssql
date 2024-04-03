@@ -2,10 +2,10 @@ import {DbSelectBuilder} from "./DbSelectBuilder";
 
 export abstract class DbSelect {
 
-    protected readonly parts: DbSelectBuilder;
+    protected readonly builder: DbSelectBuilder;
 
-    constructor(parts: DbSelectBuilder) {
-        this.parts = parts;
+    constructor(builder: DbSelectBuilder) {
+        this.builder = builder;
     }
 
 }

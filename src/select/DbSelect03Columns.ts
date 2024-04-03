@@ -13,7 +13,7 @@ import {DbSelect} from "./DbSelect";
 export class DbSelect03Columns<Result, UsedAliases, WithAliases, Tables, UsedTables> extends DbSelect {
 
     public distinct(): this {
-        this.parts._distinct = true;
+        this.builder._distinct = true;
         return this;
     }
 
@@ -26,10 +26,10 @@ export class DbSelect03Columns<Result, UsedAliases, WithAliases, Tables, UsedTab
     ): DbSelect04Where<Result & ExtractObj<Columns>, UsedAliases, WithAliases, Tables, UsedTables, Columns[number]["type"]> {
         for (let i = 0; i < columns.length; i++) {
             const col = columns[i] as unknown as SqlExpression<string, string, any>;
-            this.parts._columns.push(col.toString());
-            (this.parts._columnStruct as any)[col.nameAs] = true;
+            this.builder._columns.push(col.toString());
+            (this.builder._columnStruct as any)[col.nameAs] = true;
         }
-        return new DbSelect04Where(this.parts);
+        return new DbSelect04Where(this.builder);
     }
 
 }

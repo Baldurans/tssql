@@ -17,12 +17,12 @@ export class DbSelect01From<UsedAliases, WithAliases, Tables, UsedTables> extend
         if (typeof table === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof table + "'")
         }
-        this.parts._from = table[Db.SQL_EXPRESSION] + " as " + SQL.escapeId(table[Db.SQL_ALIAS]);
-        return new DbSelectJoin(this.parts);
+        this.builder._from = table[Db.SQL_EXPRESSION] + " as " + SQL.escapeId(table[Db.SQL_ALIAS]);
+        return new DbSelectJoin(this.builder);
     }
 
     public forUpdate(): this {
-        this.parts._forUpdate = true;
+        this.builder._forUpdate = true;
         return this;
     }
 
