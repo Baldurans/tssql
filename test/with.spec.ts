@@ -16,15 +16,15 @@ test("with", async () => {
         .columns(s.id, s.id.as("subIdRenamed"))
         .where(s.id.EQ(10 as tUserId))
         .as("part1")
-    const part1Sub1 = MyDb.createRef(part1, "part1Sub1");
-    const part1Sub2 = MyDb.createRef(part1, "part1Sub2");
+    const pA1 = MyDb.createRef(part1, "part1Sub1");
+    const pA2 = MyDb.createRef(part1, "part1Sub2");
 
     const part2 = db
         .select()
         .from(s)
         .columns(s.id)
         .as("part2")
-    const part2Sub1 = MyDb.createRef(part2, "part2Sub1")
+    const pB1 = MyDb.createRef(part2, "part2Sub1")
 
     const query = db
         .with(part1)
@@ -32,15 +32,15 @@ test("with", async () => {
         .select()
         .from(c)
         .join(c2, c2.id, c.id)
-        .join(part1Sub1, part1Sub1.id, c.id)
-        .join(part1Sub2, part1Sub2.id, c.id)
-        .join(part2Sub1, part2Sub1.id, c.id)
+        .join(pA1, pA1.id, c.id)
+        .join(pA2, pA2.id, c.id)
+        .join(pB1, pB1.id, c.id)
         .columns(
             c.id,
-            part1Sub1.id.as("aa1"),
-            part1Sub1.subIdRenamed.as("aa1X"),
-            part1Sub2.id.as("aa2"),
-            part2Sub1.id.as("aa3"),
+            pA1.id.as("aa1"),
+            pA1.subIdRenamed.as("aa1X"),
+            pA2.id.as("aa2"),
+            pB1.id.as("aa3"),
         )
         .whereEq(c.id, input.userId) // c.id = 10
         .where(c.id.EQ(input.userId)) // c.id = 10

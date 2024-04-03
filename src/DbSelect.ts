@@ -1,5 +1,5 @@
 import {
-    AliasedTable, SQL_BOOL,
+    AliasedTable,
     CheckForDuplicateColumns,
     CheckIfAliasedTablesAreReferenced,
     CheckIfAliasIsAlreadyUsed,
@@ -9,6 +9,7 @@ import {
     OrderByStructure,
     R,
     ScalarSubQueryAllowsOnlyOneColumn,
+    SQL_BOOL,
     Value
 } from "./Types";
 import {SQL} from "./SQL";
@@ -135,24 +136,11 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         return this._join("LEFT JOIN", table as any, field1, field2)
     }
 
-    public columns_WITH_CTRL_CLICK_CAPABILITY_BUT_WITHOUT_DUPLICATE_CHECK<
-        TableRef extends string & keyof Tables,
-        Columns extends Value<TableRef, string, string | number>[]
-    >(
-        ...columns: Columns
-    ): DbSelect<Result & ExtractObj<Columns>, UsedAliases, WithAliases, Tables, UsedTables, Columns[number]["type"]> {
-        for (let i = 0; i < columns.length; i++) {
-            const col = columns[i] as unknown as SqlExpression<string, string, any>;
-            this._columns.push(col.toString());
-            (this._columnStruct as any)[col.nameAs] = true;
-        }
-        return this as any;
-    }
-
     public columns<
         TableRef extends string & keyof Tables,
         Columns extends Value<TableRef, string, string | number>[]
     >(
+        //...columns: Columns - this will enable seeing sources of Result object properties.
         ...columns: CheckForDuplicateColumns<Columns, Result>
     ): DbSelect<Result & ExtractObj<Columns>, UsedAliases, WithAliases, Tables, UsedTables, Columns[number]["type"]> {
         for (let i = 0; i < columns.length; i++) {
