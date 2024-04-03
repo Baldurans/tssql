@@ -7,14 +7,14 @@ export class DbSelect00Union<Result, UsedAliases, Tables, UsedTables, LastType> 
     public distinct<Result2>(
         table: CompareObjects<Result, Result2, DbSelect09Exec<Result2, any, any>>
     ): DbSelect00Union<Result, UsedAliases, Tables, UsedTables, LastType> {
-        this.builder.union("", table.toString(1))
+        this.builder.union("", table.toString(1), (table as DbSelect09Exec<any, any, any>).getColumnStruct())
         return this as any;
     }
 
     public all<Result2>(
         table: CompareObjects<Result, Result2, DbSelect09Exec<Result2, any, any>>
     ): DbSelect00Union<Result, UsedAliases, Tables, UsedTables, LastType> {
-        this.builder.union("ALL", table.toString(1))
+        this.builder.union("ALL", table.toString(1), (table as DbSelect09Exec<any, any, any>).getColumnStruct())
         return this as any;
     }
 

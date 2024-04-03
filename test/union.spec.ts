@@ -9,7 +9,7 @@ test("with", async () => {
     const c = db.tables.user("c")
 
     const q1 = db.select().from(c).columns(c.username, c.id).where(c.id.EQ(input.userId)).noLimit()
-    const q2 = db.select().from(c).columns(c.username, c.id).where(c.id.EQ(input.userId)).noLimit()
+    const q2 = db.select().from(c).columns(c.username, c.id,).where(c.id.EQ(input.userId)).noLimit()
     const q3 = db.select().from(c).columns(c.username, c.id).where(c.id.EQ(input.userId)).noLimit()
 
     const union = db
@@ -19,10 +19,17 @@ test("with", async () => {
         .groupBy()
         .orderBy("id")
         .limit(10)
+        .as("x")
 
-    console.log(union.toString())
+    const b = db.select()
+        .from(union)
+        .columns(union.id, union.username)
+        .where(union.id.EQ(10 as tUserId))
+        .noLimit()
 
-    const res = await union.execOne();
+    console.log(b.toString())
+
+    const res = await b.execOne();
     console.log(
         res.id,  // type tUserId
     )

@@ -40,9 +40,7 @@ export abstract class Db {
         return new DbSelect00With(new DbSelectBuilder(this)).with(table as any);
     }
 
-    public union<Result>(
-        table: DbSelect09Exec<Result, any, any>
-    ): DbSelect00Union<Result, unknown, unknown, {}, unknown> {
+    public union<Result>(table: DbSelect09Exec<Result, any, any>): DbSelect00Union<Result, unknown, unknown, {}, unknown> {
         return new DbSelect00Union<Result, unknown, unknown, {}, unknown>(new DbSelectBuilder(this)).all(table as any);
     }
 

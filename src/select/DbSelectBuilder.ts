@@ -14,7 +14,8 @@ export class DbSelectBuilder {
     private _withQueries: Map<string, string> = new Map()
     private _from: string;
     private readonly _columns: string[] = [];
-    private readonly _columnStruct: DbTableDefinition<any> = {} as any;
+    private _columnStruct: DbTableDefinition<any> = {} as any;
+
     private readonly _joins: string[] = []
     private readonly _where: string[] = []
     private readonly _having: string[] = [];
@@ -23,6 +24,7 @@ export class DbSelectBuilder {
     private _limit: string = ""
 
     private readonly unions: string[] = [];
+    private _unionColumnOrder: string[] = [];
 
     private _distinct: boolean = false;
     private _forUpdate: boolean = false;
@@ -35,10 +37,28 @@ export class DbSelectBuilder {
         return this._columnStruct;
     }
 
-    public union(type: "ALL" | "", sql: string): void {
+    public union(type: "ALL" | "", sql: string, struct: DbTableDefinition<any>): void {
         if (this.unions.length === 0) {
             this.unions.push("(\n" + sql + ") ")
+            this._columnStruct = struct;
+            for (const k in struct) {
+                this._unionColumnOrder.push(k);
+            }
         } else {
+            let i = 0;
+            for (const k in struct) {
+                if (this._unionColumnOrder[i] !== k) {
+                    const order: string[] = []
+                    for (const k in struct) {
+                        order.push(k);
+                    }
+                    throw new Error("Union columns from pos " + i + " do not match! \nFirst call columns:   '" + this._unionColumnOrder.join(", ") + "'. \nCurrent call columns: '" + order.join(", ") + "'")
+                }
+                i++;
+            }
+            if (i !== this._unionColumnOrder.length) {
+                throw new Error("Union columns count do not match! " + this._unionColumnOrder.length + " != " + i + " (Why didn't compiler warn you about this?)");
+            }
             this.unions.push("UNION " + (type === "" ? "" : "ALL ") + "(\n" + sql + ") ")
         }
     }
