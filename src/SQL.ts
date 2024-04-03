@@ -58,22 +58,28 @@ export class SQL {
         return SqlExpression.create<any, unknown, any>("IF(" + col.expression + "," + col2.expression + "," + col3.expression + ")")
     }
 
+    /**
+     * Accepts undefined as well.
+     */
     public static OR<T1 extends string, T2 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>): Value<T1 | T2, unknown, SQL_BOOL>
     public static OR<T1 extends string, T2 extends string, T3 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>, col3: AnyBoolValue<T3>): Value<T1 | T2 | T3, unknown, SQL_BOOL>
     public static OR<T1 extends string, T2 extends string, T3 extends string, T4 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>, col3: AnyBoolValue<T3>, col4: AnyBoolValue<T4>): Value<T1 | T2 | T3 | T4, unknown, SQL_BOOL>
     public static OR<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>, col3: AnyBoolValue<T3>, col4: AnyBoolValue<T4>, col5: AnyBoolValue<T5>): Value<T1 | T2 | T3 | T4 | T5, unknown, SQL_BOOL>
     public static OR<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>, col3: AnyBoolValue<T3>, col4: AnyBoolValue<T4>, col5: AnyBoolValue<T5>, col6: AnyBoolValue<T6>): Value<T1 | T2 | T3 | T4 | T5 | T6, unknown, SQL_BOOL>
     public static OR(...col: any[]): any {
-        return SqlExpression.create<any, unknown, any>("(" + col.map(e => e.expression).join(" OR ") + ")")
+        return SqlExpression.create<any, unknown, any>("(" + col.filter(e => e).map(e => e.expression).join(" OR ") + ")")
     }
 
+    /**
+     * Accepts undefined as well.
+     */
     public static AND<T1 extends string, T2 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>): Value<T1 | T2, unknown, SQL_BOOL>
     public static AND<T1 extends string, T2 extends string, T3 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>, col3: AnyBoolValue<T3>): Value<T1 | T2 | T3, unknown, SQL_BOOL>
     public static AND<T1 extends string, T2 extends string, T3 extends string, T4 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>, col3: AnyBoolValue<T3>, col4: AnyBoolValue<T4>): Value<T1 | T2 | T3 | T4, unknown, SQL_BOOL>
     public static AND<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>, col3: AnyBoolValue<T3>, col4: AnyBoolValue<T4>, col5: AnyBoolValue<T5>): Value<T1 | T2 | T3 | T4 | T5, unknown, SQL_BOOL>
     public static AND<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>, col3: AnyBoolValue<T3>, col4: AnyBoolValue<T4>, col5: AnyBoolValue<T5>, col6: AnyBoolValue<T6>): Value<T1 | T2 | T3 | T4 | T5 | T6, unknown, SQL_BOOL>
     public static AND(...col: any[]): any {
-        return SqlExpression.create<any, unknown, any>("(" + col.map(e => e.expression).join(" AND ") + ")")
+        return SqlExpression.create<any, unknown, any>("(" + col.filter(e => e).map(e => e.expression).join(" AND ") + ")")
     }
 
     /**
@@ -95,11 +101,23 @@ export class SQL {
         return SqlExpression.create("TRIM(" + SQL.escape(value) + ")")
     }
 
-    public static LIKE<TableRef extends string>(col: (Value<TableRef, string | unknown, string | unknown>), value: string): Value<TableRef, unknown, string> {
+    public static LIKE<TableRef extends string>(col: (Value<TableRef, string | unknown, string | unknown>), value: string): Value<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(col.expression + " LIKE " + SQL.escape(value));
     }
 
-    public static CONCAT<TableRef extends string>(...expr: (string | Value<TableRef, string | unknown, string | number | unknown>)[]): Value<TableRef, unknown, string> {
+    public static LIKE_WILD<TableRef extends string>(col: (Value<TableRef, string | unknown, string | unknown>), value: string): Value<TableRef, unknown, SQL_BOOL> {
+        return SqlExpression.create(col.expression + " LIKE " + SQL.escape("%" + value + "%"));
+    }
+
+    public static LIKE_PRE<TableRef extends string>(col: (Value<TableRef, string | unknown, string | unknown>), value: string): Value<TableRef, unknown, SQL_BOOL> {
+        return SqlExpression.create(col.expression + " LIKE " + SQL.escape("%" + value));
+    }
+
+    public static LIKE_SUF<TableRef extends string>(col: (Value<TableRef, string | unknown, string | unknown>), value: string): Value<TableRef, unknown, SQL_BOOL> {
+        return SqlExpression.create(col.expression + " LIKE " + SQL.escape(value + "%"));
+    }
+
+    public static CONCAT<TableRef extends string>(...expr: (string | Value<TableRef, string | unknown, string | number | unknown>)[]): Value<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create("CONCAT(" + expr.map(e => typeof e === "string" ? e : e.expression) + ")")
     }
 

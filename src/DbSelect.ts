@@ -214,8 +214,10 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
             const item = items[i];
             if (item === "asc" || item === "ASC" || item === "desc" || item === "DESC") {
                 this._orderBy[this._orderBy.length - 1] += " " + item;
+            } else if (typeof item === "string") {
+                this._orderBy.push(item)
             } else {
-                this._orderBy.push(String(item))
+                this._orderBy.push(item.nameAs ? SQL.escapeId(item.nameAs as any) : item.expression)
             }
         }
         return this;
@@ -223,9 +225,9 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
 
     public limit(limit: number | [number, number]): this {
         if (Array.isArray(limit)) {
-            this._limit = SQL.escape(limit[0]) + "," + SQL.escape(limit[1]);
+            this._limit = Number(limit[0]) + "," + Number(limit[1]);
         } else {
-            this._limit = SQL.escape(limit);
+            this._limit = String(Number(limit));
         }
         return this;
     }

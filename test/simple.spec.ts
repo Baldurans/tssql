@@ -11,6 +11,7 @@ test("simple", async () => {
     const c2 = db.tables.user("c2")
     const s = db.tables.user("s")
 
+    const val: any = undefined;
     const query = db
         .select()
         .from(c)
@@ -41,6 +42,7 @@ test("simple", async () => {
         .where(SQL.AND(
             c.id.EQ(input.userId),
             c.username.ISNULL(),
+            val && c.username.ISNULL(),
             c.username.ISNOTNULL()
         )) // c.id = 10
 

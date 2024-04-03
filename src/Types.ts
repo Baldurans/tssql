@@ -19,6 +19,9 @@ export type RawValue<TableRef extends string, Name extends string | unknown, Typ
     EQ: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
     EQC: <TableRef2 extends string>(value: Value<TableRef2, string, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
     LIKE: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
+    LIKE_PRE: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
+    LIKE_SUF: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
+    LIKE_WILD: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
 };
 
 export type AliasedTable<Alias extends string, TableRef extends string, Entity, RefAlias extends string | NOT_REFERENCED> = {

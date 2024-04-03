@@ -44,6 +44,18 @@ export class SqlExpression<TableRef extends string, Name extends string | unknow
         return SqlExpression.create(this.expression + " LIKE " + SQL.escape(value));
     }
 
+    public LIKE_WILD<TableRef extends string>(value: string): Value<TableRef, unknown, SQL_BOOL> {
+        return SqlExpression.create(this.expression + " LIKE " + SQL.escape("%" + value + "%"));
+    }
+
+    public LIKE_PRE<TableRef extends string>(value: string): Value<TableRef, unknown, SQL_BOOL> {
+        return SqlExpression.create(this.expression + " LIKE " + SQL.escape("%" + value));
+    }
+
+    public LIKE_SUF<TableRef extends string>(value: string): Value<TableRef, unknown, SQL_BOOL> {
+        return SqlExpression.create(this.expression + " LIKE " + SQL.escape(value + "%"));
+    }
+
     public toString() {
         return this.expression + (this.nameAs ? " as " + SQL.escapeId(this.nameAs) : "")
     }
