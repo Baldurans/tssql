@@ -7,7 +7,7 @@ export class MyDb extends Db {
     public readonly tables = {
         user: this.getDbTableAliasFunction<"user", User>("user", {
             id: true,
-            name: true,
+            username: true,
             age: true,
             isMan: true,
             created: true

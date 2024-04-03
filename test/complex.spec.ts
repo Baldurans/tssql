@@ -23,7 +23,7 @@ test("complex", async () => {
     const withSub = db
         .select()
         .from(s)
-        .columns(s.id, s.created, s.name, s.age)
+        .columns(s.id, s.created, s.username, s.age)
         .columns(s.id.as("subIdRenamed"))
         .where(s.id.EQ(10 as tUserId))
         .as("withSub")
@@ -33,7 +33,7 @@ test("complex", async () => {
     const withSub2 = db
         .select()
         .from(s)
-        .columns(s.id, s.created, s.name, s.age)
+        .columns(s.id, s.created, s.username, s.age)
         .columns(s.id.as("subIdRenamed"))
         .where(s.id.EQ(10 as tUserId))
         .as("withSub2")
@@ -44,13 +44,13 @@ test("complex", async () => {
         .uses(c)
         .select()
         .from(s)
-        .columns(s.id, s.name)
+        .columns(s.id, s.username)
         //.columns(s.name.as("id")) // ____ERROR: id already used
         .columns(s.id.as("subIdRenamed"))
         .where(SQL.EQC(s.id, c.id))
         .as("sub")
 
-    const expr = SQL.EXPRESSION("IF(", c.name, " > ", c2.name, ",", c.id, ",", c2.id, ")").cast<tUserId>();
+    const expr = SQL.EXPRESSION("IF(", c.username, " > ", c2.username, ",", c.id, ",", c2.id, ")").cast<tUserId>();
 
     const query = db
         .with(withSub)
@@ -73,7 +73,7 @@ test("complex", async () => {
 
         .columns(
             db.uses(c).select().from(s).columns(s.id).where(SQL.EQC(c.id, s.id)).asColumn("someItem"),
-            c.name,
+            c.username,
             c.id,
             subQueryTable.id.as("sId"),
             subQueryTable.subIdRenamed.as("subIdRenamedAgain"),
@@ -82,7 +82,7 @@ test("complex", async () => {
             SQL.COMPAREC(c.id, ">", c2.id).as("expr1"),
             SQL.COMPAREC(c.id, ">", c2.id).as("expr2"),
             SQL.COMPAREC(c.id, "=", expr).as("expr3"),
-            SQL.IF(c.id.EQC(c2.id), c.name, c2.name).cast<string>().as("expr4"),
+            SQL.IF(c.id.EQC(c2.id), c.username, c2.username).cast<string>().as("expr4"),
 
             withSubSub1.subIdRenamed.as("withSubSub1"),
             withSubSub2.subIdRenamed.as("withSubSub2"),
@@ -123,16 +123,16 @@ test("complex", async () => {
         .where(SQL.EXPRESSION(c.id, " > ", c2.id).cast<SQL_BOOL>())
         .where(SQL.ISNULL(c.id))
 
-        .groupBy(c.id, c.name, "expr2")
+        .groupBy(c.id, c.username, "expr2")
 
-        .orderBy(c.id, "asc", c.id, c.name, "expr2", "desc")
+        .orderBy(c.id, "asc", c.id, c.username, "expr2", "desc")
 
     console.log(query.toString())
 
     const res = await query.execOne()
     console.log(
         res.id, // type tUserId
-        res.name,  // type string
+        res.username,  // type string
         res.renamedId,  // type tUserId
         res.myDate, // type vDateTime
         res.sId,

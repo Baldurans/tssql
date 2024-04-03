@@ -32,7 +32,7 @@ test("simple", async () => {
         )
         .whereEq(c.id, input.userId) // c.id = 10
         .where(c.id.EQ(input.userId)) // c.id = 10
-        .whereEq(c.name, null) // c.id IS NULL
+        .whereEq(c.username, null) // c.id IS NULL
 
     console.log(query.toString())
 

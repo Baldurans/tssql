@@ -5,7 +5,7 @@ export type tUserId = number & { tUserId: true };
 
 export interface User {
     id: tUserId;
-    name: string;
+    username: string;
     age: number;
     isMan: number;
     created: vDateTime
