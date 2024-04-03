@@ -26,6 +26,7 @@ test("with", async () => {
         .from(s)
         .columns(s.id)
         .whereAccessFullTable()
+        .limitGetAll()
         .as("part2")
     const pB1 = MyDb.createRef(part2, "part2Sub1")
 

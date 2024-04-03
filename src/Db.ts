@@ -15,7 +15,7 @@ export abstract class Db {
 
     public abstract query(sql: string): any;
 
-    public select(): DbSelectFrom<{}, {}, {}, {}, {}, unknown> {
+    public select(): DbSelectFrom<{}, {}, {}, {}> {
         return new DbSelectFrom(this, new DbSelectParts())
     }
 

@@ -11,6 +11,15 @@ test("simple", async () => {
     const c2 = db.tables.user("c2")
     const s = db.tables.user("s")
 
+    const scalarSub = db
+        .uses(c)
+        .select()
+        .from(s)
+        .columns(s.id)
+        .where(s.id.EQC(c.id))
+        .limitGetAll()
+        .asScalar("subColumn");
+
     const joinSub = db
         .uses(c)
         .uses(c2)
@@ -18,8 +27,8 @@ test("simple", async () => {
         .from(s)
         .columns(s.id, s.id.as("subIdRenamed"))
         .where(s.id.EQC(c.id))
+        .where(c2.id.EQC(s.id))
         .limitGetAll()
-        //.where(c2.id.EQC(s.id))
         .as("joinSub")
 
     const query = db
@@ -30,7 +39,7 @@ test("simple", async () => {
         .columns(
             c.id,
             joinSub.id.as("subId"),
-            db.uses(c).select().from(s).columns(s.id).where(s.id.EQC(c.id)).limitGetAll().asScalar("subColumn"),
+            scalarSub,
         )
         .where(SQL.AND(
             c.id.EQ(input.userId),

@@ -4,7 +4,7 @@ import {Db} from "./Db";
 import {DbSelectJoin} from "./DbSelectJoins";
 import {DbSelect} from "./DbSelect";
 
-export class DbSelectFrom<Result, UsedAliases, WithAliases, Tables, UsedTables, LastType> extends DbSelect {
+export class DbSelectFrom<UsedAliases, WithAliases, Tables, UsedTables> extends DbSelect {
 
     public from<
         Alias extends string,
@@ -13,7 +13,7 @@ export class DbSelectFrom<Result, UsedAliases, WithAliases, Tables, UsedTables, 
         Columns
     >(
         table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>
-    ): DbSelectJoin<Result, UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables> {
+    ): DbSelectJoin<UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables> {
         if (typeof table === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof table + "'")
         }

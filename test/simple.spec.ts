@@ -45,6 +45,8 @@ test("simple", async () => {
             val && c.username.ISNULL(),
             c.username.ISNOTNULL()
         ))
+        .groupBy("renamedId", c.id)
+        .orderBy("renamedId", c.id)
         .limitGetAll()
 
     console.log(query.toString())

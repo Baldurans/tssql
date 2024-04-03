@@ -25,7 +25,7 @@ export class DbUses<UsedAliases, UsedTables> {
         return this;
     }
 
-    public select(): DbSelectFrom<{}, UsedAliases, {}, UsedTables, UsedTables, unknown> {
+    public select(): DbSelectFrom<UsedAliases, {}, UsedTables, {}> {
         return new DbSelectFrom(this.db, new DbSelectParts())
     }
 

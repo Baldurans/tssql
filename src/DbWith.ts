@@ -30,7 +30,7 @@ export class DbWith<UsedAliases, UsedTables> {
         return this as any;
     }
 
-    public select(): DbSelectFrom<{}, {}, UsedAliases, {}, UsedTables, unknown> {
+    public select(): DbSelectFrom<{}, UsedAliases, {}, UsedTables> {
         return new DbSelectFrom(this.db, this.parts)
     }
 
