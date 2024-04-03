@@ -62,7 +62,7 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
         return this as any;
     }
 
-    public _join<
+    private _join<
         Alias extends string,
         TableName extends string,
         TableRef extends `${TableName} as ${Alias}`,
@@ -244,7 +244,6 @@ export class DbSelect<Result, UsedAliases, WithAliases, Tables, UsedTables, Last
     }
 
     public async exec(): Promise<Result[]> {
-        5
         return this.db.query(this.toString());
     }
 

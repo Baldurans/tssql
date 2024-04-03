@@ -3,7 +3,7 @@ import {DbSelectExec} from "./DbSelectExec";
 
 export class DbSelectLimit<Result, UsedTables, LastType> extends DbSelect {
 
-    public limitGetAll(): DbSelectExec<Result, UsedTables, LastType> {
+    public noLimit(): DbSelectExec<Result, UsedTables, LastType> {
         return new DbSelectExec(this.db, this.parts);
     }
 

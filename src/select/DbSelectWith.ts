@@ -2,17 +2,9 @@ import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "../Typ
 import {Db} from "../Db";
 import {SQL} from "../SQL";
 import {DbSelectFrom} from "./DbSelectFrom";
-import {DbSelectParts} from "./DbSelectParts";
+import {DbSelect} from "./DbSelect";
 
-
-export class DbSelectWith<UsedAliases, UsedTables> {
-
-    private parts = new DbSelectParts()
-    private readonly db: Db;
-
-    constructor(db: Db) {
-        this.db = db;
-    }
+export class DbSelectWith<UsedAliases, UsedTables> extends DbSelect {
 
     public with<
         Alias extends string,

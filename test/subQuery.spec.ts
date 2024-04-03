@@ -17,7 +17,7 @@ test("simple", async () => {
         .from(s)
         .columns(s.id)
         .where(s.id.EQC(c.id))
-        .limitGetAll()
+        .noLimit()
         .asScalar("subColumn");
 
     const joinSub = db
@@ -28,7 +28,7 @@ test("simple", async () => {
         .columns(s.id, s.id.as("subIdRenamed"))
         .where(s.id.EQC(c.id))
         .where(c2.id.EQC(s.id))
-        .limitGetAll()
+        .noLimit()
         .as("joinSub")
 
     const query = db
@@ -45,7 +45,7 @@ test("simple", async () => {
             c.id.EQ(input.userId),
             c.username.ISNULL()
         ))
-        .limitGetAll()
+        .noLimit()
 
     console.log(query.toString())
 

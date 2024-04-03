@@ -4,7 +4,7 @@ import {DbSelectGroupBy} from "./DbSelectGroupBy";
 
 export class DbSelectWhere<Result, UsedAliases, WithAliases, Tables, UsedTables, LastType> extends DbSelect {
 
-    public whereAccessFullTable(): DbSelectGroupBy<Result,  Tables, UsedTables, LastType> {
+    public noWhere(): DbSelectGroupBy<Result, Tables, UsedTables, LastType> {
         return new DbSelectGroupBy(this.db, this.parts)
     }
 

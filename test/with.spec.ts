@@ -16,7 +16,7 @@ test("with", async () => {
         .from(s)
         .columns(s.id, s.id.as("subIdRenamed"))
         .where(s.id.EQ(10 as tUserId))
-        .limitGetAll()
+        .noLimit()
         .as("part1")
     const pA1 = MyDb.createRef(part1, "part1Sub1");
     const pA2 = MyDb.createRef(part1, "part1Sub2");
@@ -25,8 +25,8 @@ test("with", async () => {
         .select()
         .from(s)
         .columns(s.id)
-        .whereAccessFullTable()
-        .limitGetAll()
+        .noWhere()
+        .noLimit()
         .as("part2")
     const pB1 = MyDb.createRef(part2, "part2Sub1")
 
@@ -50,7 +50,7 @@ test("with", async () => {
             c.id.EQ(input.userId),
             pB1.id.EQ(input.userId)
         ))
-        .limitGetAll()
+        .noLimit()
 
 
     console.log(query.toString())

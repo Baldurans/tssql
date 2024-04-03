@@ -14,8 +14,10 @@ test("simple", async () => {
     const val: any = undefined;
     const query = db
         .select()
+        .forUpdate()
         .from(c)
         .join(c2, c2.id, c.id)
+        .distinct()
         .columns(
             db.uses(c).select().from(s).columns(s.id).where(s.id.EQC(c.id)).limit(10).asScalar("subColumn"),
             c.username,
@@ -47,7 +49,7 @@ test("simple", async () => {
         ))
         .groupBy("renamedId", c.id)
         .orderBy("renamedId", c.id)
-        .limitGetAll()
+        .noLimit()
 
     console.log(query.toString())
     expect(query.toString()).toEqual('SELECT \n' +

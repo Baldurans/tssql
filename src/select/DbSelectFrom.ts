@@ -1,8 +1,8 @@
-import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, R} from "../Types";
 import {SQL} from "../SQL";
 import {Db} from "../Db";
 import {DbSelectJoin} from "./DbSelectJoins";
 import {DbSelect} from "./DbSelect";
+import {AliasedTable, NOT_REFERENCED, R} from "../Types";
 
 export class DbSelectFrom<UsedAliases, WithAliases, Tables, UsedTables> extends DbSelect {
 
@@ -12,7 +12,7 @@ export class DbSelectFrom<UsedAliases, WithAliases, Tables, UsedTables> extends 
         TableRef extends `${TableName} as ${Alias}`,
         Columns
     >(
-        table: CheckIfAliasIsAlreadyUsed<UsedAliases, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>
+        table: AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>
     ): DbSelectJoin<UsedAliases & R<Alias>, WithAliases, Tables & R<TableRef>, UsedTables> {
         if (typeof table === "string") { // This is pretty much to satisfy typescript issue, not really needed for practical purposes.
             throw new Error("Invalid argument! Got '" + typeof table + "'")
@@ -26,8 +26,4 @@ export class DbSelectFrom<UsedAliases, WithAliases, Tables, UsedTables> extends 
         return this;
     }
 
-    public distinct(): this {
-        this.parts._distinct = true;
-        return this;
-    }
 }

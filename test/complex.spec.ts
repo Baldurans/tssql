@@ -25,7 +25,7 @@ test("complex", async () => {
         .from(s)
         .columns(s.id, s.created, s.username, s.age, s.id.as("subIdRenamed"))
         .where(s.id.EQ(10 as tUserId))
-        .limitGetAll()
+        .noLimit()
         .as("withSub")
     const withSubSub1 = MyDb.createRef(withSub, "withSubSub1");
     const withSubSub2 = MyDb.createRef(withSub, "withSubSub2");
@@ -51,7 +51,7 @@ test("complex", async () => {
             //s.username.as("id"),// ____ERROR: id already used
         )
         .where(SQL.EQC(s.id, c.id))
-        .limitGetAll()
+        .noLimit()
         .as("sub")
 
     const expr = SQL.EXPRESSION("IF(", c.username, " > ", c2.username, ",", c.id, ",", c2.id, ")").cast<tUserId>();
@@ -61,9 +61,10 @@ test("complex", async () => {
         .with(withSub)
         .select()
         .from(c)
+
         .join(c2, c2.id, c.id)
 
-        // .from(cFake) // ____ERROR, alias c is already used!
+        // .join(cFake, cFake.id, c.id) // ____ERROR, alias c is already used!
         // .join(c2, c2.id, c.id) // ____ERROR, c2 already joined
         // .join(c4, c.id, c.id) // ____ERROR, invalid join condition (second argument must be from c4)
         // .join(c5, c5.id, c.name) // ____ERROR, c5.id type != c2.name type
@@ -77,7 +78,7 @@ test("complex", async () => {
         //.leftJoin(withSub2Sub1, withSub2Sub1.id, c.id) // ____ERROR, not referenced in with part.
 
         .columns(
-            db.uses(c).select().from(s).columns(s.id).where(SQL.EQC(c.id, s.id)).limitGetAll().asScalar("someItem"),
+            db.uses(c).select().from(s).columns(s.id).where(SQL.EQC(c.id, s.id)).noLimit().asScalar("someItem"),
             c.username,
             c.id,
             subQueryTable.id.as("sId"),
@@ -97,7 +98,7 @@ test("complex", async () => {
                 .from(s)
                 .columns(s.id)
                 // .columns_WITH_CTRL_CLICK_CAPABILITY_BUT_WITHOUT_DUPLICATE_CHECK(s.name) // ___ERROR - Scalar subquery allows only 1 column!
-                .where(SQL.EQC(s.id, c.id)).limitGetAll().asScalar("subColumn"),
+                .where(SQL.EQC(s.id, c.id)).noLimit().asScalar("subColumn"),
 
             //c.id, // ____ERROR, can't add same field twice!
             //subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
@@ -131,7 +132,7 @@ test("complex", async () => {
         .groupBy(c.id, c.username, "expr2")
 
         .orderBy(c.id, "asc", c.id, c.username, "expr2", "desc")
-        .limitGetAll()
+        .noLimit()
 
     console.log(query.toString())
 
