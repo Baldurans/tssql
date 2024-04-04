@@ -35,10 +35,10 @@ test("with", async () => {
         .with(part2)
         .select()
         .from(c)
-        .join(c2, c2.id, c.id)
-        .join(pA1, pA1.id, c.id)
-        .join(pA2, pA2.id, c.id)
-        .join(pB1, pB1.id, c.id)
+        .join(c2, c2.id.eq(c.id))
+        .join(pA1, pA1.id.eq(c.id))
+        .join(pA2, pA2.id.eq(c.id))
+        .join(pB1, pB1.id.eq(c.id))
         .columns(
             c.id,
             pA1.id.as("aa1"),
@@ -46,10 +46,10 @@ test("with", async () => {
             pA2.id.as("aa2"),
             pB1.id.as("aa3"),
         )
-        .where(Sql.and(
+        .where(
             c.id.is(input.userId),
-            pB1.id.EQ(input.userId)
-        ))
+            pB1.id.eq(input.userId)
+        )
         .noLimit()
 
 

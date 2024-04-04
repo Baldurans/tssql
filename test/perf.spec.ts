@@ -16,7 +16,7 @@ test("simple", async () => {
             .select()
             .forUpdate()
             .from(c)
-            .join(c2, c2.id, c.id)
+            .join(c2, c2.id.eq(c.id))
             .distinct()
             .columns(
                 db.uses(c).select().from(s).columns(s.id).where(s.id.eq(c.id)).limit(10).asScalar("subColumn"),

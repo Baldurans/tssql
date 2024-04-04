@@ -40,8 +40,8 @@ test("simple", async () => {
     const query = db
         .select()
         .from(c)
-        .join(c2, c2.id, c.id)
-        .leftJoin(joinSub, joinSub.id, c.id)
+        .join(c2, c2.id.eq(c.id))
+        .leftJoin(joinSub, joinSub.id.eq(c.id))
         .columns(
             c.id,
             joinSub.id.as("subId"),
