@@ -1,4 +1,4 @@
-import {RuntimeValue, SQL_BOOL, Value} from "./Types";
+import {COMPARISONS, RuntimeValue, SQL_BOOL, Value} from "./Types";
 import {SQL} from "./SQL";
 
 export class SqlExpression<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> implements RuntimeValue<TableRef, Name, Type> {
@@ -37,11 +37,51 @@ export class SqlExpression<TableRef extends string, Name extends string | unknow
     }
 
     public EQ(value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SQL.EQ(this.asValue(), value);
+        return SQL.COMPARE(this.asValue(), "=", value);
     }
 
-    public EQC<TableRef2 extends string, Type1>(col: Value<TableRef2, string, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return SQL.EQC(this.asValue(), col);
+    public EQC<TableRef2 extends string, Type1>(col: Value<TableRef2, string | unknown, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return SQL.COMPAREC(this.asValue(), "=", col);
+    }
+
+    public GT(value: Type): Value<TableRef, unknown, SQL_BOOL> {
+        return SQL.COMPARE(this.asValue(), ">", value);
+    }
+
+    public GTC<TableRef2 extends string, Type1>(col: Value<TableRef2, string | unknown, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return SQL.COMPARE(this.asValue(), ">", col);
+    }
+
+    public GTE(value: Type): Value<TableRef, unknown, SQL_BOOL> {
+        return SQL.COMPARE(this.asValue(), ">=", value);
+    }
+
+    public GTEC<TableRef2 extends string, Type1>(col: Value<TableRef2, string | unknown, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return SQL.COMPARE(this.asValue(), ">=", col);
+    }
+
+    public LT(value: Type): Value<TableRef, unknown, SQL_BOOL> {
+        return SQL.COMPARE(this.asValue(), "<", value);
+    }
+
+    public LTC<TableRef2 extends string, Type1>(col: Value<TableRef2, string | unknown, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return SQL.COMPARE(this.asValue(), "<", col);
+    }
+
+    public LTE(value: Type): Value<TableRef, unknown, SQL_BOOL> {
+        return SQL.COMPARE(this.asValue(), "<=", value);
+    }
+
+    public LTEC<TableRef2 extends string, Type1>(col: Value<TableRef2, string | unknown, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return SQL.COMPARE(this.asValue(), "<=", col);
+    }
+
+    public COMPARE(op: COMPARISONS, value: Type): Value<TableRef, unknown, SQL_BOOL> {
+        return SQL.COMPARE(this.asValue(), op, value)
+    }
+
+    public COMPAREC<TableRef2 extends string>(op: COMPARISONS, col2: Value<TableRef2, string | unknown, Type>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return SQL.COMPAREC(this.asValue(), op, col2)
     }
 
     public LIKE(value: string): Value<TableRef, unknown, SQL_BOOL> {

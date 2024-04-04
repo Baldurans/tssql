@@ -58,13 +58,6 @@ export class SQL {
         return DbUtility.defineDbTable("(" + tables.filter(e => e).map(e => e.expression).join(") UNION (") + ")", alias, tables[0]);
     }
 
-    /**
-     * Column OPERATION value (If you want to compare column with another column, use COMPAREC method.)
-     */
-    public static COMPARE<TableRef extends string, Type extends string | number>(col: Value<TableRef, string, Type>, op: COMPARISONS, value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create<TableRef, unknown, SQL_BOOL>(col.expression + " " + op + " " + SQL.escape(value))
-    }
-
     public static IF<
         TableRef1 extends string,
         TableRef2 extends string,
@@ -110,12 +103,19 @@ export class SQL {
         return SQL.COMPARE(col, "=", value);
     }
 
-    public static COMPAREC<TableRef1 extends string, TableRef2 extends string, Type1>(col1: Value<TableRef1, string, Type1>, op: COMPARISONS, col2: Value<TableRef2, string | unknown, Type1>): Value<TableRef1 | TableRef2, unknown, SQL_BOOL> {
-        return SqlExpression.create(col1.expression + " " + op + " " + col2.expression)
-    }
-
     public static EQC<TableRef1 extends string, TableRef2 extends string, Type1>(col1: Value<TableRef1, string, Type1>, col2: Value<TableRef2, string, Type1>): Value<TableRef1 | TableRef2, unknown, SQL_BOOL> {
         return SQL.COMPAREC(col1, "=", col2);
+    }
+
+    /**
+     * Column OPERATION value (If you want to compare column with another column, use COMPAREC method.)
+     */
+    public static COMPARE<TableRef extends string, Type extends string | number>(col: Value<TableRef, string, Type>, op: COMPARISONS, value: Type): Value<TableRef, unknown, SQL_BOOL> {
+        return SqlExpression.create<TableRef, unknown, SQL_BOOL>(col.expression + " " + op + " " + SQL.escape(value))
+    }
+
+    public static COMPAREC<TableRef1 extends string, TableRef2 extends string, Type1>(col1: Value<TableRef1, string, Type1>, op: COMPARISONS, col2: Value<TableRef2, string | unknown, Type1>): Value<TableRef1 | TableRef2, unknown, SQL_BOOL> {
+        return SqlExpression.create(col1.expression + " " + op + " " + col2.expression)
     }
 
     public static TRIM<Type extends string, TableRef extends string>(value: string): Value<TableRef, unknown, Type> {
@@ -139,7 +139,7 @@ export class SQL {
     }
 
     public static CONCAT<TableRef extends string>(...expr: (string | Value<TableRef, string | unknown, string | number | unknown>)[]): Value<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create("CONCAT(" + expr.map(e => typeof e === "string" ? e : e.expression) + ")")
+        return SqlExpression.create("CONCAT(" + expr.map(e => typeof e === "string" ? SQL.escape(e) : e.expression) + ")")
     }
 
     public static MIN<Type, TableRef extends string>(col: Value<TableRef, string | unknown, Type>): Value<TableRef, unknown, Type> {

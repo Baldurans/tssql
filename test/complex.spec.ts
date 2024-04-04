@@ -80,9 +80,9 @@ test("complex", async () => {
             subQueryTable.subIdRenamed.as("subIdRenamedAgain"),
             c.id.as("renamedId"),
             SQL.DATE(c.created).as("myDate"),
-            SQL.COMPAREC(c.id, ">", c2.id).as("expr1"),
-            SQL.COMPAREC(c.id, ">", c2.id).as("expr2"),
-            SQL.COMPAREC(c.id, "=", expr).as("expr3"),
+            c.id.COMPAREC("<=", c2.id).as("expr1"),
+            c.id.COMPAREC(">", c2.id).as("expr2"),
+            c.id.EQC(expr).as("expr3"),
             SQL.IF(c.id.EQC(c2.id), c.username, c2.username).cast<string>().as("expr4"),
 
             withSubSub1.subIdRenamed.as("withSubSub1"),
@@ -105,13 +105,15 @@ test("complex", async () => {
 
         //.columns( c.name ) // ____ERROR, Can't add same field twice!
 
-        .where(c.id.EQ(10 as tUserId)) // c.id = 10
-        .where(SQL.DATE(c.created).EQ("2024.03.09" as vDate))
-        .where(SQL.EQ(c.id, 10 as tUserId)) // c.id = 10
-        .where(SQL.EQC(c.id, c2.id)) // c.id = 10
-        .where(SQL.COMPAREC(c.id, ">=", c2.id))
-        .where(SQL.EXPRESSION(c.id, " > ", c2.id).cast<SQL_BOOL>())
-        .where(SQL.ISNULL(c.id))
+        .where(
+            c.id.EQ(10 as tUserId),
+            SQL.DATE(c.created).COMPARE(">=", "2024.03.09" as vDate),
+            c.id.EQ(10 as tUserId),
+            c.id.EQC(c2.id),
+            c.id.COMPAREC(">=", c2.id),
+            SQL.EXPRESSION(c.id, " > ", c2.id).cast<SQL_BOOL>(),
+            c.id.ISNULL()
+        ) // c.id = 10
 
         //.where(SQL.EQ(SQL.DATE(c2.username), "2024.03.09" as vDate)) // ____ERROR - wrong type DATE(c.name) = '2024.03.09'
         //.whereEq(c.id, 10) // ____ERROR, 10 is not tUser

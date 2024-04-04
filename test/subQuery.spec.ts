@@ -1,6 +1,5 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {SQL} from "../src";
 
 test("simple", async () => {
 
@@ -16,9 +15,14 @@ test("simple", async () => {
         .select()
         .from(s)
         .columns(s.id)
-        .where(s.id.EQC(c.id))
-        .noLimit()
-        .asScalar("subColumn");
+        //.where(["a","b"])
+        .where(
+            c.id.EQC(c.id),
+            s.id.EQC(c.id),
+            c.id.EQC(c.id)
+        )
+    .noLimit()
+    .asScalar("subColumn");
 
     const joinSub = db
         .uses(c)
@@ -26,8 +30,10 @@ test("simple", async () => {
         .select()
         .from(s)
         .columns(s.id, s.id.as("subIdRenamed"))
-        .where(s.id.EQC(c.id))
-        .where(c2.id.EQC(s.id))
+        .where(
+            s.id.EQC(c.id),
+            c2.id.EQC(s.id)
+        )
         .noLimit()
         .as("joinSub")
 
@@ -41,10 +47,11 @@ test("simple", async () => {
             joinSub.id.as("subId"),
             scalarSub,
         )
-        .where(SQL.AND(
+        .where(
             c.id.EQ(input.userId),
-            c.username.ISNULL()
-        ))
+            c.username.ISNULL(),
+            c.id.EQ(input.userId)
+        )
         .noLimit()
 
     console.log(query.toString())
