@@ -1,6 +1,5 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {Sql} from "../src";
 
 test("with", async () => {
 
@@ -48,7 +47,7 @@ test("with", async () => {
         )
         .where(
             c.id.is(input.userId),
-            pB1.id.eq(input.userId)
+            pB1.id.is(input.userId)
         )
         .noLimit()
 
