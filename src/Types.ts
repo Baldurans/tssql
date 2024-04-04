@@ -76,7 +76,7 @@ export {ComparisonOperandsLookup}
 /**
  * Check if Alias ("c") already exists in UsedAliases=(R<"c"> & ...)
  */
-export type isAliasAlreadyUsed<UsedAliases, Alias extends string, Res> = Alias extends keyof UsedAliases ? `Alias '${Alias}' is already used!` : Res
+export type isAliasAlreadyUsed<UsedAliases, Alias extends string, OUT> = Alias extends keyof UsedAliases ? `Alias '${Alias}' is already used!` : OUT
 
 // ----------------------------------------------
 // This stuff helps to check if 'Table as Alias' exists in usedTables
@@ -87,8 +87,8 @@ type _ConstructAliasDoesNotExistError<UsedTables, UsedTablesToMatch> = `Alias '$
 /**
  * Check if UsedTablesToMatch=(R<Alias.Table> & ...) exists in UsedTables=(R<Alias.Table> & ...)
  */
-export type isTableReferenced<UsedTables, UsedTablesToMatch, Return> = _AllKeys<UsedTablesToMatch> extends _AllKeys<UsedTables>
-    ? Return
-    : _ConstructAliasDoesNotExistError<UsedTables, UsedTablesToMatch>;
+export type isTableReferenced<Tables, CheckTables, OUT> = _AllKeys<CheckTables> extends _AllKeys<Tables>
+    ? OUT
+    : _ConstructAliasDoesNotExistError<Tables, CheckTables>;
 
 // -----------------------------------------------------
