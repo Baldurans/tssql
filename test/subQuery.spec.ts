@@ -18,7 +18,7 @@ test("simple", async () => {
         //.where(["a","b"])
         .where(
             c.id.EQC(c.id),
-            s.id.EQC(c.id),
+            c2.id.EQC(c.id),
             c.id.EQC(c.id)
         )
     .noLimit()

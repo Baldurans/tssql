@@ -8,16 +8,16 @@ export class DbSelect04Where<Result, UsedAliases, WithAliases, Tables, UsedTable
     }
 
     public where<T1 extends string>(
-        col1: CheckIfAliasedTablesAreReferenced<Tables, TrueRecord<T1>, Value<T1, unknown, SQL_BOOL>>
+        col1: CCC<Tables, T1>,
     ): DbSelect05GroupBy<Result, Tables, UsedTables, LastType, CTX>
     public where<T1 extends string, T2 extends string>(
-        col1: CheckIfAliasedTablesAreReferenced<Tables, TrueRecord<T1>, Value<T1, unknown, SQL_BOOL>>,
-        col2: CheckIfAliasedTablesAreReferenced<Tables, TrueRecord<T1>, Value<T1, unknown, SQL_BOOL>>
+        col1: CCC<Tables, T1>,
+        col2: CCC<Tables, T2>,
     ): DbSelect05GroupBy<Result, Tables, UsedTables, LastType, CTX>
     public where<T1 extends string, T2 extends string, T3 extends string>(
-        col1: CheckIfAliasedTablesAreReferenced<Tables, TrueRecord<T1>, Value<T1, unknown, SQL_BOOL>>,
-        col2: CheckIfAliasedTablesAreReferenced<Tables, TrueRecord<T2>, Value<T2, unknown, SQL_BOOL>>,
-        col3: CheckIfAliasedTablesAreReferenced<Tables, TrueRecord<T3>, Value<T3, unknown, SQL_BOOL>>
+        col1: CCC<Tables, T1>,
+        col2: CCC<Tables, T2>,
+        col3: CCC<Tables, T3>
     ): DbSelect05GroupBy<Result, Tables, UsedTables, LastType, CTX>
 
     public where(
@@ -30,6 +30,8 @@ export class DbSelect04Where<Result, UsedAliases, WithAliases, Tables, UsedTable
         return new DbSelect05GroupBy(this.builder)
     }
 }
+
+type CCC<Tables, T extends string> = CheckIfAliasedTablesAreReferenced<Tables, TrueRecord<T>, Value<T, unknown, SQL_BOOL>>
 
 // Recursive type to handle same thing, but TS does not recognize that input is a duple, but takes it as (A | B)[], but needed would be [A,B]
 // Can use something like this if it improves.
