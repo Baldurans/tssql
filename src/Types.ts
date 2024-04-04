@@ -72,7 +72,7 @@ export type CheckIfAliasIsAlreadyUsed<UsedAliases, Alias extends string, Res> = 
 
 
 // ----------------------------------------------
-// This stuff helps to check if Alias.Table exists in usedTables
+// This stuff helps to check if 'Table as Alias' exists in usedTables
 type _AllKeys<T> = T extends any ? keyof T : never;
 type _ExtractMissingAlias<Used, ToMatch> = { [K in keyof ToMatch]: K extends keyof Used ? never : K }[keyof ToMatch];
 type _ConstructAliasDoesNotExistError<UsedTables, UsedTablesToMatch> = `Alias '${_ExtractMissingAlias<UsedTables, UsedTablesToMatch> extends `${infer TableName} as ${infer Alias}` ? Alias : "???"}' is not used in this query!`

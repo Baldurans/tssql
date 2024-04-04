@@ -59,18 +59,17 @@ test("complex", async () => {
         .with(withSub)
         .select()
         .from(c)
-        .join(c2, c2.id, c.id)
-        .join(subQueryTable, subQueryTable.subIdRenamed, c.id)
-        .leftJoin(withSubSub1, withSubSub1.id, c.id)
-        .leftJoin(withSubSub2, withSubSub2.id, c.id)
+        .join(c2, c2.id.eq(c.id))
+        .join(subQueryTable, subQueryTable.subIdRenamed.eq(c.id))
+        .leftJoin(withSubSub1, withSubSub1.id.eq(c.id))
+        .leftJoin(withSubSub2, withSubSub2.id.eq(c.id))
 
-        //.join(cFake, cFake.id, c.id) // ____ERROR, alias c is already used!
-        //.join(c2, c2.id, c.id) // ____ERROR, c2 already joined
-        //.join(c4, c.id, c.id) // ____ERROR, invalid join condition (second argument must be from c4)
-        //.join(c5, c5.id, c.username) // ____ERROR, c5.id type != c2.name type
-        //.join(subQueryTable, subQueryTable.subIdRenamed, c.id) // ____ERROR, alias is already used!
-        //.leftJoin(withSub, withSub.id, c.id) // ____ERROR, alias is already in use.
-        //.leftJoin(withSub2Sub1, withSub2Sub1.id, c.id) // ____ERROR, not referenced in with part.
+        // .join(cFake, cFake.id.eq(c.id)) // ____ERROR, alias c is already used!
+        // .join(c2, c2.id.eq(c.id)) // ____ERROR, c2 already joined
+        // .join(c4, c.id.eq(c.id)) // ____ERROR, join condition should use arguments from joined table
+        // .join(subQueryTable, subQueryTable.subIdRenamed.eq(c.id)) // ____ERROR, alias is already used!
+        // .leftJoin(withSub, withSub.id.eq(c.id)) // ____ERROR, alias is already in use.
+        // .leftJoin(withSub2Sub1, withSub2Sub1.id.eq(c.id)) // ____ERROR, not referenced in with part.
 
         .columns(
             db.uses(c).select().from(s).columns(s.id).where(Sql.eq(c.id, s.id)).noLimit().asScalar("someItem"),
@@ -106,7 +105,6 @@ test("complex", async () => {
         //.columns( c.name ) // ____ERROR, Can't add same field twice!
 
         .where(
-
             c.id.is(10 as tUserId),
 
             c.id.eq(c2.id),

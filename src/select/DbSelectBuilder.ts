@@ -76,9 +76,9 @@ export class DbSelectBuilder<CTX> {
         this._forUpdate = true;
     }
 
-    public join(joinType: "JOIN" | "LEFT JOIN", table: AnyAliasedTableDef, field1: AnyValue, field2: AnyValue): void {
+    public join(joinType: "JOIN" | "LEFT JOIN", table: AnyAliasedTableDef, field1: AnyValue): void {
         const sql = this._withQueries.has(table[DbUtility.SQL_ALIAS]) ? Sql.escapeId(table[DbUtility.SQL_ALIAS]) : table[DbUtility.SQL_EXPRESSION] + " as " + Sql.escapeId(table[DbUtility.SQL_ALIAS])
-        this._joins.push(joinType + " " + sql + " ON (" + field1.expression + " = " + field2.expression + ")")
+        this._joins.push(joinType + " " + sql + " ON (" + field1.expression + ")")
         return this as any;
     }
 
