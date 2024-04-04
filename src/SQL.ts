@@ -138,7 +138,7 @@ export class SQL {
         return SqlExpression.create(col.expression + " LIKE " + SQL.escape(value + "%"));
     }
 
-    public static CONCAT<TableRef extends string>(...expr: (string | Value<TableRef, string | unknown, string | number | unknown>)[]): Value<TableRef, unknown, SQL_BOOL> {
+    public static CONCAT<TableRef extends string>(...expr: (string | Value<TableRef, string | unknown, string | number | unknown>)[]): Value<TableRef, unknown, string> {
         return SqlExpression.create("CONCAT(" + expr.map(e => typeof e === "string" ? SQL.escape(e) : e.expression) + ")")
     }
 
