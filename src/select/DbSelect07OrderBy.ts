@@ -9,7 +9,7 @@ export class DbSelect07OrderBy<Result, Tables, UsedTables, LastType, CTX> extend
     >(
         ...items: OrderByStructure<(Str | Value<TableRef, string | unknown, string | number>), "asc" | "ASC" | "desc" | "DESC">
     ): DbSelect08Limit<Result, UsedTables, LastType, CTX> {
-        this.builder.orderBy(items);
+        this.builder.orderBy(items as any);
         return new DbSelect08Limit(this.builder);
     }
 }

@@ -19,7 +19,7 @@ export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables, CTX> ext
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
     ): DbSelectJoin<UsedAliases & TrueRecord<Alias>, WithAliases, Tables & TrueRecord<TableRef>, UsedTables, CTX> {
-        this.builder.join("JOIN", table as AnyAliasedTableDef, field1, field2)
+        this.builder.join("JOIN", table as AnyAliasedTableDef, field1 as any, field2 as any)
         return this as any;
     }
 
@@ -39,7 +39,7 @@ export class DbSelectJoin<UsedAliases, WithAliases, Tables, UsedTables, CTX> ext
         field1: Value<TableRef, string, Field1Type>,
         field2: Value<Field2TableRef, string, Field2Type>
     ): DbSelectJoin<UsedAliases & TrueRecord<Alias>, WithAliases, Tables & TrueRecord<TableRef>, UsedTables, CTX> {
-        this.builder.join("LEFT JOIN", table as AnyAliasedTableDef, field1, field2)
+        this.builder.join("LEFT JOIN", table as AnyAliasedTableDef, field1 as any, field2 as any)
         return this as any;
     }
 

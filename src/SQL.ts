@@ -37,7 +37,7 @@ export class SQL {
     public static or<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>, col3: AnyBoolValue<T3>, col4: AnyBoolValue<T4>, col5: AnyBoolValue<T5>): Value<T1 | T2 | T3 | T4 | T5, unknown, SQL_BOOL>
     public static or<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>, col3: AnyBoolValue<T3>, col4: AnyBoolValue<T4>, col5: AnyBoolValue<T5>, col6: AnyBoolValue<T6>): Value<T1 | T2 | T3 | T4 | T5 | T6, unknown, SQL_BOOL>
     public static or(...col: any[]): any {
-        return SqlExpression.create<any, unknown, any>("(" + col.filter(e => e).map(e => e.expression).join(" OR ") + ")")
+        return SqlExpression.create("(" + col.filter(e => e).map(e => e.expression).join(" OR ") + ")")
     }
 
     /**
@@ -49,7 +49,7 @@ export class SQL {
     public static and<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>, col3: AnyBoolValue<T3>, col4: AnyBoolValue<T4>, col5: AnyBoolValue<T5>): Value<T1 | T2 | T3 | T4 | T5, unknown, SQL_BOOL>
     public static and<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string>(col1: AnyBoolValue<T1>, col2: AnyBoolValue<T2>, col3: AnyBoolValue<T3>, col4: AnyBoolValue<T4>, col5: AnyBoolValue<T5>, col6: AnyBoolValue<T6>): Value<T1 | T2 | T3 | T4 | T5 | T6, unknown, SQL_BOOL>
     public static and(...col: any[]): any {
-        return SqlExpression.create<any, unknown, any>("(" + col.filter(e => e).map(e => e.expression).join(" AND ") + ")")
+        return SqlExpression.create("(" + col.filter(e => e).map(e => e.expression).join(" AND ") + ")")
     }
 
     public static if<
@@ -63,15 +63,15 @@ export class SQL {
         col2: Value<TableRef2, string | unknown, Type2>,
         col3: Value<TableRef3, string | unknown, Type3>
     ): Value<TableRef1 | TableRef2 | TableRef3, unknown, (Type2 extends Type3 ? Type3 extends Type2 ? Type2 : unknown : unknown)> {
-        return SqlExpression.create<any, unknown, any>("IF(" + col.expression + "," + col2.expression + "," + col3.expression + ")")
+        return SqlExpression.create("IF(" + col.expression + "," + col2.expression + "," + col3.expression + ")")
     }
 
     public static isNull<TableRef extends string, Name, Type extends string | number>(col: Value<TableRef, Name, Type>): Value<TableRef, Name, SQL_BOOL> {
-        return SqlExpression.create<TableRef, Name, SQL_BOOL>(col.expression + " IS NULL")
+        return SqlExpression.create(col.expression + " IS NULL")
     }
 
     public static notNull<TableRef extends string, Name, Type extends string | number>(col: Value<TableRef, Name, Type>): Value<TableRef, Name, SQL_BOOL> {
-        return SqlExpression.create<TableRef, Name, SQL_BOOL>(col.expression + " IS NOT NULL")
+        return SqlExpression.create(col.expression + " IS NOT NULL")
     }
 
     /**
@@ -89,35 +89,35 @@ export class SQL {
      * Column OPERATION value (If you want to compare column with another column, use COMPAREC method.)
      */
     public static compare<TableRef extends string, Type extends string | number>(col: Value<TableRef, string, Type>, op: COMPARISONS, value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create<TableRef, unknown, SQL_BOOL>(col.expression + " " + op + " " + SQL.escape(value))
+        return SqlExpression.create(col.expression + " " + op + " " + SQL.escape(value))
     }
 
     public static comparec<TableRef1 extends string, TableRef2 extends string, Type1>(col1: Value<TableRef1, string, Type1>, op: COMPARISONS, col2: Value<TableRef2, string | unknown, Type1>): Value<TableRef1 | TableRef2, unknown, SQL_BOOL> {
         return SqlExpression.create(col1.expression + " " + op + " " + col2.expression)
     }
 
-    public static like<TableRef extends string>(col: (Value<TableRef, string | unknown, string | unknown>), value: string): Value<TableRef, unknown, SQL_BOOL> {
+    public static like<TableRef extends string, Type extends string | number>(col: (Value<TableRef, string | unknown, Type>), value: string): Value<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(col.expression + " LIKE " + SQL.escape(value));
     }
 
     /**
      * Does LIKE %X% search.
      */
-    public static contains<TableRef extends string>(col: (Value<TableRef, string | unknown, string | unknown>), value: string): Value<TableRef, unknown, SQL_BOOL> {
+    public static contains<TableRef extends string, Type extends string | number>(col: (Value<TableRef, string | unknown, Type>), value: string): Value<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(col.expression + " LIKE " + SQL.escape("%" + value + "%"));
     }
 
     /**
      * Does LIKE X% search.
      */
-    public static startsWith<TableRef extends string>(col: (Value<TableRef, string | unknown, string | unknown>), value: string): Value<TableRef, unknown, SQL_BOOL> {
+    public static startsWith<TableRef extends string, Type extends string | number>(col: (Value<TableRef, string | unknown, Type>), value: string): Value<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(col.expression + " LIKE " + SQL.escape(value + "%"));
     }
 
     /**
      * Does LIKE %X search.
      */
-    public static endsWith<TableRef extends string>(col: (Value<TableRef, string | unknown, string | unknown>), value: string): Value<TableRef, unknown, SQL_BOOL> {
+    public static endsWith<TableRef extends string, Type extends string | number>(col: (Value<TableRef, string | unknown, Type>), value: string): Value<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(col.expression + " LIKE " + SQL.escape("%" + value));
     }
 

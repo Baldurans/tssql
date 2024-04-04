@@ -8,7 +8,7 @@ export class DbSelect06Having<Result, Tables, UsedTables, LastType, CTX> extends
     >(
         col: CheckIfAliasedTablesAreReferenced<Tables, TrueRecord<UsedTables2>, Value<UsedTables2, unknown, SQL_BOOL>>
     ): DbSelect07OrderBy<Result, Tables, UsedTables, LastType, CTX> {
-        this.builder.having(col as AnyValue)
+        this.builder.having(col as unknown as AnyValue)
         return new DbSelect07OrderBy(this.builder)
     }
 

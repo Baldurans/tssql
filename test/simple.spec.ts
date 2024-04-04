@@ -11,6 +11,7 @@ test("simple", async () => {
     const c2 = db.tables.user("c2")
     const s = db.tables.user("s")
 
+
     const val: any = undefined;
     const query = db
         .select()
@@ -22,6 +23,7 @@ test("simple", async () => {
             db.uses(c).select().from(s).columns(s.id).where(s.id.eqc(c.id)).limit(10).asScalar("subColumn"),
             c.username,
             c.id,
+            c.id.like("asd"),
             c.id.as("renamedId"),
             SQL.null<string>().as("emptyValue"),
             SQL.date(c.created).as("myDate"),

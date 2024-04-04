@@ -10,7 +10,7 @@ export class DbSelect05GroupBy<Result, Tables, UsedTables, LastType, CTX> extend
     >(
         ...items: (Str | Value<TableRef, string | unknown, string | number>)[]
     ): DbSelect06Having<Result, Tables, UsedTables, LastType, CTX> {
-        this.builder.groupBy(items);
+        this.builder.groupBy(items as any);
         return new DbSelect06Having(this.builder);
     }
 

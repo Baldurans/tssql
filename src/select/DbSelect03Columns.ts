@@ -10,7 +10,7 @@ export class DbSelect03Columns<Result, UsedAliases, WithAliases, Tables, UsedTab
 
     public columns<
         TableRef extends string & keyof Tables,
-        Columns extends Value<TableRef, string, string | number>[]
+        Columns extends Value<TableRef, string, any>[]
     >(
         //...columns: Columns - this will enable seeing sources of Result object properties.
         ...columns: CheckForDuplicateColumns<Columns, Result>
