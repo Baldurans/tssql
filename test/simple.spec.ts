@@ -21,7 +21,7 @@ test("simple", async () => {
         .columns(
             db.uses(c).select().from(s).columns(s.id).where(s.id.eqc(c.id)).limit(10).asScalar("subColumn"),
             c.username,
-            c.id.asDate(), // Should be error @TODO
+            c.id,
             c.id.as("renamedId"),
             SQL.null<string>().as("emptyValue"),
             SQL.date(c.created).as("myDate"),
