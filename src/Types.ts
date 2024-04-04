@@ -43,8 +43,8 @@ export type AnyExpr = Expr<string, string | unknown, string | number | unknown>
 // ----------------------------------------------
 
 export type AliasedTable<Alias extends string, TableRef extends string, Entity, RefAlias extends string | NOT_REFERENCED> = {
-    [DbUtility.SQL_EXPRESSION]: TableRef
     [DbUtility.SQL_ALIAS]: Alias
+    [DbUtility.SQL_EXPRESSION]: TableRef
     [DbUtility.SQL_REF_ALIAS]: RefAlias
 } & {
     [K in keyof Entity]: Expr<TableRef, K, Entity[K]>
@@ -78,14 +78,14 @@ export {ComparisonOperandsLookup}
 /**
  * Check if Alias ("c") already exists in UsedAliases=(R<"c"> & ...)
  */
-export type isAliasAlreadyUsed<UsedAliases, Alias extends string, OUT> = Alias extends keyof UsedAliases ? `Alias '${Alias}' is already used!` : OUT
+export type isAliasAlreadyUsed<Aliases, Alias extends string, OUT> = Alias extends keyof Aliases ? `Alias '${Alias}' is already used!` : OUT
 
 // ----------------------------------------------
 // This stuff helps to check if 'Table as Alias' exists in usedTables
 
 type _AllKeys<T> = T extends any ? keyof T : never;
-type _ExtractMissingAlias<Used, ToMatch> = { [K in keyof ToMatch]: K extends keyof Used ? never : K }[keyof ToMatch];
-type _ConstructAliasDoesNotExistError<UsedTables, UsedTablesToMatch> = `Alias '${_ExtractMissingAlias<UsedTables, UsedTablesToMatch> extends `${infer TableName} as ${infer Alias}` ? Alias : "???"}' is not used in this query!`
+type _ExtractMissingAlias<Tables, CheckTables> = { [K in keyof CheckTables]: K extends keyof Tables ? never : K }[keyof CheckTables];
+type _ConstructAliasDoesNotExistError<Tables, CheckTables> = `Alias '${_ExtractMissingAlias<Tables, CheckTables> extends `${infer TableName} as ${infer Alias}` ? Alias : "???"}' is not used in this query!`
 /**
  * Check if UsedTablesToMatch=(R<Alias.Table> & ...) exists in UsedTables=(R<Alias.Table> & ...)
  */
