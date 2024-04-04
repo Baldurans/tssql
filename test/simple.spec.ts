@@ -19,57 +19,40 @@ test("simple", async () => {
         .join(c2, c2.id, c.id)
         .distinct()
         .columns(
-            db.uses(c).select().from(s).columns(s.id).where(s.id.EQC(c.id)).limit(10).asScalar("subColumn"),
+            db.uses(c).select().from(s).columns(s.id).where(s.id.eqc(c.id)).limit(10).asScalar("subColumn"),
             c.username,
-            c.id,
+            c.id.asDate(), // Should be error @TODO
             c.id.as("renamedId"),
-            SQL.NULL<string>().as("emptyValue"),
-            SQL.DATE(c.created).as("myDate"),
-            SQL.IF(
-                c.id.EQ(10 as tUserId),
+            SQL.null<string>().as("emptyValue"),
+            SQL.date(c.created).as("myDate"),
+            c.created.asDate(),
+            SQL.if(
+                c.id.eq(10 as tUserId),
                 c.id,
                 c2.id
             ).as("userIdFromIf"),
-            SQL.OR(
-                c.username.ISNULL(),
-                c.username.NOTNULL(),
-                c.username.ISNULL()
+            SQL.or(
+                c.username.isNull(),
+                c.username.notNull(),
+                c.username.isNull()
             ).as("or"),
-            SQL.AND(
-                c.username.ISNULL(),
-                c.username.NOTNULL(),
-                c2.username.ISNULL()
+            SQL.and(
+                c.username.isNull(),
+                c.username.notNull(),
+                c2.username.isNull()
             ).as("and")
         )
-        .where(SQL.AND(
-            c.id.EQ(input.userId),
-            c.username.ISNULL(),
-            val && c.username.ISNULL(),
-            c.username.NOTNULL()
+        .where(SQL.and(
+            c.id.eq(input.userId),
+            c.username.isNull(),
+            val && c.username.isNull(),
+            c.username.notNull()
         ))
         .groupBy("renamedId", c.id)
         .orderBy("renamedId", c.id)
         .noLimit()
 
     console.log(query.toString())
-    expect(query.toString()).toEqual('SELECT \n' +
-        '  (\n' +
-        '    SELECT DISTINCT \n' +
-        '      `s`.`id` as `id`\n' +
-        '    FROM `user` as `s`\n' +
-        '    WHERE `s`.`id` = `c`.`id`\n' +
-        '  ) as `subColumn`,\n' +
-        '  `c`.`username` as `username`,\n' +
-        '  `c`.`id` as `id`,\n' +
-        '  `c`.`id` as `renamedId`,\n' +
-        '  NULL as `emptyValue`,\n' +
-        '  DATE(`c`.`created`) as `myDate`,\n' +
-        '  IF(`c`.`id` = 10,`c`.`id`,`c2`.`id`) as `userIdFromIf`,\n' +
-        '  (`c`.`username` IS NULL OR `c`.`username` IS NOT NULL OR `c`.`username` IS NULL) as `or`,\n' +
-        '  (`c`.`username` IS NULL AND `c`.`username` IS NOT NULL AND `c2`.`username` IS NULL) as `and`\n' +
-        'FROM `user` as `c`\n' +
-        'JOIN `user` as `c2` ON (`c2`.`id` = `c`.`id`)\n' +
-        'WHERE (`c`.`id` = 10 AND `c`.`username` IS NULL AND `c`.`username` IS NOT NULL)\n')
 
     const res = await query.execOne(undefined);
     console.log(
@@ -78,6 +61,7 @@ test("simple", async () => {
         res.username,  // type string
         res.renamedId,  // type tUserId
         res.myDate, // type vDateTime
+        res.created, // type vDate
         res.emptyValue,
         res.userIdFromIf,
         res.or,

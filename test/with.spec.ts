@@ -15,7 +15,7 @@ test("with", async () => {
         .select()
         .from(s)
         .columns(s.id, s.id.as("subIdRenamed"))
-        .where(s.id.EQ(10 as tUserId))
+        .where(s.id.eq(10 as tUserId))
         .noLimit()
         .as("part1")
     const pA1 = MyDb.createRef(part1, "part1Sub1");
@@ -46,8 +46,8 @@ test("with", async () => {
             pA2.id.as("aa2"),
             pB1.id.as("aa3"),
         )
-        .where(SQL.AND(
-            c.id.EQ(input.userId),
+        .where(SQL.and(
+            c.id.eq(input.userId),
             pB1.id.EQ(input.userId)
         ))
         .noLimit()

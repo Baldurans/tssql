@@ -14,10 +14,10 @@ export type RuntimeValue<TableRef extends string, Name extends string | unknown,
     cast: <CastType extends string | number>() => Value<TableRef, Name, CastType>
     as: <T extends string>(name: T) => Value<TableRef, T, Type>
 
-    ISNULL: () => Value<TableRef, unknown, SQL_BOOL>
-    NOTNULL: () => Value<TableRef, unknown, SQL_BOOL>
-    EQ: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
-    EQC: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
+    isNull: () => Value<TableRef, unknown, SQL_BOOL>
+    notNull: () => Value<TableRef, unknown, SQL_BOOL>
+    eq: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
+    eqc: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
     // GT: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
     // GTC: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
     // GTE: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
@@ -26,12 +26,14 @@ export type RuntimeValue<TableRef extends string, Name extends string | unknown,
     // LTC: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
     // LTE: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
     // LTEC: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
-    COMPARE: (op: COMPARISONS, value: Type) => Value<TableRef, unknown, SQL_BOOL>
-    COMPAREC: <TableRef2 extends string>(op: COMPARISONS, col2: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
-    LIKE: (value: string) => Value<TableRef, unknown, SQL_BOOL>
-    LIKE_PRE: (value: string) => Value<TableRef, unknown, SQL_BOOL>
-    LIKE_SUF: (value: string) => Value<TableRef, unknown, SQL_BOOL>
-    LIKE_WILD: (value: string) => Value<TableRef, unknown, SQL_BOOL>
+    compare: (op: COMPARISONS, value: Type) => Value<TableRef, unknown, SQL_BOOL>
+    comparec: <TableRef2 extends string>(op: COMPARISONS, col2: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
+    like: (value: string) => Value<TableRef, unknown, SQL_BOOL>
+    startsWith: (value: string) => Value<TableRef, unknown, SQL_BOOL>
+    endsWith: (value: string) => Value<TableRef, unknown, SQL_BOOL>
+    contains: (value: string) => Value<TableRef, unknown, SQL_BOOL>
+    asDate: () => Value<TableRef, Name, vDate>
+    asDateTime: () => Value<TableRef, Name, vDateTime>
 }
 
 export type AnyBoolValue<TableRef extends string> = Value<TableRef, string | unknown, SQL_BOOL>;

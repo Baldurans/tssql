@@ -19,33 +19,33 @@ test("simple", async () => {
             .join(c2, c2.id, c.id)
             .distinct()
             .columns(
-                db.uses(c).select().from(s).columns(s.id).where(s.id.EQC(c.id)).limit(10).asScalar("subColumn"),
+                db.uses(c).select().from(s).columns(s.id).where(s.id.eqc(c.id)).limit(10).asScalar("subColumn"),
                 c.username,
                 c.id,
                 c.id.as("renamedId"),
-                SQL.NULL<string>().as("emptyValue"),
-                SQL.DATE(c.created).as("myDate"),
-                SQL.IF(
-                    c.id.EQ(10 as tUserId),
+                SQL.null<string>().as("emptyValue"),
+                SQL.date(c.created).as("myDate"),
+                SQL.if(
+                    c.id.eq(10 as tUserId),
                     c.id,
                     c2.id
                 ).as("userIdFromIf"),
-                SQL.OR(
-                    c.username.ISNULL(),
-                    c.username.NOTNULL(),
-                    c.username.ISNULL()
+                SQL.or(
+                    c.username.isNull(),
+                    c.username.notNull(),
+                    c.username.isNull()
                 ).as("or"),
-                SQL.AND(
-                    c.username.ISNULL(),
-                    c.username.NOTNULL(),
-                    c2.username.ISNULL()
+                SQL.and(
+                    c.username.isNull(),
+                    c.username.notNull(),
+                    c2.username.isNull()
                 ).as("and")
             )
-            .where(SQL.AND(
-                c.id.EQ(input.userId),
-                c.username.ISNULL(),
-                c.username.ISNULL(),
-                c.username.NOTNULL()
+            .where(SQL.and(
+                c.id.eq(input.userId),
+                c.username.isNull(),
+                c.username.isNull(),
+                c.username.notNull()
             ))
             .groupBy("renamedId", c.id)
             .orderBy("renamedId", c.id)
