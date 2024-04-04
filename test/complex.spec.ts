@@ -58,6 +58,7 @@ test("complex", async () => {
     const query = db
         .with(withSub)
         .select()
+        //.from(withSub) // Alias is already used!
         .from(c)
         .join(c2, c2.id.eq(c.id))
         .join(subQueryTable, subQueryTable.subIdRenamed.eq(c.id))

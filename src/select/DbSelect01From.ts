@@ -1,6 +1,6 @@
 import {DbSelectJoin} from "./DbSelect02Joins";
 import {DbSelect} from "./DbSelect";
-import {AliasedTable, NOT_REFERENCED, TrueRecord} from "../Types";
+import {AliasedTable, CheckIfAliasIsAlreadyUsed, NOT_REFERENCED, TrueRecord} from "../Types";
 
 export class DbSelect01From<Aliases, AliasesFromWith, Tables, CTX> extends DbSelect<CTX> {
 
@@ -10,9 +10,9 @@ export class DbSelect01From<Aliases, AliasesFromWith, Tables, CTX> extends DbSel
         TableRef extends `${TableName} as ${Alias}`,
         Columns
     >(
-        table: AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>
+        table: CheckIfAliasIsAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>
     ): DbSelectJoin<Aliases & TrueRecord<Alias>, AliasesFromWith, Tables & TrueRecord<TableRef>, CTX> {
-        this.builder.from(table);
+        this.builder.from(table as any);
         return new DbSelectJoin(this.builder);
     }
 
