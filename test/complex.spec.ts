@@ -90,8 +90,10 @@ test("complex", async () => {
             db.uses(c)
                 .select()
                 .from(s)
-                .columns(s.id)
-                // .columns_WITH_CTRL_CLICK_CAPABILITY_BUT_WITHOUT_DUPLICATE_CHECK(s.name) // ___ERROR - Scalar subquery allows only 1 column!
+                .columns(
+                    s.id,
+                    //s.username // ___ERROR - Scalar subquery allows only 1 column!
+                )
                 .where(s.id.eq(c.id)).noLimit().asScalar("subColumn"),
 
             //c.id, // ____ERROR, can't add same field twice!

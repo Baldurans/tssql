@@ -42,8 +42,8 @@ export abstract class Db<CTX> {
         return new DbSelect00With(new DbSelectBuilder<CTX>(this.exec)).with(table as any);
     }
 
-    public union<Result>(table: DbSelect09Exec<Result, any, any, CTX>): DbSelect00Union<Result, unknown, unknown, {}, unknown, CTX> {
-        return new DbSelect00Union<Result, unknown, unknown, {}, unknown, CTX>(new DbSelectBuilder<CTX>(this.exec)).all(table as any);
+    public union<Result>(table: DbSelect09Exec<Result, any, any, CTX>): DbSelect00Union<Result, CTX> {
+        return new DbSelect00Union<Result, CTX>(new DbSelectBuilder<CTX>(this.exec)).all(table as any);
     }
 
     public static createRef<
