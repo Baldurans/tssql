@@ -98,9 +98,9 @@ test("complex", async () => {
 
             //c.id, // ____ERROR, can't add same field twice!
             //subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
-            // SQL.expression(c.id, " > ", c3.id).as("expr2"), // ____ERROR, c3 is not referenced!
-            //cFake.name, // ____ERROR, table name does not match!
-            //c3.username // ____ERROR, c3 is not referenced
+            // Sql.veryDangerousUnsafeExpression(c.id, " > ", c3.id).as("expr2"), // ____ERROR, c3 is not referenced!
+            // cFake.name, // ____ERROR, table name does not match!
+            // c3.username // ____ERROR, c3 is not referenced
 
         )
 

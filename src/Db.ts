@@ -16,7 +16,7 @@ export abstract class Db<CTX> {
 
     }
 
-    public select(): DbSelect01From<{}, {}, {}, {}, CTX> {
+    public select(): DbSelect01From<{}, {}, {}, CTX> {
         return new DbSelect01From(new DbSelectBuilder<CTX>(this.exec)) as any
     }
 
@@ -38,11 +38,11 @@ export abstract class Db<CTX> {
         Columns
     >(
         table: AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>
-    ): DbSelect00With<TrueRecord<Alias>, TrueRecord<TableRef>, CTX> {
+    ): DbSelect00With<TrueRecord<Alias>, CTX> {
         return new DbSelect00With(new DbSelectBuilder<CTX>(this.exec)).with(table as any);
     }
 
-    public union<Result>(table: DbSelect09Exec<Result, any, any, CTX>): DbSelect00Union<Result, CTX> {
+    public union<Result>(table: DbSelect09Exec<Result, any, CTX>): DbSelect00Union<Result, CTX> {
         return new DbSelect00Union<Result, CTX>(new DbSelectBuilder<CTX>(this.exec)).all(table as any);
     }
 

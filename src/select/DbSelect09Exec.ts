@@ -6,9 +6,11 @@ import {DbTableDefinition} from "../Db";
 
 const TAB = "  ";
 
-export class DbSelect09Exec<Result, UsedTables, LastType, CTX> extends DbSelect<CTX> {
+export class DbSelect09Exec<Result, LastType, CTX> extends DbSelect<CTX> {
 
-    public asScalar<Alias extends string>(alias: Alias & ScalarSubQueryAllowsOnlyOneColumn<Alias, Result> extends never ? "Scalar subquery allows only 1 column!" : Alias): Value<keyof UsedTables & string, Alias, LastType> {
+    public asScalar<Alias extends string>(
+        alias: Alias & ScalarSubQueryAllowsOnlyOneColumn<Alias, Result> extends never ? "Scalar subquery allows only 1 column!" : Alias
+    ): Value<null, Alias, LastType> {
         return SqlExpression.create("(\n" + this.builder.toString(2) + TAB + ")", alias);
     }
 

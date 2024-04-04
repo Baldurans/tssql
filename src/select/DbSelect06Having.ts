@@ -1,13 +1,13 @@
 import {AnyValue, CheckIfAliasedTablesAreReferenced, TrueRecord, SQL_BOOL, Value} from "../Types";
 import {DbSelect07OrderBy} from "./DbSelect07OrderBy";
 
-export class DbSelect06Having<Result, Tables, UsedTables, LastType, CTX> extends DbSelect07OrderBy<Result, Tables, UsedTables, LastType, CTX> {
+export class DbSelect06Having<Result, Tables, LastType, CTX> extends DbSelect07OrderBy<Result, Tables, LastType, CTX> {
 
     public having<
         UsedTables2 extends string
     >(
         col: CheckIfAliasedTablesAreReferenced<Tables, TrueRecord<UsedTables2>, Value<UsedTables2, unknown, SQL_BOOL>>
-    ): DbSelect07OrderBy<Result, Tables, UsedTables, LastType, CTX> {
+    ): DbSelect07OrderBy<Result, Tables, LastType, CTX> {
         this.builder.having(col as unknown as AnyValue)
         return new DbSelect07OrderBy(this.builder)
     }

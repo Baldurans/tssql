@@ -2,7 +2,7 @@ import {DbSelectJoin} from "./DbSelect02Joins";
 import {DbSelect} from "./DbSelect";
 import {AliasedTable, NOT_REFERENCED, TrueRecord} from "../Types";
 
-export class DbSelect01From<UsedAliases, WithAliases, Tables, UsedTables, CTX> extends DbSelect<CTX> {
+export class DbSelect01From<Aliases, AliasesFromWith, Tables, CTX> extends DbSelect<CTX> {
 
     public from<
         Alias extends string,
@@ -11,7 +11,7 @@ export class DbSelect01From<UsedAliases, WithAliases, Tables, UsedTables, CTX> e
         Columns
     >(
         table: AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>
-    ): DbSelectJoin<UsedAliases & TrueRecord<Alias>, WithAliases, Tables & TrueRecord<TableRef>, UsedTables, CTX> {
+    ): DbSelectJoin<Aliases & TrueRecord<Alias>, AliasesFromWith, Tables & TrueRecord<TableRef>, CTX> {
         this.builder.from(table);
         return new DbSelectJoin(this.builder);
     }
