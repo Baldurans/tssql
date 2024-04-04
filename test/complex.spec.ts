@@ -93,7 +93,7 @@ test("complex", async () => {
                 .from(s)
                 .columns(s.id)
                 // .columns_WITH_CTRL_CLICK_CAPABILITY_BUT_WITHOUT_DUPLICATE_CHECK(s.name) // ___ERROR - Scalar subquery allows only 1 column!
-                .where(SQL.EQC(s.id, c.id)).noLimit().asScalar("subColumn"),
+                .where(s.id.EQC(c.id)).noLimit().asScalar("subColumn"),
 
             //c.id, // ____ERROR, can't add same field twice!
             //subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
