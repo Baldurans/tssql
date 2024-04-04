@@ -1,4 +1,4 @@
-import {Value} from "../Types";
+import {Expr} from "../Types";
 import {DbSelect07OrderBy} from "./DbSelect07OrderBy";
 import {DbSelect06Having} from "./DbSelect06Having";
 import {DbSelect09Exec} from "./DbSelect09Exec";
@@ -9,7 +9,7 @@ export class DbSelect05GroupBy<Result, Tables, CTX> extends DbSelect07OrderBy<Re
         TableRef extends string & keyof Tables,
         Str extends string & keyof Result
     >(
-        ...items: (Str | Value<TableRef, string | unknown, string | number>)[]
+        ...items: (Str | Expr<TableRef, string | unknown, string | number>)[]
     ): DbSelect06Having<Result, Tables, CTX> {
         this.builder.groupBy(items as any);
         return new DbSelect06Having(this.builder);

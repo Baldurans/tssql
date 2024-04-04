@@ -1,4 +1,4 @@
-import {AnyValue, Value} from "../Types";
+import {AnyExpr, Expr} from "../Types";
 import {DbSelect04Where} from "./DbSelect04Where";
 import {DbSelect} from "./DbSelect";
 
@@ -10,12 +10,12 @@ export class DbSelect03Columns<Result, Tables, CTX> extends DbSelect<CTX> {
 
     public columns<
         TableRef extends string & keyof Tables,
-        Columns extends Value<TableRef, string, any>[]
+        Columns extends Expr<TableRef, string, any>[]
     >(
         //...columns: Columns - this will enable seeing sources of Result object properties.
         ...columns: CheckForDuplicateColumns<Columns, Result>
     ): DbSelect04Where<Result & ExtractObj<Columns>, Tables, CTX> {
-        this.builder.columns(columns as unknown as AnyValue[]);
+        this.builder.columns(columns as unknown as AnyExpr[]);
         return new DbSelect04Where(this.builder);
     }
 
@@ -26,7 +26,7 @@ export class DbSelect03Columns<Result, Tables, CTX> extends DbSelect<CTX> {
 /**
  * Take array of Col-s and convert to Record<key, value> & ... object.
  */
-type ExtractObj<Columns extends Value<any, string, any>[]> = {
+type ExtractObj<Columns extends Expr<any, string, any>[]> = {
     [K in Columns[number]['nameAs']]: Extract<Columns[number], { nameAs: K }>['type']
 };
 

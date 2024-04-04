@@ -1,4 +1,4 @@
-import {Value} from "../Types";
+import {Expr} from "../Types";
 import {DbSelect08Limit} from "./DbSelect08Limit";
 
 export class DbSelect07OrderBy<Result, Tables, CTX> extends DbSelect08Limit<Result, CTX> {
@@ -7,7 +7,7 @@ export class DbSelect07OrderBy<Result, Tables, CTX> extends DbSelect08Limit<Resu
         TableRef extends string & keyof Tables,
         Str extends string & keyof Result
     >(
-        ...items: OrderByStructure<(Str | Value<TableRef, string | unknown, string | number>), "asc" | "ASC" | "desc" | "DESC">
+        ...items: OrderByStructure<(Str | Expr<TableRef, string | unknown, string | number>), "asc" | "ASC" | "desc" | "DESC">
     ): DbSelect08Limit<Result, CTX> {
         this.builder.orderBy(items as any);
         return new DbSelect08Limit(this.builder);

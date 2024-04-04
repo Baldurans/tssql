@@ -1,4 +1,4 @@
-import {AnyValue, isTableReferenced, SQL_BOOL, Key, Value} from "../Types";
+import {AnyExpr, isTableReferenced, SQL_BOOL, Key, Expr} from "../Types";
 import {DbSelect} from "./DbSelect";
 import {DbSelect05GroupBy} from "./DbSelect05GroupBy";
 
@@ -55,12 +55,12 @@ export class DbSelect04Where<Result, Tables, CTX> extends DbSelect<CTX> {
     ): DbSelect05GroupBy<Result, Tables, CTX> {
 
         for (let i = 0; i < cols.length; i++) {
-            this.builder.where(cols[i] as unknown as AnyValue)
+            this.builder.where(cols[i] as unknown as AnyExpr)
         }
         return new DbSelect05GroupBy(this.builder)
     }
 }
 
-type C<Tables, T extends string> = isTableReferenced<Tables, Key<T>, Value<T, unknown, SQL_BOOL>>
+type C<Tables, T extends string> = isTableReferenced<Tables, Key<T>, Expr<T, unknown, SQL_BOOL>>
 
 

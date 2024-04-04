@@ -1,4 +1,4 @@
-import {AliasedTable, NOT_REFERENCED, Value} from "../Types";
+import {AliasedTable, NOT_REFERENCED, Expr} from "../Types";
 import {SqlExpression} from "../SqlExpression";
 import {DbSelect} from "./DbSelect";
 import {DbUtility} from "../DbUtility";
@@ -10,7 +10,7 @@ export class DbSelect09Exec<Result, CTX> extends DbSelect<CTX> {
 
     public asScalar<Alias extends string>(
         alias: Alias & ScalarSubQueryAllowsOnlyOneColumn<Alias, Result> extends never ? "Scalar subquery allows only 1 column!" : Alias
-    ): Value<null, Alias, Result[keyof Result]> {
+    ): Expr<null, Alias, Result[keyof Result]> {
         return SqlExpression.create("(\n" + this.builder.toString(2) + TAB + ")", alias);
     }
 

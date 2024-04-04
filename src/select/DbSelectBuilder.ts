@@ -1,7 +1,7 @@
 import {DbTableDefinition} from "../Db";
 import {Sql} from "../Sql";
 import {SqlExpression} from "../SqlExpression";
-import {AnyAliasedTableDef, AnyValue} from "../Types";
+import {AnyAliasedTableDef, AnyExpr} from "../Types";
 import {DbUtility} from "../DbUtility";
 import {OrderByStructure} from "./DbSelect07OrderBy";
 
@@ -77,7 +77,7 @@ export class DbSelectBuilder<CTX> {
         this._forUpdate = true;
     }
 
-    public join(joinType: "JOIN" | "LEFT JOIN", table: AnyAliasedTableDef, condition: AnyValue): void {
+    public join(joinType: "JOIN" | "LEFT JOIN", table: AnyAliasedTableDef, condition: AnyExpr): void {
         const sql = this._withQueries.has(table[DbUtility.SQL_ALIAS]) ? Sql.escapeId(table[DbUtility.SQL_ALIAS]) : table[DbUtility.SQL_EXPRESSION] + " as " + Sql.escapeId(table[DbUtility.SQL_ALIAS])
         this._joins.push(joinType + " " + sql + " ON (" + condition.expression + ")")
         return this as any;
@@ -87,7 +87,7 @@ export class DbSelectBuilder<CTX> {
         this._distinct = true;
     }
 
-    public columns(cols: AnyValue[]): void {
+    public columns(cols: AnyExpr[]): void {
         const columns = cols as unknown as SqlExpression<string, string, any>[]
         for (let i = 0; i < columns.length; i++) {
             const col = columns[i];
@@ -96,26 +96,26 @@ export class DbSelectBuilder<CTX> {
         }
     }
 
-    public where(col: AnyValue): void {
+    public where(col: AnyExpr): void {
         if (col !== undefined) {
             this._where.push(col.expression)
         }
     }
 
-    public groupBy(items: (string | AnyValue)[]): void {
+    public groupBy(items: (string | AnyExpr)[]): void {
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
             this._groupBy.push(typeof item === "string" ? item : item.expression)
         }
     }
 
-    public having(col: AnyValue): void {
+    public having(col: AnyExpr): void {
         if (col !== undefined) {
             this._having.push(col.expression)
         }
     }
 
-    public orderBy(items: OrderByStructure<string | AnyValue, "asc" | "ASC" | "desc" | "DESC">): void {
+    public orderBy(items: OrderByStructure<string | AnyExpr, "asc" | "ASC" | "desc" | "DESC">): void {
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
             if (item === "asc" || item === "ASC" || item === "desc" || item === "DESC") {
