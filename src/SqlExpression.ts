@@ -1,4 +1,4 @@
-import {COMPARISONS, RuntimeValue, SQL_BOOL, Value} from "./Types";
+import {COMPARISON_SIGNS, RuntimeValue, SQL_BOOL, Value} from "./Types";
 import {SQL} from "./SQL";
 
 export class SqlExpression<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> implements RuntimeValue<TableRef, Name, Type> {
@@ -40,12 +40,12 @@ export class SqlExpression<TableRef extends string, Name extends string | unknow
         return SQL.notNull(this.asValue());
     }
 
-    public eq(value: Type): Value<TableRef, unknown, SQL_BOOL> {
+    public is(value: Type): Value<TableRef, unknown, SQL_BOOL> {
         return SQL.compare(this.asValue(), "=", value);
     }
 
-    public eqc<TableRef2 extends string, Type1>(col: Value<TableRef2, string | unknown, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return SQL.comparec(this.asValue(), "=", col);
+    public eq<TableRef2 extends string, Type1>(col: Value<TableRef2, string | unknown, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return SQL.compareCol(this.asValue(), "=", col);
     }
 
     public gt(value: Type): Value<TableRef, unknown, SQL_BOOL> {
@@ -80,12 +80,12 @@ export class SqlExpression<TableRef extends string, Name extends string | unknow
         return SQL.compare(this.asValue(), "<=", col);
     }
 
-    public compare(op: COMPARISONS, value: Type): Value<TableRef, unknown, SQL_BOOL> {
+    public compare(op: COMPARISON_SIGNS, value: Type): Value<TableRef, unknown, SQL_BOOL> {
         return SQL.compare(this.asValue(), op, value)
     }
 
-    public comparec<TableRef2 extends string>(op: COMPARISONS, col2: Value<TableRef2, string | unknown, Type>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return SQL.comparec(this.asValue(), op, col2)
+    public comparec<TableRef2 extends string>(op: COMPARISON_SIGNS, col2: Value<TableRef2, string | unknown, Type>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return SQL.compareCol(this.asValue(), op, col2)
     }
 
     public like(value: string): Value<TableRef, unknown, SQL_BOOL> {

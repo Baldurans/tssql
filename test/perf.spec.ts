@@ -19,14 +19,14 @@ test("simple", async () => {
             .join(c2, c2.id, c.id)
             .distinct()
             .columns(
-                db.uses(c).select().from(s).columns(s.id).where(s.id.eqc(c.id)).limit(10).asScalar("subColumn"),
+                db.uses(c).select().from(s).columns(s.id).where(s.id.eq(c.id)).limit(10).asScalar("subColumn"),
                 c.username,
                 c.id,
                 c.id.as("renamedId"),
                 SQL.null<string>().as("emptyValue"),
                 SQL.date(c.created).as("myDate"),
                 SQL.if(
-                    c.id.eq(10 as tUserId),
+                    c.id.is(10 as tUserId),
                     c.id,
                     c2.id
                 ).as("userIdFromIf"),
@@ -42,7 +42,7 @@ test("simple", async () => {
                 ).as("and")
             )
             .where(SQL.and(
-                c.id.eq(input.userId),
+                c.id.is(input.userId),
                 c.username.isNull(),
                 c.username.isNull(),
                 c.username.notNull()

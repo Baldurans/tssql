@@ -17,9 +17,9 @@ test("simple", async () => {
         .columns(s.id)
         //.where(["a","b"])
         .where(
-            c.id.eqc(c.id),
-            s.id.eqc(c.id),
-            c.id.eqc(c.id)
+            c.id.eq(c.id),
+            s.id.eq(c.id),
+            c.id.eq(c.id)
         )
         .noLimit()
         .asScalar("subColumn");
@@ -31,8 +31,8 @@ test("simple", async () => {
         .from(s)
         .columns(s.id, s.id.as("subIdRenamed"))
         .where(
-            s.id.eqc(c.id),
-            c2.id.eqc(s.id)
+            s.id.eq(c.id),
+            c2.id.eq(s.id)
         )
         .noLimit()
         .as("joinSub")
@@ -48,9 +48,9 @@ test("simple", async () => {
             scalarSub,
         )
         .where(
-            c.id.eq(input.userId),
+            c.id.is(input.userId),
             c.username.isNull(),
-            c.id.eq(input.userId)
+            c.id.is(input.userId)
         )
         .noLimit()
 

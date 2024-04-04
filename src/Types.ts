@@ -16,8 +16,8 @@ export type RuntimeValue<TableRef extends string, Name extends string | unknown,
 
     isNull: () => Value<TableRef, unknown, SQL_BOOL>
     notNull: () => Value<TableRef, unknown, SQL_BOOL>
-    eq: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
-    eqc: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
+    is: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
+    eq: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
     // GT: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
     // GTC: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
     // GTE: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
@@ -26,8 +26,8 @@ export type RuntimeValue<TableRef extends string, Name extends string | unknown,
     // LTC: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
     // LTE: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
     // LTEC: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
-    compare: (op: COMPARISONS, value: Type) => Value<TableRef, unknown, SQL_BOOL>
-    comparec: <TableRef2 extends string>(op: COMPARISONS, col2: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
+    compare: (op: COMPARISON_SIGNS, value: Type) => Value<TableRef, unknown, SQL_BOOL>
+    comparec: <TableRef2 extends string>(op: COMPARISON_SIGNS, col2: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
     like: (value: string) => Value<TableRef, unknown, SQL_BOOL>
     startsWith: (value: string) => Value<TableRef, unknown, SQL_BOOL>
     endsWith: (value: string) => Value<TableRef, unknown, SQL_BOOL>
@@ -89,8 +89,11 @@ export type ExtractObj<Columns extends Value<any, string, any>[]> = {
     [K in Columns[number]['nameAs']]: Extract<Columns[number], { nameAs: K }>['type']
 };
 
-export type COMPARISONS = "=" | ">=" | ">" | "<" | "<=" | "LIKE"
+export type COMPARISON_SIGNS = "!=" | "=" | ">=" | ">" | "<" | "<=" | "LIKE" | "NOT LIKE"
 
+const ComparisonOperandsLookup: Set<COMPARISON_SIGNS> = new Set(["!=", "=", ">=", ">", "<", "<=", "LIKE", "NOT LIKE"] as const)
+
+export {ComparisonOperandsLookup}
 /**
  * Anyone finds a better way, please write it. Rules are as follows:
  * 1) A is always first
