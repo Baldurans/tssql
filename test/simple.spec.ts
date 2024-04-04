@@ -66,7 +66,7 @@ test("simple", async () => {
         res.emptyValue,
         res.userIdFromIf,
         res.or,
-        res.and
+        res.and,
     )
 
 });

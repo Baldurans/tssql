@@ -106,7 +106,7 @@ export class SQL {
     public static contains<TableRef extends string, Type extends string | number>(col: (Value<TableRef, string | unknown, Type>), value: string): Value<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(col.expression + " LIKE " + SQL.escape("%" + value + "%"));
     }
-
+    
     /**
      * Does LIKE X% search.
      */

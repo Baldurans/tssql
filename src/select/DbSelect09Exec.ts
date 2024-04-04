@@ -25,10 +25,11 @@ export class DbSelect09Exec<Result, UsedTables, LastType, CTX> extends DbSelect<
     }
 
     public async exec(ctx: CTX): Promise<Result[]> {
-        return this.builder.exec(ctx);
+        return await this.builder.exec(ctx);
     }
 
-    public async execOne<ExpectedResult>(ctx: CTX): Promise<Result> {
-        return this.builder.execOne(ctx)
+    public async execOne<ExpectedResult>(ctx: CTX): Promise<Result | undefined> {
+        return (await this.exec(ctx))?.[0];
     }
+
 }
