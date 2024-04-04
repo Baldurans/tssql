@@ -5,30 +5,31 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
 
     public join<
         Alias extends string,
-        TableName extends string,
-        TableRef extends `${TableName} as ${Alias}`,
-        RefAlias extends NOT_REFERENCED | string & keyof AliasesFromWith,
-        ColTableRef extends string,
+        TableRef extends `${string} as ${Alias}`,
+        RefAlias extends NOT_REFERENCED | string,
+        ColTableRef extends string
     >(
-        table: isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>,
-        condition: TableRef extends ColTableRef ? isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>> : "Join condition should use columns from the joined table!"
+        table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
+        condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
     ): DbSelectJoin<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX> {
-        this.builder.join("JOIN", table as AnyAliasedTableDef, condition as any)
+        this.builder.join("LEFT JOIN", table as AnyAliasedTableDef, condition as any)
         return this as any;
     }
 
     public leftJoin<
         Alias extends string,
-        TableName extends string,
-        TableRef extends `${TableName} as ${Alias}`,
-        RefAlias extends NOT_REFERENCED | string & keyof AliasesFromWith,
-        ColTableRef extends string,
+        TableRef extends `${string} as ${Alias}`,
+        RefAlias extends NOT_REFERENCED | string,
+        ColTableRef extends string
     >(
-        table: isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>,
-        condition: TableRef extends ColTableRef ? isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>> : "Join condition should use columns from the joined table!"
+        table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
+        condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
     ): DbSelectJoin<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX> {
         this.builder.join("LEFT JOIN", table as AnyAliasedTableDef, condition as any)
         return this as any;
     }
 }
 
+type isConditionUsingJoinedTable<TableRef, ColTableRef, OUT> = TableRef extends ColTableRef ? OUT : "Join condition should use columns from the joined table!"
+
+type isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, OUT> = RefAlias extends NOT_REFERENCED | string & keyof AliasesFromWith ? OUT : `Alias '${RefAlias extends string ? RefAlias : RefAlias extends NOT_REFERENCED ? "NOT_REFERENCED" : "???"}' is not defined by any of the with queries!`

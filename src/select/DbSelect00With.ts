@@ -1,4 +1,4 @@
-import {AliasedTable, AnyAliasedTableDef, isAliasAlreadyUsed, NOT_REFERENCED, Key} from "../Types";
+import {AliasedTable, AnyAliasedTableDef, isAliasAlreadyUsed, Key, NOT_REFERENCED} from "../Types";
 import {DbSelect01From} from "./DbSelect01From";
 import {DbSelect} from "./DbSelect";
 
@@ -6,8 +6,7 @@ export class DbSelect00With<AliasesFromWith, CTX> extends DbSelect<CTX> {
 
     public with<
         Alias extends string,
-        TableName extends string,
-        TableRef extends `${TableName} as ${Alias}`,
+        TableRef extends `${string} as ${Alias}`,
         Columns
     >(
         table: isAliasAlreadyUsed<AliasesFromWith, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>

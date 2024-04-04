@@ -5,9 +5,8 @@ import {DbSelect} from "./DbSelect";
 export class DbSelect00Uses<Aliases, Tables, CTX> extends DbSelect<CTX> {
 
     public uses<
-        TableName extends string,
         Alias extends string,
-        TableRef extends `${TableName} as ${Alias}`,
+        TableRef extends `${string} as ${Alias}`,
         Columns
     >(
         table: isAliasAlreadyUsed<Aliases, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>
