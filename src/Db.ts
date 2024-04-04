@@ -1,5 +1,5 @@
 import {Sql} from "./Sql";
-import {AliasedTable, NOT_REFERENCED, TrueRecord} from "./Types";
+import {AliasedTable, NOT_REFERENCED, Key} from "./Types";
 import {DbSelect00Uses} from "./select/DbSelect00Uses";
 import {DbSelect00With} from "./select/DbSelect00With";
 import {DbSelectBuilder} from "./select/DbSelectBuilder";
@@ -27,7 +27,7 @@ export abstract class Db<CTX> {
         Columns
     >(
         table: AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>
-    ): DbSelect00Uses<TrueRecord<Alias>, TrueRecord<TableRef>, CTX> {
+    ): DbSelect00Uses<Key<Alias>, Key<TableRef>, CTX> {
         return new DbSelect00Uses(new DbSelectBuilder<CTX>(this.exec));
     }
 
@@ -38,11 +38,11 @@ export abstract class Db<CTX> {
         Columns
     >(
         table: AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>
-    ): DbSelect00With<TrueRecord<Alias>, CTX> {
+    ): DbSelect00With<Key<Alias>, CTX> {
         return new DbSelect00With(new DbSelectBuilder<CTX>(this.exec)).with(table as any);
     }
 
-    public union<Result>(table: DbSelect09Exec<Result, any, CTX>): DbSelect00Union<Result, CTX> {
+    public union<Result>(table: DbSelect09Exec<Result, CTX>): DbSelect00Union<Result, CTX> {
         return new DbSelect00Union<Result, CTX>(new DbSelectBuilder<CTX>(this.exec)).all(table as any);
     }
 

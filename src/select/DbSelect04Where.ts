@@ -1,4 +1,4 @@
-import {AnyValue, CheckIfAliasedTablesAreReferenced, SQL_BOOL, TrueRecord, Value} from "../Types";
+import {AnyValue, isTableReferenced, SQL_BOOL, Key, Value} from "../Types";
 import {DbSelect} from "./DbSelect";
 import {DbSelect05GroupBy} from "./DbSelect05GroupBy";
 
@@ -61,6 +61,6 @@ export class DbSelect04Where<Result, Tables, CTX> extends DbSelect<CTX> {
     }
 }
 
-type C<Tables, T extends string> = CheckIfAliasedTablesAreReferenced<Tables, TrueRecord<T>, Value<T, unknown, SQL_BOOL>>
+type C<Tables, T extends string> = isTableReferenced<Tables, Key<T>, Value<T, unknown, SQL_BOOL>>
 
 

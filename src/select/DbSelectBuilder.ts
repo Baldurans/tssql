@@ -1,8 +1,9 @@
 import {DbTableDefinition} from "../Db";
 import {Sql} from "../Sql";
 import {SqlExpression} from "../SqlExpression";
-import {AnyAliasedTableDef, AnyValue, OrderByStructure} from "../Types";
+import {AnyAliasedTableDef, AnyValue} from "../Types";
 import {DbUtility} from "../DbUtility";
+import {OrderByStructure} from "./DbSelect07OrderBy";
 
 const TAB = "  ";
 
@@ -76,9 +77,9 @@ export class DbSelectBuilder<CTX> {
         this._forUpdate = true;
     }
 
-    public join(joinType: "JOIN" | "LEFT JOIN", table: AnyAliasedTableDef, field1: AnyValue): void {
+    public join(joinType: "JOIN" | "LEFT JOIN", table: AnyAliasedTableDef, condition: AnyValue): void {
         const sql = this._withQueries.has(table[DbUtility.SQL_ALIAS]) ? Sql.escapeId(table[DbUtility.SQL_ALIAS]) : table[DbUtility.SQL_EXPRESSION] + " as " + Sql.escapeId(table[DbUtility.SQL_ALIAS])
-        this._joins.push(joinType + " " + sql + " ON (" + field1.expression + ")")
+        this._joins.push(joinType + " " + sql + " ON (" + condition.expression + ")")
         return this as any;
     }
 

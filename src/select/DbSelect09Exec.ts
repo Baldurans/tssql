@@ -1,4 +1,4 @@
-import {AliasedTable, NOT_REFERENCED, ScalarSubQueryAllowsOnlyOneColumn, Value} from "../Types";
+import {AliasedTable, NOT_REFERENCED, Value} from "../Types";
 import {SqlExpression} from "../SqlExpression";
 import {DbSelect} from "./DbSelect";
 import {DbUtility} from "../DbUtility";
@@ -35,3 +35,16 @@ export class DbSelect09Exec<Result, CTX> extends DbSelect<CTX> {
     }
 
 }
+
+
+/**
+ * Basically checks that Result would have only one column defined.
+ */
+type ScalarSubQueryAllowsOnlyOneColumn<Result, T, Keys extends keyof any = keyof T> =
+    Keys extends any
+        ? T extends Record<Keys, any>
+            ? Exclude<keyof T, Keys> extends never
+                ? Result
+                : never
+            : never
+        : never;

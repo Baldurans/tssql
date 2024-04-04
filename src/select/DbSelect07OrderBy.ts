@@ -1,4 +1,4 @@
-import {OrderByStructure, Value} from "../Types";
+import {Value} from "../Types";
 import {DbSelect08Limit} from "./DbSelect08Limit";
 
 export class DbSelect07OrderBy<Result, Tables, CTX> extends DbSelect08Limit<Result, CTX> {
@@ -13,3 +13,38 @@ export class DbSelect07OrderBy<Result, Tables, CTX> extends DbSelect08Limit<Resu
         return new DbSelect08Limit(this.builder);
     }
 }
+
+/**
+ * Anyone finds a better way, please write it. Rules are as follows:
+ * 1) A is always first
+ * 2) B can only appear after A
+ */
+export type OrderByStructure<A, B> =
+    [A]
+    | [A, A]
+    | [A, B]
+    | [A, A, A]
+    | [A, A, B]
+    | [A, B, A]
+    | [A, A, A, A]
+    | [A, A, A, B]
+    | [A, A, B, A]
+    | [A, B, A, A]
+    | [A, B, A, B]
+    | [A, A, A, A, A]
+    | [A, A, A, A, B]
+    | [A, A, A, B, A]
+    | [A, A, B, A, A]
+    | [A, B, A, A, A]
+    | [A, B, A, A, B]
+    | [A, B, A, B, A]
+    | [A, A, A, A, A, A]
+    | [A, A, A, A, A, B]
+    | [A, A, A, A, B, A]
+    | [A, A, A, B, A, A]
+    | [A, A, B, A, A, A]
+    | [A, B, A, A, A, A]
+    | [A, B, A, A, A, B]
+    | [A, B, A, A, B, A]
+    | [A, B, A, B, A, A]
+    | [A, B, A, B, A, B]
