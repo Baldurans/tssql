@@ -14,9 +14,9 @@ export class DbSelect03Columns<Result, Tables, CTX> extends DbSelect<CTX> {
     >(
         //...columns: Columns - this will enable seeing sources of Result object properties.
         ...columns: CheckForDuplicateColumns<Columns, Result>
-    ): DbSelect04Where<Result & ExtractObj<Columns>, Tables, Columns[number]["type"], CTX> {
+    ): DbSelect04Where<Result & ExtractObj<Columns>, Tables, CTX> {
         this.builder.columns(columns as unknown as AnyValue[]);
         return new DbSelect04Where(this.builder);
     }
 
-}
+}5

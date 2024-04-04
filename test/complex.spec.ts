@@ -142,6 +142,7 @@ test("complex", async () => {
         res.username,  // type string
         res.renamedId,  // type tUserId
         res.myDate, // type vDateTime
+        res.someItem, // tUserId
         res.sId,
         res.subIdRenamedAgain,
         res.subColumn,
