@@ -15,7 +15,7 @@ export class DbSelect03Columns<Result, UsedAliases, WithAliases, Tables, UsedTab
         //...columns: Columns - this will enable seeing sources of Result object properties.
         ...columns: CheckForDuplicateColumns<Columns, Result>
     ): DbSelect04Where<Result & ExtractObj<Columns>, UsedAliases, WithAliases, Tables, UsedTables, Columns[number]["type"], CTX> {
-        this.builder.columns(columns as AnyValue[]);
+        this.builder.columns(columns as unknown as AnyValue[]);
         return new DbSelect04Where(this.builder);
     }
 

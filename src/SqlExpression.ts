@@ -1,4 +1,4 @@
-import {COMPARISONS, RuntimeValue, SQL_BOOL, TypeError, Value, vDate, vDateTime} from "./Types";
+import {COMPARISONS, RuntimeValue, SQL_BOOL, Value} from "./Types";
 import {SQL} from "./SQL";
 
 export class SqlExpression<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> implements RuntimeValue<TableRef, Name, Type> {
@@ -108,12 +108,12 @@ export class SqlExpression<TableRef extends string, Name extends string | unknow
     // MANIPULATION
     // -------------------------------------------------------------------
 
-    public asDate = (() => {
+    public asDate() {
         return SQL.date(this.asValue()).as(this.nameAs as any);
-    }) as () => Value<Type extends vDateTime | vDate ? TableRef : TypeError<Type, "vDate">, Name, vDate>
+    }
 
-    public asDateTime = (() => {
-        SQL.datetime(this.asValue()).as(this.nameAs as any);
-    }) as () => Value<Type extends vDateTime | vDate ? TableRef : TypeError<Type, "vDateTime">, Name, vDateTime>
+    public asDateTime() {
+        return SQL.datetime(this.asValue()).as(this.nameAs as any);
+    }
 
 }

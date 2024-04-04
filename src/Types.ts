@@ -32,8 +32,8 @@ export type RuntimeValue<TableRef extends string, Name extends string | unknown,
     startsWith: (value: string) => Value<TableRef, unknown, SQL_BOOL>
     endsWith: (value: string) => Value<TableRef, unknown, SQL_BOOL>
     contains: (value: string) => Value<TableRef, unknown, SQL_BOOL>
-    asDate: () => Value<Type extends vDateTime | vDate ? TableRef : TypeError<Type, "vDate">, Name, vDate>
-    asDateTime: () => Value<Type extends vDateTime | vDate ? TableRef : TypeError<Type, "vDateTime">, Name, vDateTime>
+    asDate: () => Value<TableRef, Name, vDate>
+    asDateTime: () => Value<TableRef, Name, vDateTime>
 }
 
 export type AnyBoolValue<TableRef extends string> = Value<TableRef, string | unknown, SQL_BOOL>;
@@ -63,7 +63,6 @@ export type vDate = string & { vDate: true }
  */
 export type vDateTime = string & { vDateTime: true }
 
-export type TypeError<Type, To extends string> = `Can't cast '${Type extends string | number | boolean ? `${Type}` : "<Unknown>"}' to '${To}'`
 /**
  * Check if Alias ("c") already exists in UsedAliases=(R<"c"> & ...)
  */
