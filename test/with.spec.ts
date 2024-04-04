@@ -1,6 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {SQL} from "../src";
+import {Sql} from "../src";
 
 test("with", async () => {
 
@@ -46,7 +46,7 @@ test("with", async () => {
             pA2.id.as("aa2"),
             pB1.id.as("aa3"),
         )
-        .where(SQL.and(
+        .where(Sql.and(
             c.id.is(input.userId),
             pB1.id.EQ(input.userId)
         ))

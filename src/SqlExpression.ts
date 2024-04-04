@@ -1,5 +1,5 @@
 import {COMPARISON_SIGNS, RuntimeValue, SQL_BOOL, Value} from "./Types";
-import {SQL} from "./SQL";
+import {Sql} from "./Sql";
 
 export class SqlExpression<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> implements RuntimeValue<TableRef, Name, Type> {
 
@@ -33,75 +33,75 @@ export class SqlExpression<TableRef extends string, Name extends string | unknow
     // -------------------------------------------------------------------
 
     public isNull(): Value<TableRef, unknown, SQL_BOOL> {
-        return SQL.isNull(this.asValue());
+        return Sql.isNull(this.asValue());
     }
 
     public notNull(): Value<TableRef, unknown, SQL_BOOL> {
-        return SQL.notNull(this.asValue());
+        return Sql.notNull(this.asValue());
     }
 
     public is(value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SQL.compare(this.asValue(), "=", value);
+        return Sql.compare(this.asValue(), "=", value);
     }
 
     public eq<TableRef2 extends string, Type1>(col: Value<TableRef2, string | unknown, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return SQL.compareCol(this.asValue(), "=", col);
+        return Sql.compareCol(this.asValue(), "=", col);
     }
 
     public gt(value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SQL.compare(this.asValue(), ">", value);
+        return Sql.compare(this.asValue(), ">", value);
     }
 
     public gtc<TableRef2 extends string, Type1>(col: Value<TableRef2, string | unknown, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return SQL.compare(this.asValue(), ">", col);
+        return Sql.compare(this.asValue(), ">", col);
     }
 
     public gte(value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SQL.compare(this.asValue(), ">=", value);
+        return Sql.compare(this.asValue(), ">=", value);
     }
 
     public gtec<TableRef2 extends string, Type1>(col: Value<TableRef2, string | unknown, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return SQL.compare(this.asValue(), ">=", col);
+        return Sql.compare(this.asValue(), ">=", col);
     }
 
     public lt(value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SQL.compare(this.asValue(), "<", value);
+        return Sql.compare(this.asValue(), "<", value);
     }
 
     public ltc<TableRef2 extends string, Type1>(col: Value<TableRef2, string | unknown, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return SQL.compare(this.asValue(), "<", col);
+        return Sql.compare(this.asValue(), "<", col);
     }
 
     public lte(value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SQL.compare(this.asValue(), "<=", value);
+        return Sql.compare(this.asValue(), "<=", value);
     }
 
     public ltec<TableRef2 extends string, Type1>(col: Value<TableRef2, string | unknown, Type1>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return SQL.compare(this.asValue(), "<=", col);
+        return Sql.compare(this.asValue(), "<=", col);
     }
 
     public compare(op: COMPARISON_SIGNS, value: Type): Value<TableRef, unknown, SQL_BOOL> {
-        return SQL.compare(this.asValue(), op, value)
+        return Sql.compare(this.asValue(), op, value)
     }
 
     public comparec<TableRef2 extends string>(op: COMPARISON_SIGNS, col2: Value<TableRef2, string | unknown, Type>): Value<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return SQL.compareCol(this.asValue(), op, col2)
+        return Sql.compareCol(this.asValue(), op, col2)
     }
 
     public like(value: string): Value<TableRef, unknown, SQL_BOOL> {
-        return SQL.like(this.asValue(), value);
+        return Sql.like(this.asValue(), value);
     }
 
     public contains(value: string): Value<TableRef, unknown, SQL_BOOL> {
-        return SQL.contains(this.asValue(), value);
+        return Sql.contains(this.asValue(), value);
     }
 
     public startsWith(value: string): Value<TableRef, unknown, SQL_BOOL> {
-        return SQL.startsWith(this.asValue(), value);
+        return Sql.startsWith(this.asValue(), value);
     }
 
     public endsWith(value: string): Value<TableRef, unknown, SQL_BOOL> {
-        return SQL.endsWith(this.asValue(), value);
+        return Sql.endsWith(this.asValue(), value);
     }
 
     // -------------------------------------------------------------------
@@ -109,11 +109,11 @@ export class SqlExpression<TableRef extends string, Name extends string | unknow
     // -------------------------------------------------------------------
 
     public asDate() {
-        return SQL.date(this.asValue()).as(this.nameAs as any);
+        return Sql.date(this.asValue()).as(this.nameAs as any);
     }
 
     public asDateTime() {
-        return SQL.datetime(this.asValue()).as(this.nameAs as any);
+        return Sql.datetime(this.asValue()).as(this.nameAs as any);
     }
 
 }

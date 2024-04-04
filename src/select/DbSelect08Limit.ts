@@ -12,4 +12,8 @@ export class DbSelect08Limit<Result, UsedTables, LastType, CTX> extends DbSelect
         return new DbSelect09Exec(this.builder);
     }
 
+    public limit1(): DbSelect09Exec<Result, UsedTables, LastType, CTX> {
+        return this.limit(1);
+    }
+
 }

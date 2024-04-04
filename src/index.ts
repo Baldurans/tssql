@@ -1,15 +1,15 @@
 import {Db} from "./Db";
-import {SQL} from "./SQL";
+import {Sql} from "./Sql";
 import {SqlExpression} from "./SqlExpression";
 
 module.exports = {
     Db: Db,
-    SQL: SQL,
+    Sql: Sql,
     SqlExpression: SqlExpression
 }
 
 
 export * from './Db';
-export * from './SQL';
+export * from './Sql';
 export * from './SqlExpression';
 export * from './Types';

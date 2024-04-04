@@ -1,6 +1,6 @@
 import {AliasedTable, NOT_REFERENCED} from "./Types";
 import {SqlExpression} from "./SqlExpression";
-import {SQL} from "./SQL";
+import {Sql} from "./Sql";
 import {DbTableDefinition} from "./Db";
 
 export class DbUtility {
@@ -20,7 +20,7 @@ export class DbUtility {
             //createRef: (table: any, newAlias: any) => this.createRef(table, newAlias)
         } as any;
         for (const columnName in columns) {
-            (tbl as any)[columnName] = new SqlExpression(SQL.escapeId(alias) + "." + SQL.escapeId(columnName), columnName)
+            (tbl as any)[columnName] = new SqlExpression(Sql.escapeId(alias) + "." + Sql.escapeId(columnName), columnName)
         }
         Object.freeze(tbl)
         return tbl

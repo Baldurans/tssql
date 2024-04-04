@@ -1,4 +1,4 @@
-import {SQL} from "./SQL";
+import {Sql} from "./Sql";
 import {AliasedTable, NOT_REFERENCED, TrueRecord} from "./Types";
 import {DbSelect00Uses} from "./select/DbSelect00Uses";
 import {DbSelect00With} from "./select/DbSelect00With";
@@ -57,14 +57,14 @@ export abstract class Db<CTX> {
         for (const k in table) {
             (definition as any)[k] = (table as any)[k];
         }
-        return DbUtility.defineDbTable(SQL.escapeId(table[DbUtility.SQL_ALIAS]), newAlias, definition) as any;
+        return DbUtility.defineDbTable(Sql.escapeId(table[DbUtility.SQL_ALIAS]), newAlias, definition) as any;
     }
 
     protected getDbTableAliasFunction<TableName extends string, Entity>(
         tableName: TableName,
         columns: DbTableDefinition<Entity>
     ): <Alias extends string>(alias: Alias) => AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NOT_REFERENCED> {
-        return <Alias extends string>(alias: Alias) => DbUtility.defineDbTable<TableName, Alias, Entity>(SQL.escapeId(tableName) as TableName, alias, columns);
+        return <Alias extends string>(alias: Alias) => DbUtility.defineDbTable<TableName, Alias, Entity>(Sql.escapeId(tableName) as TableName, alias, columns);
     }
 
 }

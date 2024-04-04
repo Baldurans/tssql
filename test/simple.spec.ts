@@ -1,6 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {SQL} from "../src";
+import {Sql} from "../src";
 
 enum MyEnum {
     aa = "aa",
@@ -30,28 +30,28 @@ test("simple", async () => {
             c.username,
             c.id,
             c.id.as("renamedId"),
-            SQL.null<string>().as("emptyValue"),
-            SQL.date(c.created).as("myDate"),
+            Sql.null<string>().as("emptyValue"),
+            Sql.date(c.created).as("myDate"),
             c.created.asDate(),
-            SQL.literal(MyEnum.aa).as("enumValue"),
-            SQL.literal(10).as("literal"),
-            SQL.if(
+            Sql.literal(MyEnum.aa).as("enumValue"),
+            Sql.literal(10).as("literal"),
+            Sql.if(
                 c.id.is(10 as tUserId),
                 c.id,
                 c2.id
             ).as("userIdFromIf"),
-            SQL.or(
+            Sql.or(
                 c.username.isNull(),
                 c.username.notNull(),
                 c.username.isNull()
             ).as("or"),
-            SQL.and(
+            Sql.and(
                 c.username.isNull(),
                 c.username.notNull(),
                 c2.username.isNull()
             ).as("and")
         )
-        .where(SQL.and(
+        .where(Sql.and(
             c.id.is(input.userId),
             c.username.isNull(),
             val && c.username.isNull(),

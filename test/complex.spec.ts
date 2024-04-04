@@ -1,5 +1,5 @@
 import {tUserId} from "./tables/User";
-import {SQL} from "../src/SQL";
+import {Sql} from "../src/Sql";
 import {MyDb} from "./tables/MyDb";
 import {SQL_BOOL, vDate} from "../src";
 
@@ -48,11 +48,11 @@ test("complex", async () => {
             s.username,
             s.id.as("subIdRenamed")
         )
-        .where(SQL.eq(s.id, c.id))
+        .where(Sql.eq(s.id, c.id))
         .noLimit()
         .as("sub")
 
-    const expr = SQL.veryDangerousUnsafeExpression("IF(", c.username, " > ", c2.username, ",", c.id, ",", c2.id, ")").cast<tUserId>();
+    const expr = Sql.veryDangerousUnsafeExpression("IF(", c.username, " > ", c2.username, ",", c.id, ",", c2.id, ")").cast<tUserId>();
 
 
     const query = db
@@ -73,17 +73,17 @@ test("complex", async () => {
         //.leftJoin(withSub2Sub1, withSub2Sub1.id, c.id) // ____ERROR, not referenced in with part.
 
         .columns(
-            db.uses(c).select().from(s).columns(s.id).where(SQL.eq(c.id, s.id)).noLimit().asScalar("someItem"),
+            db.uses(c).select().from(s).columns(s.id).where(Sql.eq(c.id, s.id)).noLimit().asScalar("someItem"),
             c.username,
             c.id,
             subQueryTable.id.as("sId"),
             subQueryTable.subIdRenamed.as("subIdRenamedAgain"),
             c.id.as("renamedId"),
-            SQL.date(c.created).as("myDate"),
+            Sql.date(c.created).as("myDate"),
             c.id.comparec("<=", c2.id).as("expr1"),
             c.id.comparec(">", c2.id).as("expr2"),
             c.id.eq(expr).as("expr3"),
-            SQL.if(c.id.eq(c2.id), c.username, c2.username).cast<string>().as("expr4"),
+            Sql.if(c.id.eq(c2.id), c.username, c2.username).cast<string>().as("expr4"),
 
             withSubSub1.subIdRenamed.as("withSubSub1"),
             withSubSub2.subIdRenamed.as("withSubSub2"),
@@ -111,11 +111,11 @@ test("complex", async () => {
 
             c.id.eq(c2.id),
 
-            SQL.date(c.created).compare(">=", "2024.03.09" as vDate),
+            Sql.date(c.created).compare(">=", "2024.03.09" as vDate),
             c.id.is(10 as tUserId),
             c.id.eq(c2.id),
             c.id.comparec(">=", c2.id),
-            SQL.veryDangerousUnsafeExpression(c.id, " > ", c2.id).cast<SQL_BOOL>(),
+            Sql.veryDangerousUnsafeExpression(c.id, " > ", c2.id).cast<SQL_BOOL>(),
             c.id.isNull()
         ) // c.id = 10
 

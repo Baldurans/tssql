@@ -48,6 +48,8 @@ export type AliasedTable<Alias extends string, TableRef extends string, Entity, 
     [K in keyof Entity]: Value<TableRef, K, Entity[K]>
 }
 
+export type AliasedTable2<Alias extends string, TableRef extends string, Entity> = AliasedTable<Alias, TableRef, Entity, any>
+
 export type AnyAliasedTableDef = AliasedTable<string, string, {}, string | NOT_REFERENCED>
 
 export type NOT_REFERENCED = { __not_referenced: true }

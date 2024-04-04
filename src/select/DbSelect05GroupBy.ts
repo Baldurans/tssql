@@ -1,6 +1,7 @@
 import {Value} from "../Types";
 import {DbSelect07OrderBy} from "./DbSelect07OrderBy";
 import {DbSelect06Having} from "./DbSelect06Having";
+import {DbSelect09Exec} from "./DbSelect09Exec";
 
 export class DbSelect05GroupBy<Result, Tables, UsedTables, LastType, CTX> extends DbSelect07OrderBy<Result, Tables, UsedTables, LastType, CTX> {
 
@@ -12,6 +13,11 @@ export class DbSelect05GroupBy<Result, Tables, UsedTables, LastType, CTX> extend
     ): DbSelect06Having<Result, Tables, UsedTables, LastType, CTX> {
         this.builder.groupBy(items as any);
         return new DbSelect06Having(this.builder);
+    }
+
+    public async execOne(ctx: CTX): Promise<Result | undefined> {
+        this.builder.limit(1);
+        return new DbSelect09Exec<Result, UsedTables, LastType, CTX>(this.builder).execOne(ctx)
     }
 
 }

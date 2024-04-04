@@ -1,5 +1,5 @@
 import {DbTableDefinition} from "../Db";
-import {SQL} from "../SQL";
+import {Sql} from "../Sql";
 import {SqlExpression} from "../SqlExpression";
 import {AnyAliasedTableDef, AnyValue, OrderByStructure} from "../Types";
 import {DbUtility} from "../DbUtility";
@@ -65,11 +65,11 @@ export class DbSelectBuilder<CTX> {
 
     public with(table: AnyAliasedTableDef): void {
         const alias = table[DbUtility.SQL_ALIAS]
-        this._withQueries.set(alias, SQL.escapeId(alias) + " AS " + table[DbUtility.SQL_EXPRESSION])
+        this._withQueries.set(alias, Sql.escapeId(alias) + " AS " + table[DbUtility.SQL_EXPRESSION])
     }
 
     public from(table: AnyAliasedTableDef): void {
-        this._from = table[DbUtility.SQL_EXPRESSION] + " as " + SQL.escapeId(table[DbUtility.SQL_ALIAS]);
+        this._from = table[DbUtility.SQL_EXPRESSION] + " as " + Sql.escapeId(table[DbUtility.SQL_ALIAS]);
     }
 
     public forUpdate() {
@@ -77,7 +77,7 @@ export class DbSelectBuilder<CTX> {
     }
 
     public join(joinType: "JOIN" | "LEFT JOIN", table: AnyAliasedTableDef, field1: AnyValue, field2: AnyValue): void {
-        const sql = this._withQueries.has(table[DbUtility.SQL_ALIAS]) ? SQL.escapeId(table[DbUtility.SQL_ALIAS]) : table[DbUtility.SQL_EXPRESSION] + " as " + SQL.escapeId(table[DbUtility.SQL_ALIAS])
+        const sql = this._withQueries.has(table[DbUtility.SQL_ALIAS]) ? Sql.escapeId(table[DbUtility.SQL_ALIAS]) : table[DbUtility.SQL_EXPRESSION] + " as " + Sql.escapeId(table[DbUtility.SQL_ALIAS])
         this._joins.push(joinType + " " + sql + " ON (" + field1.expression + " = " + field2.expression + ")")
         return this as any;
     }
@@ -90,7 +90,7 @@ export class DbSelectBuilder<CTX> {
         const columns = cols as unknown as SqlExpression<string, string, any>[]
         for (let i = 0; i < columns.length; i++) {
             const col = columns[i];
-            this._columns.push(col.expression + (col.nameAs ? " as " + SQL.escapeId(col.nameAs) : ""));
+            this._columns.push(col.expression + (col.nameAs ? " as " + Sql.escapeId(col.nameAs) : ""));
             (this._columnStruct as any)[col.nameAs] = true;
         }
     }
@@ -122,7 +122,7 @@ export class DbSelectBuilder<CTX> {
             } else if (typeof item === "string") {
                 this._orderBy.push(item)
             } else {
-                this._orderBy.push(item.nameAs ? SQL.escapeId(item.nameAs as any) : item.expression)
+                this._orderBy.push(item.nameAs ? Sql.escapeId(item.nameAs as any) : item.expression)
             }
         }
     }

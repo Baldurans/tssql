@@ -1,6 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {SQL} from "../src";
+import {Sql} from "../src";
 
 test("simple", async () => {
 
@@ -23,25 +23,25 @@ test("simple", async () => {
                 c.username,
                 c.id,
                 c.id.as("renamedId"),
-                SQL.null<string>().as("emptyValue"),
-                SQL.date(c.created).as("myDate"),
-                SQL.if(
+                Sql.null<string>().as("emptyValue"),
+                Sql.date(c.created).as("myDate"),
+                Sql.if(
                     c.id.is(10 as tUserId),
                     c.id,
                     c2.id
                 ).as("userIdFromIf"),
-                SQL.or(
+                Sql.or(
                     c.username.isNull(),
                     c.username.notNull(),
                     c.username.isNull()
                 ).as("or"),
-                SQL.and(
+                Sql.and(
                     c.username.isNull(),
                     c.username.notNull(),
                     c2.username.isNull()
                 ).as("and")
             )
-            .where(SQL.and(
+            .where(Sql.and(
                 c.id.is(input.userId),
                 c.username.isNull(),
                 c.username.isNull(),
