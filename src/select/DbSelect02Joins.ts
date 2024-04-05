@@ -1,4 +1,4 @@
-import {AliasedTable, AnyAliasedTableDef, Expr, isAliasAlreadyUsed, isTableReferenced, Key, NotUsingWithPart, SQL_BOOL} from "../Types";
+import {AliasedTable, AnyAliasedTableDef, Expr, isAliasAlreadyUsed, isTableReferenced, NotUsingWithPart, SQL_BOOL} from "../Types";
 import {DbSelect03Columns} from "./DbSelect03Columns";
 
 export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelect03Columns<{}, Tables, CTX> {
@@ -10,8 +10,8 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
         ColTableRef extends string
     >(
         table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases | AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
-        condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
-    ): DbSelectJoin<Aliases | Alias, AliasesFromWith, Tables & Key<TableRef>, CTX> {
+        condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables | TableRef, ColTableRef, Expr<ColTableRef, unknown, SQL_BOOL>>>
+    ): DbSelectJoin<Aliases | Alias, AliasesFromWith, Tables | TableRef, CTX> {
         this.builder.join("JOIN", table as AnyAliasedTableDef, condition as any)
         return this as any;
     }
@@ -23,8 +23,8 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
         ColTableRef extends string
     >(
         table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases | AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
-        condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
-    ): DbSelectJoin<Aliases | Alias, AliasesFromWith, Tables & Key<TableRef>, CTX> {
+        condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables | TableRef, ColTableRef, Expr<ColTableRef, unknown, SQL_BOOL>>>
+    ): DbSelectJoin<Aliases | Alias, AliasesFromWith, Tables | TableRef, CTX> {
         this.builder.join("LEFT JOIN", table as AnyAliasedTableDef, condition as any)
         return this as any;
     }

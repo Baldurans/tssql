@@ -1,4 +1,4 @@
-import {AliasedTable, isAliasAlreadyUsed, NotUsingWithPart, Key} from "../Types";
+import {AliasedTable, isAliasAlreadyUsed, NotUsingWithPart} from "../Types";
 import {DbSelect01From} from "./DbSelect01From";
 import {DbSelect} from "./DbSelect";
 
@@ -9,7 +9,7 @@ export class DbSelect00Uses<Aliases, Tables, CTX> extends DbSelect<CTX> {
         TableRef extends `${string} as ${Alias}`
     >(
         table: isAliasAlreadyUsed<Aliases, Alias, AliasedTable<Alias, TableRef, any, NotUsingWithPart>>
-    ): DbSelect00Uses<Aliases | Alias, Tables & Key<TableRef>, CTX> {
+    ): DbSelect00Uses<Aliases | Alias, Tables | TableRef, CTX> {
         // This does nothing, it used only for Typescript type referencing.
         return this as any;
     }

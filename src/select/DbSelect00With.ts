@@ -15,7 +15,7 @@ export class DbSelect00With<AliasesFromWith, CTX> extends DbSelect<CTX> {
         return this as any;
     }
 
-    public select(): DbSelect01From<never, AliasesFromWith, {}, CTX> {
+    public select(): DbSelect01From<never, AliasesFromWith, never, CTX> {
         return new DbSelect01From(this.builder)
     }
 

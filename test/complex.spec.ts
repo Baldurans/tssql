@@ -98,9 +98,8 @@ test("complex", async () => {
 
             //c.id, // ____ERROR, can't add same field twice!
             //subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
-            // Sql.veryDangerousUnsafeExpression(c.id, " > ", c3.id).as("expr2"), // ____ERROR, c3 is not referenced!
-            // cFake.name, // ____ERROR, table name does not match!
-            // c3.username // ____ERROR, c3 is not referenced
+            //cFake.name, // ____ERROR, table name does not match!
+            //c3.username // ____ERROR, c3 is not referenced
 
         )
 
@@ -108,22 +107,18 @@ test("complex", async () => {
 
         .where(
             c.id.is(10 as tUserId),
-
             c.id.eq(c2.id),
-
             Sql.date(c.created).compare(">=", "2024.03.09" as vDate),
             c.id.is(10 as tUserId),
             c.id.eq(c2.id),
             c.id.comparec(">=", c2.id),
-            c.id.isNull()
-        ) // c.id = 10
 
-        //.where(SQL.EQ(SQL.DATE(c2.username), "2024.03.09" as vDate)) // ____ERROR - wrong type DATE(c.name) = '2024.03.09'
-        //.whereEq(c.id, 10) // ____ERROR, 10 is not tUser
-        //.where(SQL.EQ(c.id, 10)) // ____ERROR, as 10 is not tUserId
-        //.where(SQL.EQ(c3.username, "aa")) // ____ERROR, c3 is not referenced
-        //.where(SQL.EQC(c.id, c.username)) // ____ERROR, as tUserId != string
-        //.where(SQL.COMPAREC(c.id, ">", c3.id)) // ____ERROR, c3 is not referenced. Should be error.
+            // Sql.is(Sql.date(c2.username), "2024.03.09" as vDate), // ____ERROR - wrong type DATE(c.name) = '2024.03.09',
+            // c.id.is(10), // ____ERROR, 10 is not tUser
+            // Sql.is(c.id, 10),  // ____ERROR, as 10 is not tUserId
+            // Sql.eq(c3.username, "aa"), // ____ERROR, c3 is not referenced
+
+        )
 
         .groupBy(c.id, c.username, "expr2")
         //.groupBy(c3.id, c.username, "expr2") // ____ERROR, c3 is not referenced

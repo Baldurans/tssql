@@ -1,4 +1,4 @@
-import {AnyExpr, isTableReferenced, SQL_BOOL, Key, Expr} from "../Types";
+import {AnyExpr, Expr, isTableReferenced, SQL_BOOL} from "../Types";
 import {DbSelect} from "./DbSelect";
 import {DbSelect05GroupBy} from "./DbSelect05GroupBy";
 
@@ -61,6 +61,6 @@ export class DbSelect04Where<Result, Tables, CTX> extends DbSelect<CTX> {
     }
 }
 
-type C<Tables, T extends string> = isTableReferenced<Tables, Key<T>, Expr<T, unknown, SQL_BOOL>>
+type C<Tables, TableRef extends string> = isTableReferenced<Tables, TableRef, Expr<TableRef, unknown, SQL_BOOL>>
 
 

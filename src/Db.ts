@@ -15,7 +15,7 @@ export abstract class Db<CTX> {
 
     }
 
-    public select(): DbSelect01From<never, never, {}, CTX> {
+    public select(): DbSelect01From<never, never, never, CTX> {
         return new DbSelect01From(new DbSelectBuilder<CTX>(this.exec)) as any
     }
 

@@ -6,7 +6,7 @@ import {DbSelect09Exec} from "./DbSelect09Exec";
 export class DbSelect05GroupBy<Result, Tables, CTX> extends DbSelect07OrderBy<Result, Tables, CTX> {
 
     public groupBy<
-        TableRef extends string & keyof Tables,
+        TableRef extends string & Tables,
         Str extends string & keyof Result
     >(
         ...items: (Str | Expr<TableRef, string | unknown, string | number>)[]
