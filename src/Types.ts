@@ -64,14 +64,9 @@ export function isPrepareArgument(arg: unknown): arg is PrepareQueryArgument {
 
 export type SQL_BOOL = 0 | 1;
 
-/**
- * YYYY-MM-DD
- */
-export type vDate = string & { vDate: true }
-/**
- * YYYY-MM-DD HH:II:SS
- */
-export type vDateTime = string & { vDateTime: true }
+export type vDate = string & { vDate: true, format: "YYYY-MM-DD" }
+
+export type vDateTime = string & { vDateTime: true, format: "YYYY-MM-DD HH:II:SS" }
 
 export type COMPARISON_SIGNS = "!=" | "=" | ">=" | ">" | "<" | "<=" | "LIKE" | "NOT LIKE"
 

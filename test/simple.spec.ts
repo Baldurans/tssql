@@ -17,7 +17,6 @@ test("simple", async () => {
     const c2 = db.tables.user("c2")
     const s = db.tables.user("s")
 
-
     const val: any = undefined;
     const query = db
         .select()
@@ -35,6 +34,9 @@ test("simple", async () => {
             c.created.asDate(),
             Sql.literal(MyEnum.aa).as("enumValue"),
             Sql.literal(10).as("literal"),
+            Sql.concat(c.username, "X").as("concated1"),
+            Sql.groupConcatOrderBy([Sql.concat(c.username, "X")], [c.username]).as("concated2"),
+            Sql.math("(? * 100 / (? - ?))", [c.id, c.id, c.id]).as("math"),
             Sql.if(
                 c.id.is(10 as tUserId),
                 c.id,

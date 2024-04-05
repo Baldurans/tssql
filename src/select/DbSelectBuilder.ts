@@ -3,7 +3,7 @@ import {Sql} from "../Sql";
 import {SqlExpression} from "../SqlExpression";
 import {AnyAliasedTableDef, AnyExpr} from "../Types";
 import {DbUtility} from "../DbUtility";
-import {OrderByStructure} from "./DbSelect07OrderBy";
+import {OrderByStructure, orderByStructureToSqlString} from "./DbSelect07OrderBy";
 
 const TAB = "  ";
 
@@ -97,7 +97,7 @@ export class DbSelectBuilder<CTX> {
     }
 
     public where(col: AnyExpr): void {
-        if (col !== undefined) {
+        if (col && col.expression) {
             this._where.push(col.expression)
         }
     }
@@ -115,17 +115,8 @@ export class DbSelectBuilder<CTX> {
         }
     }
 
-    public orderBy(items: OrderByStructure<string | AnyExpr, "asc" | "ASC" | "desc" | "DESC">): void {
-        for (let i = 0; i < items.length; i++) {
-            const item = items[i];
-            if (item === "asc" || item === "ASC" || item === "desc" || item === "DESC") {
-                this._orderBy[this._orderBy.length - 1] += " " + item;
-            } else if (typeof item === "string") {
-                this._orderBy.push(item)
-            } else if (item !== undefined && item !== null) {
-                this._orderBy.push(item.nameAs ? Sql.escapeId(item.nameAs as any) : item.expression)
-            }
-        }
+    public orderBy(items: OrderByStructure<string | AnyExpr>): void {
+        this._orderBy.push(...orderByStructureToSqlString(items))
     }
 
     public limit(limit: number | [number, number]): void {

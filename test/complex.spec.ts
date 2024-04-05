@@ -1,7 +1,7 @@
 import {tUserId} from "./tables/User";
 import {Sql} from "../src/Sql";
 import {MyDb} from "./tables/MyDb";
-import {SQL_BOOL, vDate} from "../src";
+import {vDate} from "../src";
 
 test("complex", async () => {
 
@@ -52,7 +52,7 @@ test("complex", async () => {
         .noLimit()
         .as("sub")
 
-    const expr = Sql.veryDangerousUnsafeExpression("IF(", c.username, " > ", c2.username, ",", c.id, ",", c2.id, ")").cast<tUserId>();
+    // const expr = Sql.veryDangerousUnsafeExpression("IF(", c.username, " > ", c2.username, ",", c.id, ",", c2.id, ")").cast<tUserId>();
 
 
     const query = db
@@ -82,9 +82,8 @@ test("complex", async () => {
             Sql.date(c.created).as("myDate"),
             c.id.comparec("<=", c2.id).as("expr1"),
             c.id.comparec(">", c2.id).as("expr2"),
-            c.id.eq(expr).as("expr3"),
+            Sql.__veryDangerousUnsafeSqlExpression({I_DID_NOT_USE_UNSAFE_VARIABLES_TO_CONSTRUCT_THIS_STRING: ["100 + ROUND(", c.id, " > ", c2.id, ")"]}).cast<number>().as("expr3"),
             Sql.if(c.id.eq(c2.id), c.username, c2.username).cast<string>().as("expr4"),
-
             withSubSub1.subIdRenamed.as("withSubSub1"),
             withSubSub2.subIdRenamed.as("withSubSub2"),
 
@@ -116,7 +115,6 @@ test("complex", async () => {
             c.id.is(10 as tUserId),
             c.id.eq(c2.id),
             c.id.comparec(">=", c2.id),
-            Sql.veryDangerousUnsafeExpression(c.id, " > ", c2.id).cast<SQL_BOOL>(),
             c.id.isNull()
         ) // c.id = 10
 
