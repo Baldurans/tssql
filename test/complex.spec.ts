@@ -75,8 +75,6 @@ test("complex", async () => {
         // .leftJoin(withSub2Sub1, withSub2Sub1.id.eq(c.id)) // ____ERROR, not referenced in with part.
 
         .columns(
-            db.uses(c).select().from(s).columns(s.id).where(Sql.eq(c.id, s.id)).noLimit().asScalar("someItem"),
-            c.username,
             c.id,
             subQueryTable.id.as("sId"),
             subQueryTable.subIdRenamed.as("subIdRenamedAgain"),
@@ -88,7 +86,7 @@ test("complex", async () => {
             Sql.if(c.id.eq(c2.id), c.username, c2.username).cast<string>().as("expr4"),
             withSubSub1.subIdRenamed.as("withSubSub1"),
             withSubSub2.subIdRenamed.as("withSubSub2"),
-
+            db.uses(c).select().from(s).columns(s.id).where(Sql.eq(c.id, s.id)).noLimit().asScalar("someItem"),
             db.uses(c)
                 .select()
                 .from(s)
@@ -101,8 +99,8 @@ test("complex", async () => {
             // c.id, // ____ERROR, can't add same field twice!
             // subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
             // cFake.name, // ____ERROR, table X is not used in the query
+            // c3.username // ____ERROR, table X is not used in the query
             // Sql.concat(cFake.name, c2.username).as("concated"), // ____ERROR, table X is not used in the query (twice!)
-            // c3.username // ____ERROR, c3 is not referenced
 
         )
 
@@ -131,7 +129,6 @@ test("complex", async () => {
     const res = await query.execOne(undefined)
     console.log(
         res.id, // type tUserId
-        res.username,  // type string
         res.renamedId,  // type tUserId
         res.myDate, // type vDateTime
         res.someItem, // tUserId
