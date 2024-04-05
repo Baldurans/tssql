@@ -91,8 +91,8 @@ export class DbSelectBuilder<CTX> {
         const columns = cols as unknown as SqlExpression<string, string, any>[]
         for (let i = 0; i < columns.length; i++) {
             const col = columns[i];
-            this._columns.push(col.expression + (col.nameAs ? " as " + Sql.escapeId(col.nameAs) : ""));
-            (this._columnStruct as any)[col.nameAs] = true;
+            this._columns.push(col.expression + (col.nameAsForQuery ? " as " + Sql.escapeId(col.nameAsForQuery) : ""));
+            (this._columnStruct as any)[col.nameAsForQuery || col.nameAs] = true;
         }
     }
 

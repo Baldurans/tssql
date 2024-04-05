@@ -21,14 +21,14 @@ export class DbUtility {
         DbUtility.testIfOkaySqlStringOrThrow(alias);
         for (const columnName in columns) {
             DbUtility.testIfOkaySqlStringOrThrow(columnName);
-            (tbl as any)[columnName] = new SqlExpression(alias + "." + columnName, columnName)
+            (tbl as any)[columnName] = new SqlExpression(alias + "." + columnName, columnName, undefined)
         }
         Object.freeze(tbl)
         return tbl
     }
 
     public static isOkaySqlString(value: unknown): boolean {
-        return typeof value === "string" && value.length > 0 && /^[A-Za-z]+$/.test(value)
+        return typeof value === "string" && value.length > 0 && /^[A-Za-z_][A-Za-z0-9_]*$/.test(value)
     }
 
     public static testIfOkaySqlStringOrThrow(value: unknown): void {

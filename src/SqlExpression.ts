@@ -5,15 +5,17 @@ export class SqlExpression<TableRef extends string, Name extends string | unknow
 
     public readonly expression: string;
     public readonly nameAs: Name | undefined;
+    public readonly nameAsForQuery: Name | undefined;
 
-    constructor(expression: string, nameAs: Name) {
+    constructor(expression: string, nameAs: Name, nameAsForQuery: Name | undefined) {
         this.expression = expression;
         this.nameAs = nameAs;
+        this.nameAsForQuery = nameAsForQuery;
         Object.freeze(this);
     }
 
-    public static create<TableRef extends string, Name, Type>(expression: string, nameAs?: string | undefined): Expr<TableRef, Name, Type> {
-        return new SqlExpression(expression, nameAs) as any
+    public static create<TableRef extends string, Name, Type>(expression: string, nameAs?: string | undefined, nameAsForQuery?: string | undefined): Expr<TableRef, Name, Type> {
+        return new SqlExpression(expression, nameAs, nameAsForQuery) as any
     }
 
     public cast<CastType extends string | number>(): Expr<TableRef, Name, CastType> {
@@ -21,7 +23,7 @@ export class SqlExpression<TableRef extends string, Name extends string | unknow
     }
 
     public as<T extends string>(name: T): Expr<TableRef, T, Type> {
-        return new SqlExpression<TableRef, T, Type>(this.expression, name) as any;
+        return new SqlExpression<TableRef, T, Type>(this.expression, name, name) as any;
     }
 
     private asValue(): Expr<TableRef, any, any> {
