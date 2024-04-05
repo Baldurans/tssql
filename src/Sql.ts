@@ -74,21 +74,21 @@ export class Sql {
     /**
      * Accepts undefined as well.
      */
-    public static or<T1 extends string, T2 extends string>(
+    public static or<T1 extends string, T2 extends string, S1, S2>(
         col1: AnyBoolExpr<T1>, col2: AnyBoolExpr<T2>
-    ): Expr<T1 | T2, unknown, SQL_BOOL>
-    public static or<T1 extends string, T2 extends string, T3 extends string>(
+    ): Expr<T1 | T2, unknown, SQL_BOOL, S1 | S2>
+    public static or<T1 extends string, T2 extends string, T3 extends string, S1, S2, S3>(
         col1: AnyBoolExpr<T1>, col2: AnyBoolExpr<T2>, col3: AnyBoolExpr<T3>
-    ): Expr<T1 | T2 | T3, unknown, SQL_BOOL>
-    public static or<T1 extends string, T2 extends string, T3 extends string, T4 extends string>(
+    ): Expr<T1 | T2 | T3, unknown, SQL_BOOL, S1 | S2 | S3>
+    public static or<T1 extends string, T2 extends string, T3 extends string, T4 extends string, S1, S2, S3, S4>(
         col1: AnyBoolExpr<T1>, col2: AnyBoolExpr<T2>, col3: AnyBoolExpr<T3>, col4: AnyBoolExpr<T4>
-    ): Expr<T1 | T2 | T3 | T4, unknown, SQL_BOOL>
-    public static or<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string>(
+    ): Expr<T1 | T2 | T3 | T4, unknown, SQL_BOOL, S1 | S2 | S3 | S4>
+    public static or<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, S1, S2, S3, S4, S5>(
         col1: AnyBoolExpr<T1>, col2: AnyBoolExpr<T2>, col3: AnyBoolExpr<T3>, col4: AnyBoolExpr<T4>, col5: AnyBoolExpr<T5>
-    ): Expr<T1 | T2 | T3 | T4 | T5, unknown, SQL_BOOL>
-    public static or<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string>(
+    ): Expr<T1 | T2 | T3 | T4 | T5, unknown, SQL_BOOL, S1 | S2 | S3 | S4 | S5>
+    public static or<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, S1, S2, S3, S4, S6>(
         col1: AnyBoolExpr<T1>, col2: AnyBoolExpr<T2>, col3: AnyBoolExpr<T3>, col4: AnyBoolExpr<T4>, col5: AnyBoolExpr<T5>, col6: AnyBoolExpr<T6>
-    ): Expr<T1 | T2 | T3 | T4 | T5 | T6, unknown, SQL_BOOL>
+    ): Expr<T1 | T2 | T3 | T4 | T5 | T6, unknown, SQL_BOOL, S1 | S2 | S3 | S4 | S6>
     public static or(...col: any[]): any {
         return SqlExpression.create("(" + col.filter(e => e).map(e => e.expression).join(" OR ") + ")")
     }
@@ -96,27 +96,27 @@ export class Sql {
     /**
      * Accepts undefined as well.
      */
-    public static and<T1 extends string, T2 extends string>(
+    public static and<T1 extends string, T2 extends string, S1, S2>(
         col1: AnyBoolExpr<T1>, col2: AnyBoolExpr<T2>
-    ): Expr<T1 | T2, unknown, SQL_BOOL>
-    public static and<T1 extends string, T2 extends string, T3 extends string>(
+    ): Expr<T1 | T2, unknown, SQL_BOOL, S1 | S2>
+    public static and<T1 extends string, T2 extends string, T3 extends string, S1, S2, S3>(
         col1: AnyBoolExpr<T1>, col2: AnyBoolExpr<T2>, col3: AnyBoolExpr<T3>
-    ): Expr<T1 | T2 | T3, unknown, SQL_BOOL>
-    public static and<T1 extends string, T2 extends string, T3 extends string, T4 extends string>(
+    ): Expr<T1 | T2 | T3, unknown, SQL_BOOL, S1 | S2 | S3>
+    public static and<T1 extends string, T2 extends string, T3 extends string, T4 extends string, S1, S2, S3, S4>(
         col1: AnyBoolExpr<T1>, col2: AnyBoolExpr<T2>, col3: AnyBoolExpr<T3>, col4: AnyBoolExpr<T4>
-    ): Expr<T1 | T2 | T3 | T4, unknown, SQL_BOOL>
-    public static and<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string>(
+    ): Expr<T1 | T2 | T3 | T4, unknown, SQL_BOOL, S1 | S2 | S3 | S4>
+    public static and<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, S1, S2, S3, S4, S5>(
         col1: AnyBoolExpr<T1>, col2: AnyBoolExpr<T2>, col3: AnyBoolExpr<T3>, col4: AnyBoolExpr<T4>, col5: AnyBoolExpr<T5>
-    ): Expr<T1 | T2 | T3 | T4 | T5, unknown, SQL_BOOL>
-    public static and<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string>(
+    ): Expr<T1 | T2 | T3 | T4 | T5, unknown, SQL_BOOL, S1 | S2 | S3 | S4 | S5>
+    public static and<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, S1, S2, S3, S4, S5, S6>(
         col1: AnyBoolExpr<T1>, col2: AnyBoolExpr<T2>, col3: AnyBoolExpr<T3>, col4: AnyBoolExpr<T4>, col5: AnyBoolExpr<T5>, col6: AnyBoolExpr<T6>
-    ): Expr<T1 | T2 | T3 | T4 | T5 | T6, unknown, SQL_BOOL>
-    public static and<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T7 extends string>(
+    ): Expr<T1 | T2 | T3 | T4 | T5 | T6, unknown, SQL_BOOL, S1 | S2 | S3 | S4 | S5 | S6>
+    public static and<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T7 extends string, S1, S2, S3, S4, S5, S6, S7>(
         col1: AnyBoolExpr<T1>, col2: AnyBoolExpr<T2>, col3: AnyBoolExpr<T3>, col4: AnyBoolExpr<T4>, col5: AnyBoolExpr<T5>, col6: AnyBoolExpr<T6>, col7: AnyBoolExpr<T7>
-    ): Expr<T1 | T2 | T3 | T4 | T5 | T6 | T7, unknown, SQL_BOOL>
-    public static and<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T7 extends string, T8 extends string>(
+    ): Expr<T1 | T2 | T3 | T4 | T5 | T6 | T7, unknown, SQL_BOOL, S1 | S2 | S3 | S4 | S5 | S6 | S7>
+    public static and<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T7 extends string, T8 extends string, S1, S2, S3, S4, S5, S6, S7, S8>(
         col1: AnyBoolExpr<T1>, col2: AnyBoolExpr<T2>, col3: AnyBoolExpr<T3>, col4: AnyBoolExpr<T4>, col5: AnyBoolExpr<T5>, col6: AnyBoolExpr<T6>, col7: AnyBoolExpr<T7>, col8: AnyBoolExpr<T8>
-    ): Expr<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8, unknown, SQL_BOOL>
+    ): Expr<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8, unknown, SQL_BOOL, S1 | S2 | S3 | S4 | S5 | S6 | S7 | S8>
 
     public static and(...col: any[]): any {
         return SqlExpression.create("(" + col.filter(e => e).map(e => e.expression).join(" AND ") + ")")
