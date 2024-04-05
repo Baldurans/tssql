@@ -54,7 +54,7 @@ test("complex", async () => {
 
     // const expr = Sql.veryDangerousUnsafeExpression("IF(", c.username, " > ", c2.username, ",", c.id, ",", c2.id, ")").cast<tUserId>();
 
-
+    const k = Sql.concat(cFake.name, cFake.name);
     const query = db
         .with(withSub)
         .select()
@@ -97,8 +97,9 @@ test("complex", async () => {
                 .where(s.id.eq(c.id)).noLimit().asScalar("subColumn"),
 
             //c.id, // ____ERROR, can't add same field twice!
-            //subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
-            //cFake.name, // ____ERROR, table name does not match!
+            subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
+            //cFake.name, // ____ERROR, table X is not used in the query
+            //Sql.concat(cFake.name, c2.username).as("concated"), // ____ERROR, table X is not used in the query (twice!)
             //c3.username // ____ERROR, c3 is not referenced
 
         )
