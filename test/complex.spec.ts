@@ -52,9 +52,11 @@ test("complex", async () => {
         .noLimit()
         .as("sub")
 
-    // const expr = Sql.veryDangerousUnsafeExpression("IF(", c.username, " > ", c2.username, ",", c.id, ",", c2.id, ")").cast<tUserId>();
+    // const xxx1 = c.id.eq(10 as tUserId) // ____ERROR, giving value to a method that expects SqlExpression.
+    // const xxx2 = Sql.is(Sql.date(c2.username), "2024.03.09" as vDate) // ____ERROR - wrong type DATE(c.name) = '2024.03.09',
+    // const xxx3 = c.id.is(10) // ____ERROR, 10 is not tUser
+    // const xxx4 = Sql.is(c.id, 10)  // ____ERROR, as 10 is not tUserId
 
-    const k = Sql.concat(cFake.name, cFake.name);
     const query = db
         .with(withSub)
         .select()
@@ -96,15 +98,13 @@ test("complex", async () => {
                 )
                 .where(s.id.eq(c.id)).noLimit().asScalar("subColumn"),
 
-            //c.id, // ____ERROR, can't add same field twice!
-            subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
-            //cFake.name, // ____ERROR, table X is not used in the query
-            //Sql.concat(cFake.name, c2.username).as("concated"), // ____ERROR, table X is not used in the query (twice!)
-            //c3.username // ____ERROR, c3 is not referenced
+            // c.id, // ____ERROR, can't add same field twice!
+            // subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
+            // cFake.name, // ____ERROR, table X is not used in the query
+            // Sql.concat(cFake.name, c2.username).as("concated"), // ____ERROR, table X is not used in the query (twice!)
+            // c3.username // ____ERROR, c3 is not referenced
 
         )
-
-        //.columns( c.name ) // ____ERROR, Can't add same field twice!
 
         .where(
             c.id.is(10 as tUserId),
@@ -114,16 +114,14 @@ test("complex", async () => {
             c.id.eq(c2.id),
             c.id.comparec(">=", c2.id),
 
-            // Sql.is(Sql.date(c2.username), "2024.03.09" as vDate), // ____ERROR - wrong type DATE(c.name) = '2024.03.09',
-            // c.id.is(10), // ____ERROR, 10 is not tUser
-            // Sql.is(c.id, 10),  // ____ERROR, as 10 is not tUserId
-            // Sql.eq(c3.username, "aa"), // ____ERROR, c3 is not referenced
+            // c3.username.is("aa"),  // ____ERROR, c3 is not referenced
+            // Sql.is(c3.username, "aa"), // ____ERROR, c3 is not referenced
 
         )
 
         // .groupBy(c.id, c.username, "expr2")
         //.groupBy(c3.id, c.username, "expr2") // ____ERROR, c3 is not referenced
-        //.groupBy(c.id, c.username, "notDefined") // ____ERROR, notDefined does not exist
+        // .groupBy(c.id, c.username, "notDefined") // ____ERROR, notDefined does not exist
 
         .orderBy(c.id, "asc", c.id, c.username, "expr2", "desc")
         .noLimit()

@@ -32,23 +32,48 @@ type ExtractObj<Columns extends Expr<any, string, any>[]> = {
 
 // --------------------------------------------------------------------
 
-type _ExtractNameAsUnion<T> = T extends Array<{ nameAs: infer A }> ? A : never;
 
-type _CheckIfExistsInResult<A extends { nameAs: string }, Result> = A["nameAs"] extends keyof Result ? `'${A["nameAs"]}' already exists in columns!` : A
+type _checkIfExistsInResult<Result, Expr> =
+    Expr extends { nameAs: string } ?
+        Expr["nameAs"] extends keyof Result
+            ? `'${Expr["nameAs"]}' already exists in result columns!`
+            : Expr
+        : Expr
+
+
+type _checkIfExistsInOtherFields<Rest extends any[], Expr> =
+    Rest extends []
+        ? Expr
+        : Expr extends { nameAs: string } ?
+            Expr["nameAs"] extends (Rest extends { nameAs: infer A }[] ? A : never)
+                ? `'${Expr["nameAs"]}' already exists in columns!`
+                : Expr
+            : Expr
 
 /**
  * Searches for duplicate names in Columns AND Result.
  */
-type isColumnNameADuplicate<Result, Columns> = Columns extends [...(infer B), infer A]
-    ? A extends { nameAs: string }
-        ? B extends []
-            ? [_CheckIfExistsInResult<A, Result>]
-            : [...isColumnNameADuplicate<Result, B>, A["nameAs"] extends _ExtractNameAsUnion<B>
-                ? `'${A["nameAs"]}' already exists in columns!`
-                : _CheckIfExistsInResult<A, Result>
-            ]
-        : [...isColumnNameADuplicate<Result, B>, A]
-    : Columns;
+type isColumnNameADuplicate<Result, ColumnExpressions> =
+    ColumnExpressions extends []
+        ? ColumnExpressions
+        : ColumnExpressions extends [...(infer Rest), infer A]
+            ? [...isColumnNameADuplicate<Result, Rest>, _checkIfExistsInOtherFields<Rest, _checkIfExistsInResult<Result, A>>]
+            : ColumnExpressions;
+
+
+/*
+type isColumnNameADuplicate<Result, Columns> =
+    Columns extends [...(infer B), infer A]
+        ? A extends { nameAs: string }
+            ? B extends []
+                ? [_CheckIfExistsInResult<A, Result>]
+                : [...isColumnNameADuplicate<Result, B>, A["nameAs"] extends _ExtractNameAsUnion<B>
+                    ? `'${A["nameAs"]}' already exists in columns!`
+                    : _CheckIfExistsInResult<A, Result>
+                ]
+            : [...isColumnNameADuplicate<Result, B>, A]
+        : Columns;
+ */
 
 // --------------------------------------------------------------------
 
