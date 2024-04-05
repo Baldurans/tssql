@@ -13,7 +13,7 @@ test("short", async () => {
         return db
             .uses(table)
             .select()
-            .from_noCheck(o)
+            .from(o)
             .columns(o.id)
             .where(
                 table.id.is(10 as tUserId),
@@ -28,7 +28,7 @@ test("short", async () => {
         return db
             .uses(table)
             .select()
-            .from_noCheck(o)
+            .from(o)
             .columns(table.id)
             .where(
                 table.id.is(10 as tUserId),
