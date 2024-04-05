@@ -54,6 +54,12 @@ export type AnyAliasedTableDef = AliasedTable<string, string, {}, string | NOT_R
 
 export type NOT_REFERENCED = { __not_referenced: true }
 
+export type PrepareQueryArgument = { __prepare_argument: true, name: string }
+
+export function isPrepareArgument(arg: unknown): arg is PrepareQueryArgument {
+    return (arg as any)?.__prepare_argument === true;
+}
+
 // ----------------------------------------------
 
 export type SQL_BOOL = 0 | 1;

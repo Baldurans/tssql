@@ -1,5 +1,5 @@
 import {Sql} from "./Sql";
-import {AliasedTable, NOT_REFERENCED, Key} from "./Types";
+import {AliasedTable, Key, NOT_REFERENCED, PrepareQueryArgument} from "./Types";
 import {DbSelect00Uses} from "./select/DbSelect00Uses";
 import {DbSelect00With} from "./select/DbSelect00With";
 import {DbSelectBuilder} from "./select/DbSelectBuilder";
@@ -11,8 +11,7 @@ import {DbSelect09Exec} from "./select/DbSelect09Exec";
 
 export abstract class Db<CTX> {
 
-
-    constructor(private readonly exec: (ctx: CTX, sql: string) => Promise<any[]>) {
+    constructor(private readonly exec: (ctx: CTX, sql: string, args?: { [key: string]: string | number }) => Promise<any[]>) {
 
     }
 
@@ -44,6 +43,30 @@ export abstract class Db<CTX> {
 
     public union<Result>(table: DbSelect09Exec<Result, CTX>): DbSelect00Union<Result, CTX> {
         return new DbSelect00Union<Result, CTX>(new DbSelectBuilder<CTX>(this.exec)).all(table as any);
+    }
+
+    public prepare<PrepareQueryArguments extends { [key: string]: any }, Result>(func: (args: PrepareQueryArguments) => DbSelect09Exec<Result, CTX>): {
+        exec: (ctx: CTX, args: PrepareQueryArguments) => Promise<Result[]>,
+        execOne: (ctx: CTX, args: PrepareQueryArguments) => Promise<Result | undefined>
+    } {
+        const argumentsInOrder: string[] = [];
+        const p: PrepareQueryArguments = new Proxy({}, {
+            get(_: {}, p: string): PrepareQueryArgument {
+                argumentsInOrder.push(p);
+                return {__prepare_argument: true, name: p};
+            }
+        }) as any
+        const str = func(p).toString();
+        return {
+            exec: async (ctx: CTX, args: PrepareQueryArguments): Promise<Result[]> => {
+                console.log(str, args)
+                return this.exec(ctx, str, args)
+            },
+            execOne: async (ctx: CTX, args: PrepareQueryArguments): Promise<Result | undefined> => {
+                console.log(str, args)
+                return (await this.exec(ctx, str, args))?.[0]
+            }
+        }
     }
 
     public static createRef<

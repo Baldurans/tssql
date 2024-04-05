@@ -1,11 +1,18 @@
-import {AnyBoolExpr, COMPARISON_SIGNS, ComparisonOperandsLookup, SQL_BOOL, Expr, vDate, vDateTime} from "./Types";
+import {AnyBoolExpr, COMPARISON_SIGNS, ComparisonOperandsLookup, Expr, isPrepareArgument, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
 import mysql from "mysql";
 import {SqlExpression} from "./SqlExpression";
 
 export class Sql {
 
-    public static escape(value: string | number): string {
-        return mysql.escape(value);
+    public static escape(value: string | number | PrepareQueryArgument): string {
+        if (isPrepareArgument(value)) {
+            if (!/^[A-Za-z]+$/.test(value.name)) {
+                throw new Error("Invalid prepare query argument named '" + value.name + "'. Can only contain ascii letters!")
+            }
+            return ":___arg__" + value.name
+        } else {
+            return mysql.escape(value)
+        }
     }
 
     public static escapeId(value: string): string {
@@ -20,11 +27,11 @@ export class Sql {
         return SqlExpression.create("NULL")
     }
 
-    public static string(value: string): Expr<null, unknown, string> {
+    public static string(value: string | PrepareQueryArgument): Expr<null, unknown, string> {
         return SqlExpression.create(this.escape(value))
     }
 
-    public static number(value: number): Expr<null, unknown, number> {
+    public static number(value: number | PrepareQueryArgument): Expr<null, unknown, number> {
         return SqlExpression.create(this.escape(value))
     }
 
@@ -112,7 +119,7 @@ export class Sql {
     /**
      * Column = value (If you want to compare column with another column, use EQC method.
      */
-    public static is<TableRef extends string, Type extends string | number>(col: Expr<TableRef, string, Type>, value: Type): Expr<TableRef, unknown, SQL_BOOL> {
+    public static is<TableRef extends string, Type extends string | number | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, value: Type): Expr<TableRef, unknown, SQL_BOOL> {
         return Sql.compare(col, "=", value);
     }
 
@@ -123,11 +130,11 @@ export class Sql {
     /**
      * Column OPERATION value (If you want to compare column with another column, use COMPAREC method.)
      */
-    public static compare<TableRef extends string, Type extends string | number>(col: Expr<TableRef, string, Type>, op: COMPARISON_SIGNS, value: Type): Expr<TableRef, unknown, SQL_BOOL> {
+    public static compare<TableRef extends string, Type extends string | number | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, op: COMPARISON_SIGNS, value: Type): Expr<TableRef, unknown, SQL_BOOL> {
         if (!ComparisonOperandsLookup.has(op)) {
             throw new Error("Invalid comparison operand '" + op + "'")
         }
-        return SqlExpression.create(col.expression + " " + op + " " + Sql.escape(value))
+        return SqlExpression.create(col.expression + " " + op + " " + this.escape(value))
     }
 
     public static compareCol<TableRef1 extends string, TableRef2 extends string, Type1>(col1: Expr<TableRef1, string, Type1>, op: COMPARISON_SIGNS, col2: Expr<TableRef2, string | unknown, Type1>): Expr<TableRef1 | TableRef2, unknown, SQL_BOOL> {
@@ -137,41 +144,41 @@ export class Sql {
         return SqlExpression.create(col1.expression + " " + op + " " + col2.expression)
     }
 
-    public static like<TableRef extends string, Type extends string | number>(col: (Expr<TableRef, string | unknown, Type>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(col.expression + " LIKE " + Sql.escape(value));
+    public static like<TableRef extends string, Type extends string | number>(col: (Expr<TableRef, string | unknown, Type>), value: string | PrepareQueryArgument): Expr<TableRef, unknown, SQL_BOOL> {
+        return SqlExpression.create(col.expression + " LIKE " + this.escape(value));
     }
 
     /**
      * Does LIKE %X% search.
      */
     public static contains<TableRef extends string, Type extends string | number>(col: (Expr<TableRef, string | unknown, Type>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(col.expression + " LIKE " + Sql.escape("%" + value + "%"));
+        return SqlExpression.create(col.expression + " LIKE " + this.escape("%" + value + "%"));
     }
 
     /**
      * Does LIKE X% search.
      */
     public static startsWith<TableRef extends string, Type extends string | number>(col: (Expr<TableRef, string | unknown, Type>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(col.expression + " LIKE " + Sql.escape(value + "%"));
+        return SqlExpression.create(col.expression + " LIKE " + this.escape(value + "%"));
     }
 
     /**
      * Does LIKE %X search.
      */
     public static endsWith<TableRef extends string, Type extends string | number>(col: (Expr<TableRef, string | unknown, Type>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(col.expression + " LIKE " + Sql.escape("%" + value));
+        return SqlExpression.create(col.expression + " LIKE " + this.escape("%" + value));
     }
 
     // -------------------------------------------------------------------
     // MANIPULATION
     // -------------------------------------------------------------------
 
-    public static trim<Type extends string, TableRef extends string>(value: string): Expr<TableRef, unknown, Type> {
-        return SqlExpression.create("TRIM(" + Sql.escape(value) + ")")
+    public static trim<Type extends string, TableRef extends string>(value: string | PrepareQueryArgument): Expr<TableRef, unknown, Type> {
+        return SqlExpression.create("TRIM(" + this.escape(value) + ")")
     }
 
-    public static concat<TableRef extends string>(...expr: (string | Expr<TableRef, string | unknown, string | number | unknown>)[]): Expr<TableRef, unknown, string> {
-        return SqlExpression.create("CONCAT(" + expr.map(e => typeof e === "string" ? Sql.escape(e) : e.expression) + ")")
+    public static concat<TableRef extends string>(...expr: (string | PrepareQueryArgument | Expr<TableRef, string | unknown, string | number | unknown>)[]): Expr<TableRef, unknown, string> {
+        return SqlExpression.create("CONCAT(" + expr.map(e => typeof e === "string" || isPrepareArgument(e) ? this.escape(e) : e.expression) + ")")
     }
 
     public static date<TableRef extends string, Name, Type extends vDate | vDateTime>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, vDate> {
@@ -183,7 +190,7 @@ export class Sql {
     }
 
     public static dateFormat<Type, TableRef extends string>(col: Expr<TableRef, string | unknown, Type>, format: string): Expr<TableRef, string, string> {
-        return SqlExpression.create("DATE_FORMAT(" + col.expression + ", " + Sql.escape(format) + ")")
+        return SqlExpression.create("DATE_FORMAT(" + col.expression + ", " + this.escape(format) + ")")
     }
 
     // -------------------------------------------------------------------
