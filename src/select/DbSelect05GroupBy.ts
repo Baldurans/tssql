@@ -28,7 +28,7 @@ export type _checkThatTableOrColumnCanBeReferenced<Result, Tables, Expr> =
         Expr["tableRef"] extends keyof Tables ?
             Expr["seenResultColumnNames"] extends keyof Result
                 ? Expr
-                : `Column '${Expr["seenResultColumnNames"]}' is not used in this query!`
+                : `Column '${Expr["seenResultColumnNames"]}' is not used in this query!` // @TODO Filter out names that exist in the Result
             : `Table '${Expr["tableRef"]}' is not used in this query!`
         : Expr extends string
             ? Expr extends keyof Result ? Expr : `Column '${Expr}' is not used in this query!`

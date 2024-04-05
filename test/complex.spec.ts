@@ -121,7 +121,7 @@ test("complex", async () => {
 
         )
 
-        // .groupBy(c.id, c.username, "expr2")
+        .groupBy(c.id, c.username, "expr2")
         // .groupBy(c.username, "expr2", c3.id) // ____ERROR, c3 is not referenced
         // .groupBy(c.id, c.username, "notDefined") // ____ERROR, notDefined does not exist
         // .groupBy(c.id, Sql.field("notDefined")) // ____ERROR, notDefined does not exist
@@ -133,6 +133,7 @@ test("complex", async () => {
         // .having(Sql.field("withSubSub2")) // ____ERROR, expression should be of Boolean type.
         // .having(c3.id.is(10 as tUserId)) // ____ERROR, c3 is not referenced
         // .having(Sql.field("notDefined2").is("notDefined2")) // ____ERROR, notDefined does not exist
+        .having(Sql.concat(Sql.field("expr2"), Sql.field("notDefined2")).is("adfadf")) // ____ERROR, notDefined does not exist
 
         .orderBy(c.id, "asc", c.id, c.username, "expr2", "desc")
         .noLimit()
