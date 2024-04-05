@@ -14,6 +14,16 @@ export class DbSelect01From<Aliases, AliasesFromWith, Tables, CTX> extends DbSel
         return new DbSelectJoin(this.builder);
     }
 
+    public from_noCheck<
+        Alias extends string,
+        TableRef extends `${string} as ${Alias}`
+    >(
+        table: AliasedTable<Alias, TableRef, any, NOT_REFERENCED>
+    ): DbSelectJoin<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX> {
+        this.builder.from(table as any);
+        return new DbSelectJoin(this.builder);
+    }
+
     public forUpdate(): this {
         this.builder.forUpdate()
         return this;
