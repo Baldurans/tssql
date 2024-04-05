@@ -5,3 +5,4 @@
 * update
 
 * having, groupBy on probleeme väljade kasutamisega mis on juba Response struktuuris.
+* @TODO Filter out names that exist in the Result
