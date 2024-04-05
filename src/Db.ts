@@ -87,7 +87,10 @@ export abstract class Db<CTX> {
         tableName: TableName,
         columns: DbTableDefinition<Entity>
     ): <Alias extends string>(alias: Alias) => AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NOT_REFERENCED> {
-        return <Alias extends string>(alias: Alias) => DbUtility.defineDbTable<TableName, Alias, Entity>(Sql.escapeId(tableName) as TableName, alias, columns);
+        if (!DbUtility.isOkaySqlString(tableName)) {
+            DbUtility.testIfOkaySqlStringOrThrow(tableName);
+        }
+        return <Alias extends string>(alias: Alias) => DbUtility.defineDbTable<TableName, Alias, Entity>(tableName as TableName, alias, columns);
     }
 
 }

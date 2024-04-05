@@ -1,15 +1,14 @@
 import {AnyBoolExpr, COMPARISON_SIGNS, ComparisonOperandsLookup, Expr, isPrepareArgument, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
 import mysql from "mysql";
 import {SqlExpression} from "./SqlExpression";
+import {DbUtility} from "./DbUtility";
 
 export class Sql {
 
     public static escape(value: string | number | PrepareQueryArgument): string {
         if (isPrepareArgument(value)) {
-            if (!/^[A-Za-z]+$/.test(value.name)) {
-                throw new Error("Invalid prepare query argument named '" + value.name + "'. Can only contain ascii letters!")
-            }
-            return ":___arg__" + value.name
+            DbUtility.testIfOkaySqlStringOrThrow(value.name);
+            return ":" + value.name
         } else {
             return mysql.escape(value)
         }
