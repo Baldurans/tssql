@@ -6,10 +6,9 @@ export class DbSelect00Uses<Aliases, Tables, CTX> extends DbSelect<CTX> {
 
     public uses<
         Alias extends string,
-        TableRef extends `${string} as ${Alias}`,
-        Columns
+        TableRef extends `${string} as ${Alias}`
     >(
-        table: isAliasAlreadyUsed<Aliases, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>
+        table: isAliasAlreadyUsed<Aliases, Alias, AliasedTable<Alias, TableRef, any, NOT_REFERENCED>>
     ): DbSelect00Uses<Aliases & Key<Alias>, Tables & Key<TableRef>, CTX> {
         // This does nothing, it used only for Typescript type referencing.
         return this as any;
