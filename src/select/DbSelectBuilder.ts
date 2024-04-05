@@ -122,7 +122,7 @@ export class DbSelectBuilder<CTX> {
                 this._orderBy[this._orderBy.length - 1] += " " + item;
             } else if (typeof item === "string") {
                 this._orderBy.push(item)
-            } else {
+            } else if (item !== undefined && item !== null) {
                 this._orderBy.push(item.nameAs ? Sql.escapeId(item.nameAs as any) : item.expression)
             }
         }
