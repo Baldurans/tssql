@@ -61,6 +61,6 @@ export class DbSelect04Where<Result, Tables, CTX> extends DbSelect<CTX> {
     }
 }
 
-type C<Tables, T extends string> = isTableReferenced<Tables, Key<T>, Expr<T, unknown, SQL_BOOL>>
+type C<Tables, T extends string> = isTableReferenced<Tables, Key<T>, Expr<T, unknown, SQL_BOOL, any>>
 
 

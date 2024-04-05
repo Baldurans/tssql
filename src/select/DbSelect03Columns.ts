@@ -10,7 +10,7 @@ export class DbSelect03Columns<Result, Tables, CTX> extends DbSelect<CTX> {
 
     public columns<
         TableRef extends string,
-        Columns extends Expr<TableRef, string, any>[]
+        Columns extends Expr<TableRef, string, any, never>[]
     >(
         //...columns: Columns - this will enable seeing sources of Result object properties.
         ...columns: isColumnOkToAdd<Result, Tables, Columns>
@@ -26,7 +26,7 @@ export class DbSelect03Columns<Result, Tables, CTX> extends DbSelect<CTX> {
 /**
  * Take array of Col-s and convert to Record<key, value> & ... object.
  */
-type ExtractObj<Columns extends Expr<any, string, any>[]> = {
+type ExtractObj<Columns extends Expr<any, string, any, never>[]> = {
     [K in Columns[number]['nameAs']]: Extract<Columns[number], { nameAs: K }>['type']
 };
 

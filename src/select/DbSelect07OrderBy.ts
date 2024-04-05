@@ -7,7 +7,7 @@ export class DbSelect07OrderBy<Result, Tables, CTX> extends DbSelect08Limit<Resu
         TableRef extends string & keyof Tables,
         Str extends string & keyof Result
     >(
-        ...items: OrderByStructure<(Str | Expr<TableRef, string | unknown, string | number>)>
+        ...items: OrderByStructure<(Str | Expr<TableRef, string | unknown, string | number, string | never>)>
     ): DbSelect08Limit<Result, CTX> {
         this.builder.orderBy(items as any);
         return new DbSelect08Limit(this.builder);

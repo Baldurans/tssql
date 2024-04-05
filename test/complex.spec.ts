@@ -57,6 +57,7 @@ test("complex", async () => {
     // const xxx3 = c.id.is(10) // ____ERROR, 10 is not tUser
     // const xxx4 = Sql.is(c.id, 10)  // ____ERROR, as 10 is not tUserId
 
+
     const query = db
         .with(withSub)
         .select()
@@ -73,6 +74,7 @@ test("complex", async () => {
         // .join(subQueryTable, subQueryTable.subIdRenamed.eq(c.id)) // ____ERROR, alias is already used!
         // .leftJoin(withSub, withSub.id.eq(c.id)) // ____ERROR, alias is already in use.
         // .leftJoin(withSub2Sub1, withSub2Sub1.id.eq(c.id)) // ____ERROR, not referenced in with part.
+
 
         .columns(
             c.id,
@@ -119,15 +121,18 @@ test("complex", async () => {
 
         )
 
-        .groupBy(c.id, c.username, "expr2")
-        // .groupBy(c3.id, c.username, "expr2") // ____ERROR, c3 is not referenced
+        // .groupBy(c.id, c.username, "expr2")
+        // .groupBy(c.username, "expr2", c3.id) // ____ERROR, c3 is not referenced
         // .groupBy(c.id, c.username, "notDefined") // ____ERROR, notDefined does not exist
         // .groupBy(c.id, Sql.field("notDefined")) // ____ERROR, notDefined does not exist
-        // .groupBy(c.id, Sql.concat(Sql.field("notDefined"), c.id)) // ____ERROR, notDefined does not exist
+        // .groupBy(c.id, Sql.concat(Sql.field("notDefined")), c.id) // ____ERROR, notDefined does not exist
+        // .groupBy(c.id, Sql.concat(Sql.field("notDefined"), c.id), c.id) // ____ERROR, notDefined does not exist
 
-        // .having(c.id.is(10 as tUserId))
+        // .having(c.id.is(10 as tUserId))  // OK
+        // .having(Sql.field("withSubSub2").is("10"))  // OK
+        // .having(Sql.field("withSubSub2")) // ____ERROR, expression should be of Boolean type.
         // .having(c3.id.is(10 as tUserId)) // ____ERROR, c3 is not referenced
-        .having(Sql.field("notDefined2").is("notDefined2")) // ____ERROR, notDefined does not exist
+        // .having(Sql.field("notDefined2").is("notDefined2")) // ____ERROR, notDefined does not exist
 
         .orderBy(c.id, "asc", c.id, c.username, "expr2", "desc")
         .noLimit()
