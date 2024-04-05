@@ -79,7 +79,7 @@ export {ComparisonOperandsLookup}
 /**
  * Check if Alias ("c") already exists in UsedAliases=(R<"c"> & ...)
  */
-export type isAliasAlreadyUsed<Aliases, Alias extends string, OUT> = Alias extends keyof Aliases ? `Alias '${Alias}' is already used!` : OUT
+export type isAliasAlreadyUsed<Aliases, Alias extends string, OUT> = Alias extends Aliases ? `Alias '${Alias}' is already used!` : OUT
 
 // ----------------------------------------------
 // This stuff helps to check if 'Table as Alias' exists in usedTables

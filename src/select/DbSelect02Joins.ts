@@ -9,9 +9,9 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
         RefAlias extends NotUsingWithPart | string,
         ColTableRef extends string
     >(
-        table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
+        table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases | AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
         condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
-    ): DbSelectJoin<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX> {
+    ): DbSelectJoin<Aliases | Alias, AliasesFromWith, Tables & Key<TableRef>, CTX> {
         this.builder.join("JOIN", table as AnyAliasedTableDef, condition as any)
         return this as any;
     }
@@ -22,9 +22,9 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
         RefAlias extends NotUsingWithPart | string,
         ColTableRef extends string
     >(
-        table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
+        table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases | AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
         condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
-    ): DbSelectJoin<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX> {
+    ): DbSelectJoin<Aliases | Alias, AliasesFromWith, Tables & Key<TableRef>, CTX> {
         this.builder.join("LEFT JOIN", table as AnyAliasedTableDef, condition as any)
         return this as any;
     }
@@ -32,4 +32,4 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
 
 type isConditionUsingJoinedTable<TableRef, ColTableRef, OUT> = TableRef extends ColTableRef ? OUT : "Join condition should use columns from the joined table!"
 
-type isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, OUT> = RefAlias extends NotUsingWithPart | string & keyof AliasesFromWith ? OUT : `Alias '${RefAlias extends string ? RefAlias : RefAlias extends NotUsingWithPart ? "NOT_REFERENCED" : "???"}' is not defined by any of the with queries!`
+type isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, OUT> = RefAlias extends NotUsingWithPart | string & AliasesFromWith ? OUT : `Alias '${RefAlias extends string ? RefAlias : RefAlias extends NotUsingWithPart ? "NOT_REFERENCED" : "???"}' is not defined by any of the with queries!`

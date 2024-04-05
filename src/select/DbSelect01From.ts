@@ -8,8 +8,8 @@ export class DbSelect01From<Aliases, AliasesFromWith, Tables, CTX> extends DbSel
         Alias extends string,
         TableRef extends `${string} as ${Alias}`
     >(
-        table: isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, NotUsingWithPart>>
-    ): DbSelectJoin<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX> {
+        table: isAliasAlreadyUsed<Aliases | AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, NotUsingWithPart>>
+    ): DbSelectJoin<Aliases | Alias, AliasesFromWith, Tables & Key<TableRef>, CTX> {
         this.builder.from(table as any);
         return new DbSelectJoin(this.builder);
     }

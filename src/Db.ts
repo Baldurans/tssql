@@ -15,7 +15,7 @@ export abstract class Db<CTX> {
 
     }
 
-    public select(): DbSelect01From<{}, {}, {}, CTX> {
+    public select(): DbSelect01From<"", "", {}, CTX> {
         return new DbSelect01From(new DbSelectBuilder<CTX>(this.exec)) as any
     }
 
@@ -25,7 +25,7 @@ export abstract class Db<CTX> {
         TableRef extends `${TableName} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, any, NotUsingWithPart>
-    ): DbSelect00Uses<Key<Alias>, Key<TableRef>, CTX> {
+    ): DbSelect00Uses<Alias, Key<TableRef>, CTX> {
         return new DbSelect00Uses(new DbSelectBuilder<CTX>(this.exec));
     }
 
@@ -35,8 +35,8 @@ export abstract class Db<CTX> {
         TableRef extends `${TableName} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, any, NotUsingWithPart>
-    ): DbSelect00With<Key<Alias>, CTX> {
-        return new DbSelect00With(new DbSelectBuilder<CTX>(this.exec)).with(table as any);
+    ): DbSelect00With<Alias, CTX> {
+        return new DbSelect00With<Alias, CTX>(new DbSelectBuilder<CTX>(this.exec)).with(table as any);
     }
 
     public union<Result>(table: DbSelect09Exec<Result, CTX>): DbSelect00Union<Result, CTX> {
