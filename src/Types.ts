@@ -79,17 +79,18 @@ export {ComparisonOperandsLookup}
 /**
  * Check if Alias ("c") already exists in UsedAliases=(R<"c"> & ...)
  */
-export type isAliasAlreadyUsed<Aliases, Alias extends string, OUT> = Alias extends Aliases ? `Alias '${Alias}' is already used!` : OUT
+export type isAliasAlreadyUsed<Aliases, Alias extends string, OUT> = Alias extends keyof Aliases ? `Alias '${Alias}' is already used!` : OUT
 
 // ----------------------------------------------
 // This stuff helps to check if 'Table as Alias' exists in usedTables
 
+type _AllKeys<T> = T extends any ? keyof T : never;
 type _ExtractMissingAlias<Tables, CheckTables> = { [K in keyof CheckTables]: K extends keyof Tables ? never : K }[keyof CheckTables];
 type _ConstructAliasDoesNotExistError<Tables, CheckTables> = `Alias '${_ExtractMissingAlias<Tables, CheckTables> extends `${infer TableName} as ${infer Alias}` ? Alias : "???"}' is not used in this query!`
 /**
  * Check if UsedTablesToMatch=(R<Alias.Table> & ...) exists in UsedTables=(R<Alias.Table> & ...)
  */
-export type isTableReferenced<Tables, CheckTables, OUT> = CheckTables extends Tables
+export type isTableReferenced<Tables, CheckTables, OUT> = _AllKeys<CheckTables> extends _AllKeys<Tables>
     ? OUT
     : _ConstructAliasDoesNotExistError<Tables, CheckTables>;
 

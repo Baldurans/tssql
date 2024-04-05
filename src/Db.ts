@@ -1,5 +1,5 @@
 import {Sql} from "./Sql";
-import {AliasedTable, NotUsingWithPart, PrepareQueryArgument} from "./Types";
+import {AliasedTable, Key, NotUsingWithPart, PrepareQueryArgument} from "./Types";
 import {DbSelect00Uses} from "./select/DbSelect00Uses";
 import {DbSelect00With} from "./select/DbSelect00With";
 import {DbSelectBuilder} from "./select/DbSelectBuilder";
@@ -15,7 +15,7 @@ export abstract class Db<CTX> {
 
     }
 
-    public select(): DbSelect01From<never, never, never, CTX> {
+    public select(): DbSelect01From<{}, {}, {}, CTX> {
         return new DbSelect01From(new DbSelectBuilder<CTX>(this.exec)) as any
     }
 
@@ -25,7 +25,7 @@ export abstract class Db<CTX> {
         TableRef extends `${TableName} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, any, NotUsingWithPart>
-    ): DbSelect00Uses<Alias, TableRef, CTX> {
+    ): DbSelect00Uses<Key<Alias>, Key<TableRef>, CTX> {
         return new DbSelect00Uses(new DbSelectBuilder<CTX>(this.exec));
     }
 
@@ -35,8 +35,8 @@ export abstract class Db<CTX> {
         TableRef extends `${TableName} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, any, NotUsingWithPart>
-    ): DbSelect00With<Alias, CTX> {
-        return new DbSelect00With<Alias, CTX>(new DbSelectBuilder<CTX>(this.exec)).with(table as any);
+    ): DbSelect00With<Key<Alias>, CTX> {
+        return new DbSelect00With(new DbSelectBuilder<CTX>(this.exec)).with(table as any);
     }
 
     public union<Result>(table: DbSelect09Exec<Result, CTX>): DbSelect00Union<Result, CTX> {
