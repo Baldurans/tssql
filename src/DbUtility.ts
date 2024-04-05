@@ -1,5 +1,6 @@
 import {AliasedTable, NOT_REFERENCED} from "./Types";
 import {SqlExpression} from "./SqlExpression";
+import {Sql} from "./Sql";
 import {DbTableDefinition} from "./Db";
 
 export class DbUtility {
@@ -18,22 +19,11 @@ export class DbUtility {
             [DbUtility.SQL_ALIAS]: alias,
             //createRef: (table: any, newAlias: any) => this.createRef(table, newAlias)
         } as any;
-        DbUtility.testIfOkaySqlStringOrThrow(alias);
         for (const columnName in columns) {
-            DbUtility.testIfOkaySqlStringOrThrow(columnName);
-            (tbl as any)[columnName] = new SqlExpression(alias + "." + columnName, columnName)
+            (tbl as any)[columnName] = new SqlExpression(Sql.escapeId(alias) + "." + Sql.escapeId(columnName), columnName)
         }
         Object.freeze(tbl)
         return tbl
     }
 
-    public static isOkaySqlString(value: unknown): boolean {
-        return typeof value === "string" && value.length > 0 && /^[A-Za-z]+$/.test(value)
-    }
-
-    public static testIfOkaySqlStringOrThrow(value: unknown): void {
-        if (!this.isOkaySqlString(value)) {
-            throw new Error("Invalid SQL string '" + value + "'")
-        }
-    }
 }

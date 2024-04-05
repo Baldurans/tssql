@@ -66,11 +66,11 @@ export class DbSelectBuilder<CTX> {
 
     public with(table: AnyAliasedTableDef): void {
         const alias = table[DbUtility.SQL_ALIAS]
-        this._withQueries.set(alias, alias + " AS " + table[DbUtility.SQL_EXPRESSION])
+        this._withQueries.set(alias, Sql.escapeId(alias) + " AS " + table[DbUtility.SQL_EXPRESSION])
     }
 
     public from(table: AnyAliasedTableDef): void {
-        this._from = table[DbUtility.SQL_EXPRESSION] + " as " + table[DbUtility.SQL_ALIAS];
+        this._from = table[DbUtility.SQL_EXPRESSION] + " as " + Sql.escapeId(table[DbUtility.SQL_ALIAS]);
     }
 
     public forUpdate() {
