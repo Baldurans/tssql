@@ -48,7 +48,7 @@ type _checkIfExistsInResult<Result, Expr> =
             : Expr
         : Expr
 
-type _checkThatTableIsUsed<Tables, Expr> =
+type _checkThatTableIsReferenced<Tables, Expr> =
     Expr extends { tableRef: string } ?
         Expr["tableRef"] extends keyof Tables
             ? Expr
@@ -59,7 +59,7 @@ type isColumnOkToAdd<Result, Tables, ColumnExpressions> =
     ColumnExpressions extends []
         ? ColumnExpressions
         : ColumnExpressions extends [...(infer Rest), infer A]
-            ? [...isColumnOkToAdd<Result, Tables, Rest>, _checkIfExistsInOtherFields<Rest, _checkIfExistsInResult<Result, _checkThatTableIsUsed<Tables, A>>>]
+            ? [...isColumnOkToAdd<Result, Tables, Rest>, _checkIfExistsInOtherFields<Rest, _checkIfExistsInResult<Result, _checkThatTableIsReferenced<Tables, A>>>]
             : ColumnExpressions;
 
 

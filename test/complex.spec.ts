@@ -119,12 +119,18 @@ test("complex", async () => {
 
         )
 
-    // .groupBy(c.id, c.username, "expr2")
-    //.groupBy(c3.id, c.username, "expr2") // ____ERROR, c3 is not referenced
-    // .groupBy(c.id, c.username, "notDefined") // ____ERROR, notDefined does not exist
+        .groupBy(c.id, c.username, "expr2")
+        // .groupBy(c3.id, c.username, "expr2") // ____ERROR, c3 is not referenced
+        // .groupBy(c.id, c.username, "notDefined") // ____ERROR, notDefined does not exist
+        // .groupBy(c.id, Sql.field("notDefined")) // ____ERROR, notDefined does not exist
+        // .groupBy(c.id, Sql.concat(Sql.field("notDefined"), c.id)) // ____ERROR, notDefined does not exist
 
-    // .orderBy(c.id, "asc", c.id, c.username, "expr2", "desc")
-    // .noLimit()
+        // .having(c.id.is(10 as tUserId))
+        // .having(c3.id.is(10 as tUserId)) // ____ERROR, c3 is not referenced
+        .having(Sql.field("notDefined2").is("notDefined2")) // ____ERROR, notDefined does not exist
+
+        .orderBy(c.id, "asc", c.id, c.username, "expr2", "desc")
+        .noLimit()
 
     console.log(query.toString())
 

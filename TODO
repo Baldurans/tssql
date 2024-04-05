@@ -1,10 +1,7 @@
 
 * maybe handle booleans correctly? If field has comment "BOOL" or "BOOLEAN", it will consider it boolean and transform?
 
-* join conditions should use SQL.xxx methods as well. Check that each condition used uses joined table (or at least once if not doable otherwise)
-
 * insert
 * update
 
-
-* LIKE, = jne input argumendina on SQL injection risk!
+* having, groupBy on probleeme väljade kasutamisega mis on juba Response struktuuris.

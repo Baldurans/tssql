@@ -63,6 +63,10 @@ export class Sql {
         return SqlExpression.create(this.escape(value))
     }
 
+    public static field<Name extends string | number>(value: Name): Expr<null, Name, unknown> {
+        return SqlExpression.create(this.escape(value))
+    }
+
     // -------------------------------------------------------------------
     // BOOLEAN CHECKS
     // -------------------------------------------------------------------

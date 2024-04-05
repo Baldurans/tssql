@@ -9,7 +9,7 @@ export class DbSelect04Where<Result, Tables, CTX> extends DbSelect<CTX> {
 
 
     // Recursive type to handle same thing, but TS does not recognize that input is a duple, but takes it as (A | B)[], but needed would be [A,B]
-    // Issue why it is needed is to highlight exactly which where argument is flawed. Otherwise whole where call will be marked as invalid with very ambigious error message.
+    // Issue why it is needed is to highlight exactly which where argument is flawed. Otherwise, whole where call will be marked as invalid with very ambiguous error message.
     // Can use something like this if it improves.
     // type CheckThatTablesAreAllAddedToTheQuery<Cols, Tables> = Cols extends [infer A, ...(infer B)]
     //     ? [
