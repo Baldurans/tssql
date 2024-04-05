@@ -42,17 +42,17 @@ export type AnyExpr = Expr<string, string | unknown, string | number | unknown>
 
 // ----------------------------------------------
 
-export type AliasedTable<Alias extends string, TableRef extends string, Entity, RefAlias extends string | NOT_REFERENCED> = {
+export type AliasedTable<Alias extends string, TableRef extends string, Entity, AliasForWithQuery extends string | NotUsingWithPart> = {
     [DbUtility.SQL_ALIAS]: Alias
     [DbUtility.SQL_EXPRESSION]: TableRef
-    [DbUtility.SQL_REF_ALIAS]: RefAlias
+    [DbUtility.SQL_ALIAS_FOR_WITH_QUERY]: AliasForWithQuery
 } & {
     [K in keyof Entity]: Expr<TableRef, K, Entity[K]>
 }
 
-export type AnyAliasedTableDef = AliasedTable<string, string, {}, string | NOT_REFERENCED>
+export type AnyAliasedTableDef = AliasedTable<string, string, {}, string | NotUsingWithPart>
 
-export type NOT_REFERENCED = { __not_referenced: true }
+export type NotUsingWithPart = { __not_referenced: true }
 
 export type PrepareQueryArgument = { __prepare_argument: true, name: string }
 

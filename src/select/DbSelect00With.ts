@@ -1,4 +1,4 @@
-import {AliasedTable, AnyAliasedTableDef, isAliasAlreadyUsed, Key, NOT_REFERENCED} from "../Types";
+import {AliasedTable, AnyAliasedTableDef, isAliasAlreadyUsed, Key, NotUsingWithPart} from "../Types";
 import {DbSelect01From} from "./DbSelect01From";
 import {DbSelect} from "./DbSelect";
 
@@ -9,7 +9,7 @@ export class DbSelect00With<AliasesFromWith, CTX> extends DbSelect<CTX> {
         TableRef extends `${string} as ${Alias}`,
         Columns
     >(
-        table: isAliasAlreadyUsed<AliasesFromWith, Alias, AliasedTable<Alias, TableRef, Columns, NOT_REFERENCED>>
+        table: isAliasAlreadyUsed<AliasesFromWith, Alias, AliasedTable<Alias, TableRef, Columns, NotUsingWithPart>>
     ): DbSelect00With<AliasesFromWith & Key<Alias>, CTX> {
         this.builder.with(table as AnyAliasedTableDef);
         return this as any;

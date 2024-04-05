@@ -1,5 +1,5 @@
 import {Sql} from "./Sql";
-import {AliasedTable, Key, NOT_REFERENCED, PrepareQueryArgument} from "./Types";
+import {AliasedTable, Key, NotUsingWithPart, PrepareQueryArgument} from "./Types";
 import {DbSelect00Uses} from "./select/DbSelect00Uses";
 import {DbSelect00With} from "./select/DbSelect00With";
 import {DbSelectBuilder} from "./select/DbSelectBuilder";
@@ -24,7 +24,7 @@ export abstract class Db<CTX> {
         TableName extends string,
         TableRef extends `${TableName} as ${Alias}`
     >(
-        table: AliasedTable<Alias, TableRef, any, NOT_REFERENCED>
+        table: AliasedTable<Alias, TableRef, any, NotUsingWithPart>
     ): DbSelect00Uses<Key<Alias>, Key<TableRef>, CTX> {
         return new DbSelect00Uses(new DbSelectBuilder<CTX>(this.exec));
     }
@@ -34,7 +34,7 @@ export abstract class Db<CTX> {
         TableName extends string,
         TableRef extends `${TableName} as ${Alias}`
     >(
-        table: AliasedTable<Alias, TableRef, any, NOT_REFERENCED>
+        table: AliasedTable<Alias, TableRef, any, NotUsingWithPart>
     ): DbSelect00With<Key<Alias>, CTX> {
         return new DbSelect00With(new DbSelectBuilder<CTX>(this.exec)).with(table as any);
     }
@@ -47,22 +47,24 @@ export abstract class Db<CTX> {
         exec: (ctx: CTX, args: PrepareQueryArguments) => Promise<Result[]>,
         execOne: (ctx: CTX, args: PrepareQueryArguments) => Promise<Result | undefined>
     } {
-        const argumentsInOrder: string[] = [];
-        const p: PrepareQueryArguments = new Proxy({}, {
-            get(_: {}, p: string): PrepareQueryArgument {
-                argumentsInOrder.push(p);
-                return {__prepare_argument: true, name: p};
+        let sqlQuery: string = undefined;
+        const getSqlString = () => {
+            if (sqlQuery === undefined) {
+                const p: PrepareQueryArguments = new Proxy({}, {
+                    get(_: {}, p: string): PrepareQueryArgument {
+                        return {__prepare_argument: true, name: p};
+                    }
+                }) as any
+                sqlQuery = func(p).toString();
             }
-        }) as any
-        const str = func(p).toString();
+            return sqlQuery;
+        }
         return {
             exec: async (ctx: CTX, args: PrepareQueryArguments): Promise<Result[]> => {
-                console.log(str, args)
-                return this.exec(ctx, str, args)
+                return this.exec(ctx, getSqlString(), args)
             },
             execOne: async (ctx: CTX, args: PrepareQueryArguments): Promise<Result | undefined> => {
-                console.log(str, args)
-                return (await this.exec(ctx, str, args))?.[0]
+                return (await this.exec(ctx, getSqlString(), args))?.[0]
             }
         }
     }
@@ -73,7 +75,7 @@ export abstract class Db<CTX> {
         TableRef extends `${TableName} as ${Alias}`,
         Entity,
         NewAlias extends string
-    >(table: AliasedTable<Alias, TableRef, Entity, NOT_REFERENCED>, newAlias: NewAlias): AliasedTable<NewAlias, `${TableName} as ${NewAlias}`, Entity, Alias> {
+    >(table: AliasedTable<Alias, TableRef, Entity, NotUsingWithPart>, newAlias: NewAlias): AliasedTable<NewAlias, `${TableName} as ${NewAlias}`, Entity, Alias> {
         const definition: DbTableDefinition<Entity> = {} as any;
         for (const k in table) {
             (definition as any)[k] = (table as any)[k];
@@ -84,7 +86,7 @@ export abstract class Db<CTX> {
     protected getDbTableAliasFunction<TableName extends string, Entity>(
         tableName: TableName,
         columns: DbTableDefinition<Entity>
-    ): <Alias extends string>(alias: Alias) => AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NOT_REFERENCED> {
+    ): <Alias extends string>(alias: Alias) => AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> {
         return <Alias extends string>(alias: Alias) => DbUtility.defineDbTable<TableName, Alias, Entity>(Sql.escapeId(tableName) as TableName, alias, columns);
     }
 

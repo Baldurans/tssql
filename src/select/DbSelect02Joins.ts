@@ -1,4 +1,4 @@
-import {AliasedTable, AnyAliasedTableDef, Expr, isAliasAlreadyUsed, isTableReferenced, Key, NOT_REFERENCED, SQL_BOOL} from "../Types";
+import {AliasedTable, AnyAliasedTableDef, Expr, isAliasAlreadyUsed, isTableReferenced, Key, NotUsingWithPart, SQL_BOOL} from "../Types";
 import {DbSelect03Columns} from "./DbSelect03Columns";
 
 export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelect03Columns<{}, Tables, CTX> {
@@ -6,7 +6,7 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
     public join<
         Alias extends string,
         TableRef extends `${string} as ${Alias}`,
-        RefAlias extends NOT_REFERENCED | string,
+        RefAlias extends NotUsingWithPart | string,
         ColTableRef extends string
     >(
         table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
@@ -19,7 +19,7 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
     public leftJoin<
         Alias extends string,
         TableRef extends `${string} as ${Alias}`,
-        RefAlias extends NOT_REFERENCED | string,
+        RefAlias extends NotUsingWithPart | string,
         ColTableRef extends string
     >(
         table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
@@ -32,4 +32,4 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
 
 type isConditionUsingJoinedTable<TableRef, ColTableRef, OUT> = TableRef extends ColTableRef ? OUT : "Join condition should use columns from the joined table!"
 
-type isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, OUT> = RefAlias extends NOT_REFERENCED | string & keyof AliasesFromWith ? OUT : `Alias '${RefAlias extends string ? RefAlias : RefAlias extends NOT_REFERENCED ? "NOT_REFERENCED" : "???"}' is not defined by any of the with queries!`
+type isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, OUT> = RefAlias extends NotUsingWithPart | string & keyof AliasesFromWith ? OUT : `Alias '${RefAlias extends string ? RefAlias : RefAlias extends NotUsingWithPart ? "NOT_REFERENCED" : "???"}' is not defined by any of the with queries!`

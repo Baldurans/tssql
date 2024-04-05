@@ -1,4 +1,4 @@
-import {AliasedTable, NOT_REFERENCED, Expr} from "../Types";
+import {AliasedTable, NotUsingWithPart, Expr} from "../Types";
 import {SqlExpression} from "../SqlExpression";
 import {DbSelect} from "./DbSelect";
 import {DbUtility} from "../DbUtility";
@@ -14,7 +14,7 @@ export class DbSelect09Exec<Result, CTX> extends DbSelect<CTX> {
         return SqlExpression.create("(\n" + this.builder.toString(2) + TAB + ")", alias);
     }
 
-    public as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result, NOT_REFERENCED> {
+    public as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result, NotUsingWithPart> {
         return DbUtility.defineDbTable<"(SUBQUERY)", Alias, Result>("(\n" + this.builder.toString(2) + ")" as "(SUBQUERY)", alias, this.builder.getColumnStruct())
     }
 
