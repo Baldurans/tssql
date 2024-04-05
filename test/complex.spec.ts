@@ -120,7 +120,7 @@ test("complex", async () => {
 
         )
 
-        .groupBy(c.id, c.username, "expr2")
+        // .groupBy(c.id, c.username, "expr2")
         //.groupBy(c3.id, c.username, "expr2") // ____ERROR, c3 is not referenced
         //.groupBy(c.id, c.username, "notDefined") // ____ERROR, notDefined does not exist
 

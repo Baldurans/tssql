@@ -1,5 +1,5 @@
 import {Sql} from "./Sql";
-import {AliasedTable, Key, NotUsingWithPart, PrepareQueryArgument} from "./Types";
+import {AliasedTable, NotUsingWithPart, PrepareQueryArgument} from "./Types";
 import {DbSelect00Uses} from "./select/DbSelect00Uses";
 import {DbSelect00With} from "./select/DbSelect00With";
 import {DbSelectBuilder} from "./select/DbSelectBuilder";
@@ -25,7 +25,7 @@ export abstract class Db<CTX> {
         TableRef extends `${TableName} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, any, NotUsingWithPart>
-    ): DbSelect00Uses<Alias, Key<TableRef>, CTX> {
+    ): DbSelect00Uses<Alias, TableRef, CTX> {
         return new DbSelect00Uses(new DbSelectBuilder<CTX>(this.exec));
     }
 

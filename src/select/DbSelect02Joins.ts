@@ -1,7 +1,7 @@
 import {AliasedTable, AnyAliasedTableDef, Expr, isAliasAlreadyUsed, isTableReferenced, NotUsingWithPart, SQL_BOOL} from "../Types";
 import {DbSelect03Columns} from "./DbSelect03Columns";
 
-export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelect03Columns<{}, Tables, CTX> {
+export class DbSelectJoin<Aliases, AliasesFromWith, Tables extends string, CTX> extends DbSelect03Columns<{}, Tables, CTX> {
 
     public join<
         Alias extends string,

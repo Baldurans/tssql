@@ -2,7 +2,7 @@ import {AliasedTable, isAliasAlreadyUsed, NotUsingWithPart} from "../Types";
 import {DbSelect01From} from "./DbSelect01From";
 import {DbSelect} from "./DbSelect";
 
-export class DbSelect00Uses<Aliases, Tables, CTX> extends DbSelect<CTX> {
+export class DbSelect00Uses<Aliases, Tables extends string, CTX> extends DbSelect<CTX> {
 
     public uses<
         Alias extends string,
