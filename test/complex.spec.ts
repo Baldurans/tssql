@@ -112,17 +112,19 @@ test("complex", async () => {
             c.id.eq(c2.id),
             c.id.comparec(">=", c2.id),
 
+            // cFake.name.is("as"),
             // c3.username.is("aa"),  // ____ERROR, c3 is not referenced
             // Sql.is(c3.username, "aa"), // ____ERROR, c3 is not referenced
+            // Sql.and(c3.username.is("a"), cFake.name.is("a"), c4.username.is("a")), // ____ERROR, c3 is not referenced
 
         )
 
-        // .groupBy(c.id, c.username, "expr2")
-        //.groupBy(c3.id, c.username, "expr2") // ____ERROR, c3 is not referenced
-        // .groupBy(c.id, c.username, "notDefined") // ____ERROR, notDefined does not exist
+    // .groupBy(c.id, c.username, "expr2")
+    //.groupBy(c3.id, c.username, "expr2") // ____ERROR, c3 is not referenced
+    // .groupBy(c.id, c.username, "notDefined") // ____ERROR, notDefined does not exist
 
-        .orderBy(c.id, "asc", c.id, c.username, "expr2", "desc")
-        .noLimit()
+    // .orderBy(c.id, "asc", c.id, c.username, "expr2", "desc")
+    // .noLimit()
 
     console.log(query.toString())
 

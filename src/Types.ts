@@ -84,14 +84,14 @@ export type isAliasAlreadyUsed<Aliases, Alias extends string, OUT> = Alias exten
 // ----------------------------------------------
 // This stuff helps to check if 'Table as Alias' exists in usedTables
 
-type _AllKeys<T> = T extends any ? keyof T : never;
-type _ExtractMissingAlias<Tables, CheckTables> = { [K in keyof CheckTables]: K extends keyof Tables ? never : K }[keyof CheckTables];
-type _ConstructAliasDoesNotExistError<Tables, CheckTables> = `Alias '${_ExtractMissingAlias<Tables, CheckTables> extends `${infer TableName} as ${infer Alias}` ? Alias : "???"}' is not used in this query!`
+type _extractMissingAlias<Tables, CheckTables> = { [K in keyof CheckTables]: K extends keyof Tables ? never : K }[keyof CheckTables];
 /**
  * Check if UsedTablesToMatch=(R<Alias.Table> & ...) exists in UsedTables=(R<Alias.Table> & ...)
  */
-export type isTableReferenced<Tables, CheckTables, OUT> = _AllKeys<CheckTables> extends _AllKeys<Tables>
+// type _AllKeys<T> = T extends any ? keyof T : never;
+// export type isTableReferenced<Tables, CheckTables, OUT> = _AllKeys<CheckTables> extends _AllKeys<Tables> might be more correct if unions would be used, but we don't really use them in this place.
+export type isTableReferenced<Tables, CheckTables, OUT> = keyof CheckTables extends keyof Tables
     ? OUT
-    : _ConstructAliasDoesNotExistError<Tables, CheckTables>;
+    : `Table '${_extractMissingAlias<Tables, CheckTables> extends `${infer TableRef}` ? `${TableRef}` : "???"}' is not used in this query!`
 
 // -----------------------------------------------------
