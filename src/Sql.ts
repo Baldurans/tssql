@@ -194,19 +194,26 @@ export class Sql {
     }
 
     // -------------------------------------------------------------------
-    // MANIPULATION
+    // STRING MANIPULATION
     // -------------------------------------------------------------------
 
     public static trim<Type extends string, TableRef extends string>(value: string | PrepareQueryArgument): Expr<TableRef, unknown, Type> {
         return SqlExpression.create("TRIM(" + this.escape(value) + ")")
     }
 
+    /**
+     * normal SQL length function, but JS does not allow usage of length.
+     */
+    public static length2<Type extends string, TableRef extends string>(value: string | PrepareQueryArgument | Expr<TableRef, string | unknown, Type>): Expr<TableRef, unknown, number> {
+        return SqlExpression.create("LENGTH(" + this.escape(this._toSqlArg(value)) + ")")
+    }
+
     public static concat<TableRef extends string>(...expr: (string | PrepareQueryArgument | Expr<TableRef, any, any>)[]): Expr<TableRef, unknown, string> {
-        return SqlExpression.create("CONCAT (" + expr.map(this.toSqlArg) + ")")
+        return SqlExpression.create("CONCAT (" + expr.map(this._toSqlArg) + ")")
     }
 
     public static concat_ws<TableRef extends string>(separator: string, ...expr: (string | PrepareQueryArgument | Expr<TableRef, any, any>)[]): Expr<TableRef, unknown, string> {
-        return SqlExpression.create("CONCAT_WS(" + this.escape(separator) + "," + expr.map(this.toSqlArg) + ")")
+        return SqlExpression.create("CONCAT_WS(" + this.escape(separator) + "," + expr.map(this._toSqlArg) + ")")
     }
 
     public static groupConcat<TableRef extends string>(
@@ -216,7 +223,7 @@ export class Sql {
     ): Expr<TableRef, unknown, string> {
         return SqlExpression.create("GROUP_CONCAT(" +
             (distinct ? "DISTINCT " : "") +
-            "" + expr.map(this.toSqlArg) +
+            "" + expr.map(this._toSqlArg) +
             (separator ? " SEPARATOR " + this.escape(separator) : "") +
             ")");
     }
@@ -229,11 +236,15 @@ export class Sql {
     ): Expr<TableRef | OrderByTableRef, unknown, string> {
         return SqlExpression.create("GROUP_CONCAT(" +
             (distinct ? "DISTINCT " : "") +
-            "" + expr.map(this.toSqlArg) +
+            "" + expr.map(this._toSqlArg) +
             (orderBy && orderBy.length > 0 ? " ORDER BY " + orderByStructureToSqlString(orderBy).join(", ") : "") +
             (separator ? " SEPARATOR " + this.escape(separator) : "") +
             ")");
     }
+
+    // -------------------------------------------------------------------
+    // DATE MANIPULATION
+    // -------------------------------------------------------------------
 
     public static date<TableRef extends string, Name, Type extends vDate | vDateTime>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, vDate> {
         return SqlExpression.create("DATE(" + field.expression + ")")
@@ -314,7 +325,7 @@ export class Sql {
     // UTILITY
     // -------------------------------------------------------------------
 
-    private static toSqlArg = (e: string | PrepareQueryArgument | AnyExpr) => {
+    private static _toSqlArg = (e: string | PrepareQueryArgument | AnyExpr) => {
         if (typeof e === "string") {
             return this.escape(e);
         } else if (typeof e === "number") {
