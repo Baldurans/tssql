@@ -59,6 +59,7 @@ test("simple", async () => {
             val && c.username.isNull(),
             c.username.notNull()
         ))
+
         .groupBy("renamedId", c.id)
         .orderBy("renamedId", c.id)
         .noLimit()

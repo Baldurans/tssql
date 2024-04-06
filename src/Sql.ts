@@ -33,33 +33,33 @@ export class Sql {
      * DO NOT USE THIS METHOD :)
      */
     public static __veryDangerousUnsafeSqlExpression<TableRef extends string>(arg: {
-        I_DID_NOT_USE_UNSAFE_VARIABLES_TO_CONSTRUCT_THIS_STRING: (string | Expr<TableRef, string | unknown, string | number | unknown, never>)[]
-    }): Expr<TableRef, unknown, unknown, never> {
+        I_DID_NOT_USE_UNSAFE_VARIABLES_TO_CONSTRUCT_THIS_STRING: (string | Expr<TableRef, string | unknown, string | number | unknown, unknown>)[]
+    }): Expr<TableRef, unknown, unknown, unknown> {
         return SqlExpression.create("(" + arg.I_DID_NOT_USE_UNSAFE_VARIABLES_TO_CONSTRUCT_THIS_STRING.map(e => typeof e === "string" ? e : e.expression).join("") + ")")
     }
 
-    public static null<Type = null>(): Expr<null, unknown, Type, never> {
+    public static null<Type = null>(): Expr<null, unknown, Type, unknown> {
         return SqlExpression.create("NULL")
     }
 
-    public static now(): Expr<null, unknown, vDateTime, never> {
+    public static now(): Expr<null, unknown, vDateTime, unknown> {
         return SqlExpression.create("NOW()")
     }
 
-    public static curDate(): Expr<null, unknown, vDate, never> {
+    public static curDate(): Expr<null, unknown, vDate, unknown> {
         return SqlExpression.create("CURDATE()")
     }
 
 
-    public static string(value: string | PrepareQueryArgument): Expr<null, unknown, string, never> {
+    public static string(value: string | PrepareQueryArgument): Expr<null, unknown, string, unknown> {
         return SqlExpression.create(this.escape(value))
     }
 
-    public static number(value: number | PrepareQueryArgument): Expr<null, unknown, number, never> {
+    public static number(value: number | PrepareQueryArgument): Expr<null, unknown, number, unknown> {
         return SqlExpression.create(this.escape(value))
     }
 
-    public static literal<Type extends string | number>(value: Type): Expr<null, unknown, Type, never> {
+    public static literal<Type extends string | number>(value: Type): Expr<null, unknown, Type, unknown> {
         return SqlExpression.create(this.escape(value))
     }
 

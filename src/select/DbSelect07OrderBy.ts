@@ -1,16 +1,35 @@
-import {Expr} from "../Types";
+import {AliasedTable, Expr, Key, NotUsingWithPart} from "../Types";
 import {DbSelect08Limit} from "./DbSelect08Limit";
+import {isColumnOkToUse} from "./DbSelect05GroupBy";
+import {SqlExpression} from "../SqlExpression";
 
 export class DbSelect07OrderBy<Result, Tables, CTX> extends DbSelect08Limit<Result, CTX> {
 
     public orderBy<
-        TableRef extends string & keyof Tables,
-        Str extends string & keyof Result
+        TableRef extends string,
+        Str extends string,
+        Columns extends OrderByStructure<(Str | Expr<TableRef, string | unknown, any, string | never>)>
     >(
-        ...items: OrderByStructure<(Str | Expr<TableRef, string | unknown, string | number, string | never>)>
+        ...items: isColumnOkToUse<Result, Tables, Columns>
     ): DbSelect08Limit<Result, CTX> {
         this.builder.orderBy(items as any);
         return new DbSelect08Limit(this.builder);
+    }
+
+    public orderByF<
+        TableRef extends string,
+        StrNames extends string | never,
+        Columns extends OrderByStructure<Expr<TableRef, string | unknown, string | number, StrNames>>
+    >(
+        func: (columnsTable: AliasedTable<"__res", "__res", Result, NotUsingWithPart>) => isColumnOkToUse<Result, Tables & Key<"__res">, Columns>
+    ): DbSelect07OrderBy<Result, Tables, CTX> {
+        const proxy: any = new Proxy({}, {
+            get(target: {}, p: string, receiver: any): any {
+                return new SqlExpression(p, p)
+            }
+        })
+        this.builder.orderBy(func(proxy) as any);
+        return new DbSelect07OrderBy(this.builder)
     }
 }
 

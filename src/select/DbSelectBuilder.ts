@@ -109,9 +109,10 @@ export class DbSelectBuilder<CTX> {
         }
     }
 
-    public having(col: AnyExpr): void {
-        if (col !== undefined) {
-            this._having.push(col.expression)
+    public having(items: AnyExpr[]): void {
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            this._having.push(typeof item === "string" ? item : item.expression)
         }
     }
 
