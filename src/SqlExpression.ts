@@ -7,6 +7,10 @@ export type Expr<TableRef, Name, Type extends string | number | unknown> = symbo
     type: Type
 } & SqlExpression<TableRef, Name, Type>
 
+export type ExprWithOver<TableRef, Name, Type extends string | number | unknown> = symbol
+    & Expr<TableRef, Name, Type>
+    & SqlExpressionWithOver<TableRef, Name, Type>
+
 export type AnyBoolExpr<TableRef> = Expr<TableRef, string | unknown, SQL_BOOL>;
 
 export type AnyExpr = Expr<string, string | unknown, string | number | unknown>
@@ -24,6 +28,10 @@ export class SqlExpression<TableRef, Name, Type extends string | number | unknow
 
     public static create<TableRef, Name, Type>(expression: string, nameAs?: string | unknown | undefined): Expr<TableRef, Name, Type> {
         return new SqlExpression(expression, nameAs) as any
+    }
+
+    public static createWithOver<TableRef, Name, Type>(expression: string, nameAs?: string | unknown | undefined): ExprWithOver<TableRef, Name, Type> {
+        return new SqlExpressionWithOver(expression, nameAs) as any
     }
 
     public cast<CastType extends string | number>(): Expr<TableRef, Name, CastType> {
@@ -102,9 +110,10 @@ export class SqlExpression<TableRef, Name, Type extends string | number | unknow
         return Sql.datetime(this.asValue()).as(this.nameAs as any);
     }
 
-    // -------------------------------------------------------------------
-    // MISC
-    // -------------------------------------------------------------------
+}
+
+
+export class SqlExpressionWithOver<TableRef, Name, Type extends string | number | unknown> extends SqlExpression<TableRef, Name, Type> {
 
     public over<TableRef1 extends string>(func: (builder: SqlOverClauseBuilder<never>) => SqlOverClauseBuilder<TableRef1>): Expr<TableRef | TableRef1, unknown, Type>
     //public over<WindowName extends string>(namedWindow: WindowName): Expr<TableRef | `${WINDOW} as ${WindowName}`, unknown, Type>

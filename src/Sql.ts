@@ -1,6 +1,6 @@
 import {COMPARISON_SIGNS, ComparisonOperandsLookup, isPrepareArgument, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
 import mysql from "mysql";
-import {AnyBoolExpr, AnyExpr, Expr, SqlExpression} from "./SqlExpression";
+import {AnyBoolExpr, AnyExpr, Expr, ExprWithOver, SqlExpression} from "./SqlExpression";
 import {OrderByStructure, orderByStructureToSqlString} from "./select/DbSelect07OrderBy";
 
 export class Sql {
@@ -315,48 +315,50 @@ export class Sql {
     // AGGREGATE FUNCTIONS
     // -------------------------------------------------------------------
 
-    public static min<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, Type> {
-        return SqlExpression.create("MIN(" + col.expression + ")", col.nameAs)
+    public static min<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): ExprWithOver<TableRef, Name, Type> {
+        return SqlExpression.createWithOver("MIN(" + col.expression + ")", col.nameAs)
     }
 
-    public static max<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, Type> {
-        return SqlExpression.create("MAX(" + col.expression + ")", col.nameAs)
+    public static max<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): ExprWithOver<TableRef, Name, Type> {
+        return SqlExpression.createWithOver("MAX(" + col.expression + ")", col.nameAs)
     }
 
-    public static sum<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, Type> {
-        return SqlExpression.create("SUM(" + col.expression + ")", col.nameAs)
+    public static sum<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): ExprWithOver<TableRef, Name, Type> {
+        return SqlExpression.createWithOver("SUM(" + col.expression + ")", col.nameAs)
     }
 
-    public static count<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, Type> {
-        return SqlExpression.create("COUNT(" + col.expression + ")", col.nameAs)
+    public static count<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number>
+    public static count(value: number): ExprWithOver<never, unknown, number>
+    public static count(col: any): any {
+        return SqlExpression.createWithOver("COUNT(" + (col instanceof SqlExpression ? col.expression : Number(col)) + ")", col.nameAs)
     }
 
-    public static rank(): Expr<never, unknown, number> {
-        return SqlExpression.create("RANK()", undefined)
+    public static rank(): ExprWithOver<never, unknown, number> {
+        return SqlExpression.createWithOver("RANK()", undefined)
     }
 
-    public static rowNumber(): Expr<never, unknown, number> {
-        return SqlExpression.create("ROW_NUMBER()", undefined)
+    public static rowNumber(): ExprWithOver<never, unknown, number> {
+        return SqlExpression.createWithOver("ROW_NUMBER()", undefined)
     }
 
-    public static lag<Type, TableRef>(col: Expr<TableRef, unknown, Type>, n?: number, def?: number): Expr<TableRef, unknown, Type> {
-        return SqlExpression.create("LAG(" + col.expression + "," + (n ? Number(n) : 0) + "," + (def ? Number(def) : 0) + ")", undefined)
+    public static lag<Type, TableRef>(col: Expr<TableRef, unknown, Type>, n?: number, def?: number): ExprWithOver<TableRef, unknown, Type> {
+        return SqlExpression.createWithOver("LAG(" + col.expression + "," + (n ? Number(n) : 0) + "," + (def ? Number(def) : 0) + ")", undefined)
     }
 
-    public static lead<Type, TableRef>(col: Expr<TableRef, unknown, Type>, n?: number, def?: number): Expr<TableRef, unknown, Type> {
-        return SqlExpression.create("LEAD(" + col.expression + "," + (n ? Number(n) : 0) + "," + (def ? Number(def) : 0) + ")", undefined)
+    public static lead<Type, TableRef>(col: Expr<TableRef, unknown, Type>, n?: number, def?: number): ExprWithOver<TableRef, unknown, Type> {
+        return SqlExpression.createWithOver("LEAD(" + col.expression + "," + (n ? Number(n) : 0) + "," + (def ? Number(def) : 0) + ")", undefined)
     }
 
-    public static firstValue<Type, TableRef>(col: Expr<TableRef, unknown, Type>): Expr<TableRef, unknown, Type> {
-        return SqlExpression.create("FIRST_VALUE(" + col.expression + ")", undefined)
+    public static firstValue<Type, TableRef>(col: Expr<TableRef, unknown, Type>): ExprWithOver<TableRef, unknown, Type> {
+        return SqlExpression.createWithOver("FIRST_VALUE(" + col.expression + ")", undefined)
     }
 
-    public static lastValue<Type, TableRef>(col: Expr<TableRef, unknown, Type>): Expr<TableRef, unknown, Type> {
-        return SqlExpression.create("LAST_VALUE(" + col.expression + ")", undefined)
+    public static lastValue<Type, TableRef>(col: Expr<TableRef, unknown, Type>): ExprWithOver<TableRef, unknown, Type> {
+        return SqlExpression.createWithOver("LAST_VALUE(" + col.expression + ")", undefined)
     }
 
-    public static nthValue<Type, TableRef>(col: Expr<TableRef, unknown, Type>, value: number): Expr<TableRef, unknown, Type> {
-        return SqlExpression.create("NTH_VALUE(" + col.expression + "," + (value ? Number(value) : 0) + ")", undefined)
+    public static nthValue<Type, TableRef>(col: Expr<TableRef, unknown, Type>, value: number): ExprWithOver<TableRef, unknown, Type> {
+        return SqlExpression.createWithOver("NTH_VALUE(" + col.expression + "," + (value ? Number(value) : 0) + ")", undefined)
     }
 
     // -------------------------------------------------------------------
