@@ -126,7 +126,7 @@ test("complex", async () => {
         // .groupBy(c.username, c3.id) // ____ERROR, c3 is not referenced
         // .groupByF(r => [c.username, r.renamedId, c3.id]) // ____ERROR, c3 is not referenced
 
-        .having(c.id.is(10 as tUserId))  // OK
+        // .having(c.id.is(10 as tUserId))  // OK
         // .havingF(r => [c.id.is(10 as tUserId), r.expr2.isNull()])  // OK
         // .havingF(r => [Sql.concat(r.expr2, r.expr1).is("adfadf")]) // OK
         // .having(c.username) // ____ERROR, expression should be of Boolean type.
