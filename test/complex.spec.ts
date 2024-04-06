@@ -99,6 +99,7 @@ test("complex", async () => {
                 .where(s.id.eq(c.id)).noLimit().asScalar("subColumn"),
 
             // c.id, // ____ERROR, can't add same field twice!
+            // Sql.datediff(Sql.now(), c.created) // ____ERROR, Is missing column name
             // subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
             // cFake.name, // ____ERROR, table X is not used in the query
             // c3.username // ____ERROR, table X is not used in the query
