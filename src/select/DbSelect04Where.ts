@@ -1,6 +1,7 @@
-import {AnyExpr, isTableReferenced, SQL_BOOL, Key, Expr} from "../Types";
+import {isTableReferenced, SQL_BOOL, Key} from "../Types";
 import {DbSelect} from "./DbSelect";
 import {DbSelect05GroupBy} from "./DbSelect05GroupBy";
+import {AnyExpr, Expr} from "../SqlExpression";
 
 export class DbSelect04Where<Result, Tables, CTX> extends DbSelect<CTX> {
     public noWhere(): DbSelect05GroupBy<Result, Tables, CTX> {

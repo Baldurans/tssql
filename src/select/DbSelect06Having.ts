@@ -1,7 +1,7 @@
-import {AliasedTable, AnyExpr, COLUMNS, Expr, Key, NotUsingWithPart, SQL_BOOL} from "../Types";
+import {AliasedTable, COLUMNS, Key, NotUsingWithPart, SQL_BOOL} from "../Types";
 import {DbSelect07OrderBy} from "./DbSelect07OrderBy";
 import {isColumnOkToUse} from "./DbSelect05GroupBy";
-import {SqlExpression} from "../SqlExpression";
+import {AnyExpr, Expr, SqlExpression} from "../SqlExpression";
 
 export class DbSelect06Having<Result, Tables, CTX> extends DbSelect07OrderBy<Result, Tables, CTX> {
 

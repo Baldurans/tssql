@@ -1,7 +1,7 @@
-import {AliasedTable, COLUMNS, Expr, Key, NotUsingWithPart} from "../Types";
+import {AliasedTable, COLUMNS, Key, NotUsingWithPart} from "../Types";
 import {DbSelect08Limit} from "./DbSelect08Limit";
 import {isColumnOkToUse} from "./DbSelect05GroupBy";
-import {SqlExpression} from "../SqlExpression";
+import {Expr, SqlExpression} from "../SqlExpression";
 
 export class DbSelect07OrderBy<Result, Tables, CTX> extends DbSelect08Limit<Result, CTX> {
 

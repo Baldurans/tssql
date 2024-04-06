@@ -1,8 +1,8 @@
-import {AliasedTable, COLUMNS, Expr, Key, NotUsingWithPart} from "../Types";
+import {AliasedTable, COLUMNS, Key, NotUsingWithPart} from "../Types";
 import {DbSelect07OrderBy} from "./DbSelect07OrderBy";
 import {DbSelect06Having} from "./DbSelect06Having";
 import {DbSelect09Exec} from "./DbSelect09Exec";
-import {SqlExpression} from "../SqlExpression";
+import {Expr, SqlExpression} from "../SqlExpression";
 
 export class DbSelect05GroupBy<Result, Tables, CTX> extends DbSelect07OrderBy<Result, Tables, CTX> {
 

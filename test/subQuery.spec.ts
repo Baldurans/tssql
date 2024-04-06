@@ -48,9 +48,9 @@ test("simple", async () => {
             scalarSub,
         )
         .where(
-            c.id.is(input.userId),
+            c.id.eq(input.userId),
             c.username.isNull(),
-            c.id.is(input.userId)
+            c.id.eq(input.userId)
         )
         .noLimit()
 

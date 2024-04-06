@@ -1,5 +1,5 @@
-import {AliasedTable, NotUsingWithPart, Expr} from "../Types";
-import {SqlExpression} from "../SqlExpression";
+import {AliasedTable, NotUsingWithPart} from "../Types";
+import {Expr, SqlExpression} from "../SqlExpression";
 import {DbSelect} from "./DbSelect";
 import {DbUtility} from "../DbUtility";
 import {DbTableDefinition} from "../Db";

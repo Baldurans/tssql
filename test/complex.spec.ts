@@ -23,7 +23,7 @@ test("complex", async () => {
         .select()
         .from(s)
         .columns(s.id, s.created, s.username, s.age, s.id.as("subIdRenamed"))
-        .where(s.id.is(10 as tUserId))
+        .where(s.id.eq(10 as tUserId))
         .noLimit()
         .as("withSub")
     const withSubSub1 = MyDb.createRef(withSub, "withSubSub1");
@@ -33,7 +33,7 @@ test("complex", async () => {
         .select()
         .from(s)
         .columns(s.id, s.created, s.username, s.age, s.id.as("subIdRenamed"))
-        .where(s.id.is(10 as tUserId))
+        .where(s.id.eq(10 as tUserId))
         .limit([0, 50])
         .as("withSub2")
     const withSub2Sub1 = MyDb.createRef(withSub2, "withSub2Sub1")
@@ -52,11 +52,14 @@ test("complex", async () => {
         .noLimit()
         .as("sub")
 
+
     // const xxx1 = c.id.eq(10 as tUserId) // ____ERROR, giving value to a method that expects SqlExpression.
     // const xxx2 = Sql.is(Sql.date(c2.username), "2024.03.09" as vDate) // ____ERROR - wrong type DATE(c.name) = '2024.03.09',
     // const xxx3 = c.id.is(10) // ____ERROR, 10 is not tUser
     // const xxx4 = Sql.is(c.id, 10)  // ____ERROR, as 10 is not tUserId
-
+    // const xxx5 = Sql.eq(c.id, cFake.id)  // ____ERROR, as tUser can't be applied over tCompanyId
+    // const xxx5 = c.id.eq(cFake.id)  // ____ERROR, as tUser can't be applied over tCompanyId
+    // const xxx6 = c.id.eq(12 as tCompanyId)  // ____ERROR, as tUser can't be applied over tCompanyId
 
     const query = db
         .with(withSub)
@@ -108,17 +111,17 @@ test("complex", async () => {
         )
 
         .where(
-            c.id.is(10 as tUserId),
+            c.id.eq(10 as tUserId),
             c.id.eq(c2.id),
             Sql.date(c.created).compare(">=", "2024.03.09" as vDate),
-            c.id.is(10 as tUserId),
+            c.id.eq(10 as tUserId),
             c.id.eq(c2.id),
             c.id.comparec(">=", c2.id),
 
-            // cFake.name.is("as"), // ____ERROR, company as c is not referenced
-            // c3.username.is("aa"),  // ____ERROR, c3 is not referenced
-            // Sql.is(c3.username, "aa"), // ____ERROR, c3 is not referenced
-            // Sql.and(c3.username.is("a"), cFake.name.is("a"), c4.username.is("a")), // ____ERROR, c3, company as c, c4 is not referenced
+            // cFake.name.eq("as"), // ____ERROR, company as c is not referenced
+            // c3.username.eq("aa"),  // ____ERROR, c3 is not referenced
+            // Sql.eq(c3.username, "aa"), // ____ERROR, c3 is not referenced
+            // Sql.and(c3.username.eq("a"), cFake.name.eq("a"), c4.username.eq("a")), // ____ERROR, c3, company as c, c4 is not referenced
 
         )
 
@@ -127,13 +130,13 @@ test("complex", async () => {
         // .groupBy(c.username, c3.id) // ____ERROR, c3 is not referenced
         // .groupByF(r => [c.username, r.renamedId, c3.id]) // ____ERROR, c3 is not referenced
 
-        // .having(c.id.is(10 as tUserId))  // OK
-        // .havingF(r => [c.id.is(10 as tUserId), r.expr2.isNull()])  // OK
-        // .havingF(r => [Sql.concat(r.expr2, r.expr1).is("adfadf")]) // OK
+        // .having(c.id.eq(10 as tUserId))  // OK
+        // .havingF(r => [c.id.eq(10 as tUserId), r.expr2.isNull()])  // OK
+        // .havingF(r => [Sql.concat(r.expr2, r.expr1).eq("adfadf")]) // OK
         // .having(c.username) // ____ERROR, expression should be of Boolean type.
         // .havingF(r => [r.renamedId]) // ____ERROR, expression should be of Boolean type.
-        // .having(c3.id.is(10 as tUserId)) // ____ERROR, c3 is not referenced
-        // .havingF(r => [Sql.concat(r.expr2, c.username, c3.username, c4.username).is("adfadf")]) //  ____ERROR, c3,c4 is not referenced
+        // .having(c3.id.eq(10 as tUserId)) // ____ERROR, c3 is not referenced
+        // .havingF(r => [Sql.concat(r.expr2, c.username, c3.username, c4.username).eq("adfadf")]) //  ____ERROR, c3,c4 is not referenced
 
         // .orderBy(c.id, "asc", c.username, "desc") // OK
         // .orderByF(r => [r.expr1, c.id, "asc", c.id, "desc"]) // OK

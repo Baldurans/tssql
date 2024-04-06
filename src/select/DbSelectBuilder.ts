@@ -1,7 +1,7 @@
 import {DbTableDefinition} from "../Db";
 import {Sql} from "../Sql";
-import {SqlExpression} from "../SqlExpression";
-import {AnyAliasedTableDef, AnyExpr} from "../Types";
+import {AnyExpr, SqlExpression} from "../SqlExpression";
+import {AnyAliasedTableDef} from "../Types";
 import {DbUtility} from "../DbUtility";
 import {OrderByStructure, orderByStructureToSqlString} from "./DbSelect07OrderBy";
 
@@ -88,7 +88,7 @@ export class DbSelectBuilder<CTX> {
     }
 
     public columns(cols: AnyExpr[]): void {
-        const columns = cols as unknown as SqlExpression<string, string, any, never>[]
+        const columns = cols as unknown as SqlExpression<string, string, any>[]
         for (let i = 0; i < columns.length; i++) {
             const col = columns[i];
             this._columns.push(col.expression + (col.nameAs ? " as " + Sql.escapeId(col.nameAs) : ""));

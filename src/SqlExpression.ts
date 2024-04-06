@@ -1,7 +1,16 @@
-import {COMPARISON_SIGNS, RuntimeExpr, SQL_BOOL, Expr, PrepareQueryArgument} from "./Types";
+import {COMPARISON_SIGNS, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
 import {Sql} from "./Sql";
 
-export class SqlExpression<TableRef, Name, Type extends string | number | unknown, StrNames> implements RuntimeExpr<TableRef, Name, Type> {
+export type Expr<TableRef, Name, Type extends string | number | unknown> = symbol & {
+    tableRef: TableRef
+    type: Type
+} & SqlExpression<TableRef, Name, Type>
+
+export type AnyBoolExpr<TableRef> = Expr<TableRef, string | unknown, SQL_BOOL>;
+
+export type AnyExpr = Expr<string, string | unknown, string | number | unknown>
+
+export class SqlExpression<TableRef, Name, Type extends string | number | unknown> {
 
     public readonly expression: string;
     public readonly nameAs: Name | undefined;
@@ -21,7 +30,7 @@ export class SqlExpression<TableRef, Name, Type extends string | number | unknow
     }
 
     public as<T extends string>(name: T): Expr<TableRef, T, Type> {
-        return new SqlExpression<TableRef, T, Type, StrNames>(this.expression, name) as any;
+        return new SqlExpression<TableRef, T, Type>(this.expression, name) as any;
     }
 
     private asValue(): Expr<TableRef, any, any> {
@@ -44,12 +53,10 @@ export class SqlExpression<TableRef, Name, Type extends string | number | unknow
         return Sql.in(this.asValue(), values);
     }
 
-    public is(value: Type): Expr<TableRef, unknown, SQL_BOOL> {
-        return Sql.compare(this.asValue(), "=", value);
-    }
-
-    public eq<TableRef2, Type1>(col: Expr<TableRef2, string | unknown, Type1>): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return Sql.compareCol(this.asValue(), "=", col);
+    public eq<Type2 extends (string | number) & Type>(value: Type2): Expr<TableRef, unknown, SQL_BOOL>
+    public eq<TableRef2, Type1 extends Type>(col: Expr<TableRef2, string | unknown, Type1>): Expr<TableRef | TableRef2, unknown, SQL_BOOL>
+    public eq(col: any): any {
+        return Sql.compare(this.asValue(), "=", col);
     }
 
     public compare(op: COMPARISON_SIGNS, value: Type): Expr<TableRef, unknown, SQL_BOOL> {
@@ -57,7 +64,7 @@ export class SqlExpression<TableRef, Name, Type extends string | number | unknow
     }
 
     public comparec<TableRef2>(op: COMPARISON_SIGNS, col2: Expr<TableRef2, string | unknown, Type>): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return Sql.compareCol(this.asValue(), op, col2)
+        return Sql.compare(this.asValue(), op, col2)
     }
 
     public like(value: string): Expr<TableRef, unknown, SQL_BOOL> {
@@ -80,11 +87,11 @@ export class SqlExpression<TableRef, Name, Type extends string | number | unknow
     // MANIPULATION
     // -------------------------------------------------------------------
 
-    public asDate() {
+    public asDate(): Expr<TableRef, Name, vDate> {
         return Sql.date(this.asValue()).as(this.nameAs as any);
     }
 
-    public asDateTime() {
+    public asDateTime(): Expr<TableRef, Name, vDateTime> {
         return Sql.datetime(this.asValue()).as(this.nameAs as any);
     }
 

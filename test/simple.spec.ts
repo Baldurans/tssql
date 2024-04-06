@@ -38,7 +38,7 @@ test("simple", async () => {
             Sql.groupConcatOrderBy([Sql.concat(c.username, "X")], [c.username]).as("concated2"),
             Sql.math("(? * 100 / (? - ?))", [c.id, c.id, c.id]).as("math"),
             Sql.if(
-                c.id.is(10 as tUserId),
+                c.id.eq(10 as tUserId),
                 c.id,
                 c2.id
             ).as("userIdFromIf"),
@@ -54,7 +54,7 @@ test("simple", async () => {
             ).as("and")
         )
         .where(Sql.and(
-            c.id.is(input.userId),
+            c.id.eq(input.userId),
             c.username.isNull(),
             val && c.username.isNull(),
             c.username.notNull()

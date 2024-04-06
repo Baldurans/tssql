@@ -1,6 +1,6 @@
-import {AnyExpr, Expr} from "../Types";
 import {DbSelect04Where} from "./DbSelect04Where";
 import {DbSelect} from "./DbSelect";
+import {AnyExpr, Expr} from "../SqlExpression";
 
 export class DbSelect03Columns<Result, Tables, CTX> extends DbSelect<CTX> {
     public distinct(): this {

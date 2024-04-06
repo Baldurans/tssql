@@ -8,7 +8,6 @@ module.exports = {
     SqlExpression: SqlExpression
 }
 
-
 export * from './Db';
 export * from './Sql';
 export * from './SqlExpression';

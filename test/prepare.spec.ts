@@ -19,7 +19,7 @@ test("prepare", async () => {
     const preparedQuery = db.prepare((args: Arguments) => {
         const c = db.tables.user("c")
 
-        const cond = c.age.is(args.age)
+        const cond = c.age.eq(args.age)
 
         const sub = db
             .select()
@@ -42,7 +42,7 @@ test("prepare", async () => {
                 c.username,
             )
             .where(
-                c.id.is(args.id),
+                c.id.eq(args.id),
                 cond
             )
             .noLimit()

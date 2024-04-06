@@ -8,9 +8,9 @@ test("with", async () => {
 
     const c = db.tables.user("c")
 
-    const q1 = db.select().from(c).columns(c.username, c.id).where(c.id.is(input.userId)).noLimit()
-    const q2 = db.select().from(c).columns(c.username, c.id,).where(c.id.is(input.userId)).noLimit()
-    const q3 = db.select().from(c).columns(c.username, c.id).where(c.id.is(input.userId)).noLimit()
+    const q1 = db.select().from(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
+    const q2 = db.select().from(c).columns(c.username, c.id,).where(c.id.eq(input.userId)).noLimit()
+    const q3 = db.select().from(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
 
     const union = db
         .union(q1)
@@ -24,7 +24,7 @@ test("with", async () => {
     const b = db.select()
         .from(union)
         .columns(union.id, union.username)
-        .where(union.id.is(10 as tUserId))
+        .where(union.id.eq(10 as tUserId))
         .noLimit()
 
     console.log(b.toString())

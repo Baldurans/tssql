@@ -26,7 +26,7 @@ test("simple", async () => {
                 Sql.null<string>().as("emptyValue"),
                 Sql.date(c.created).as("myDate"),
                 Sql.if(
-                    c.id.is(10 as tUserId),
+                    c.id.eq(10 as tUserId),
                     c.id,
                     c2.id
                 ).as("userIdFromIf"),
@@ -42,7 +42,7 @@ test("simple", async () => {
                 ).as("and")
             )
             .where(Sql.and(
-                c.id.is(input.userId),
+                c.id.eq(input.userId),
                 c.username.isNull(),
                 c.username.isNull(),
                 c.username.notNull()

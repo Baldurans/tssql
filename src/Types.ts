@@ -1,45 +1,7 @@
 import {DbUtility} from "./DbUtility";
+import {Expr} from "./SqlExpression";
 
 export type Key<Alias extends string> = Record<Alias, true>;
-
-export type Expr<TableRef, Name, Type extends string | number | unknown> = symbol & {
-    tableRef: TableRef
-    type: Type
-} & RuntimeExpr<TableRef, Name, Type>
-
-export type RuntimeExpr<TableRef, Name, Type extends string | number | unknown> = {
-    nameAs: Name
-    expression: string
-
-    cast: <CastType extends string | number>() => Expr<TableRef, Name, CastType>
-    as: <T extends string>(name: T) => Expr<TableRef, T, Type>
-
-    isNull: () => Expr<TableRef, unknown, SQL_BOOL>
-    notNull: () => Expr<TableRef, unknown, SQL_BOOL>
-    in(values: Type[] | PrepareQueryArgument): Expr<TableRef, unknown, SQL_BOOL>
-    is: (value: Type) => Expr<TableRef, unknown, SQL_BOOL>
-    eq: <TableRef2 extends string>(value: Expr<TableRef2, string | unknown, Type>) => Expr<TableRef | TableRef2, unknown, SQL_BOOL>
-    // GT: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
-    // GTC: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
-    // GTE: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
-    // GTEC: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
-    // LT: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
-    // LTC: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
-    // LTE: (value: Type) => Value<TableRef, unknown, SQL_BOOL>
-    // LTEC: <TableRef2 extends string>(value: Value<TableRef2, string | unknown, Type>) => Value<TableRef | TableRef2, unknown, SQL_BOOL>
-    compare: (op: COMPARISON_SIGNS, value: Type) => Expr<TableRef, unknown, SQL_BOOL>
-    comparec: <TableRef2 extends string>(op: COMPARISON_SIGNS, col2: Expr<TableRef2, string | unknown, Type>) => Expr<TableRef | TableRef2, unknown, SQL_BOOL>
-    like: (value: string) => Expr<TableRef, unknown, SQL_BOOL>
-    startsWith: (value: string) => Expr<TableRef, unknown, SQL_BOOL>
-    endsWith: (value: string) => Expr<TableRef, unknown, SQL_BOOL>
-    contains: (value: string) => Expr<TableRef, unknown, SQL_BOOL>
-    asDate: () => Expr<TableRef, Name, vDate>
-    asDateTime: () => Expr<TableRef, Name, vDateTime>
-}
-
-export type AnyBoolExpr<TableRef> = Expr<TableRef, string | unknown, SQL_BOOL>;
-
-export type AnyExpr = Expr<string, string | unknown, string | number | unknown>
 
 // ----------------------------------------------
 

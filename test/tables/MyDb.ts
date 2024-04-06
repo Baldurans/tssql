@@ -12,14 +12,14 @@ export class MyDb extends Db<undefined> {
     }
 
     public readonly tables = {
-        user: this.getDbTableAliasFunction<"user", User>("user", {
+        user: Db.getDbTableAliasFunction<"user", User>("user", {
             id: true,
             username: true,
             age: true,
             isMan: true,
             created: true
         }),
-        company: this.getDbTableAliasFunction<"company", Company>("company", {
+        company: Db.getDbTableAliasFunction<"company", Company>("company", {
             id: true,
             name: true,
         }),

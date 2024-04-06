@@ -16,8 +16,8 @@ test("short", async () => {
             .from(o)
             .columns(o.id)
             .where(
-                table.id.is(10 as tUserId),
-                o.id.is(10 as tCompanyId)
+                table.id.eq(10 as tUserId),
+                o.id.eq(10 as tCompanyId)
             )
             .noLimit()
             .as("sub")
@@ -31,8 +31,8 @@ test("short", async () => {
             .from(o)
             .columns(table.id)
             .where(
-                table.id.is(10 as tUserId),
-                o.id.is(10 as tCompanyId)
+                table.id.eq(10 as tUserId),
+                o.id.eq(10 as tCompanyId)
             )
             .noLimit()
             .as("sub2")
@@ -44,7 +44,7 @@ test("short", async () => {
         .select()
         .forUpdate()
         .from(c)
-        .join(sub, sub.id.is(10 as tCompanyId))
+        .join(sub, sub.id.eq(10 as tCompanyId))
         .join(sub2, sub2.id.eq(c.id))
         .distinct()
         .columns(
@@ -52,7 +52,7 @@ test("short", async () => {
             sub.id.as("subId"),
             sub2.id.as("sub2Id")
         )
-        .where(c.id.is(input.userId))
+        .where(c.id.eq(input.userId))
         .execOne(undefined);
 
     console.log(

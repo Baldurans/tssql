@@ -8,10 +8,11 @@ import {DbUtility} from "./DbUtility";
 import {DbSelect00Union} from "./select/DbSelect00Union";
 import {DbSelect09Exec} from "./select/DbSelect09Exec";
 
+export type DbExecFunc<CTX> = (ctx: CTX, sql: string, args?: { [key: string]: string | number }) => Promise<any[]>;
 
 export abstract class Db<CTX> {
 
-    constructor(private readonly exec: (ctx: CTX, sql: string, args?: { [key: string]: string | number }) => Promise<any[]>) {
+    constructor(private readonly exec: DbExecFunc<CTX>) {
 
     }
 
@@ -82,7 +83,7 @@ export abstract class Db<CTX> {
         return DbUtility.defineDbTable(Sql.escapeId(table[DbUtility.SQL_ALIAS]), newAlias, definition) as any;
     }
 
-    protected getDbTableAliasFunction<TableName extends string, Entity>(
+    public static getDbTableAliasFunction<TableName extends string, Entity>(
         tableName: TableName,
         columns: DbTableDefinition<Entity>
     ): <Alias extends string>(alias: Alias) => AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> {

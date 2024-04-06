@@ -1,6 +1,6 @@
-import {AnyBoolExpr, AnyExpr, COMPARISON_SIGNS, ComparisonOperandsLookup, Expr, isPrepareArgument, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
+import {COMPARISON_SIGNS, ComparisonOperandsLookup, isPrepareArgument, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
 import mysql from "mysql";
-import {SqlExpression} from "./SqlExpression";
+import {AnyBoolExpr, AnyExpr, Expr, SqlExpression} from "./SqlExpression";
 import {OrderByStructure, orderByStructureToSqlString} from "./select/DbSelect07OrderBy";
 
 export class Sql {
@@ -42,23 +42,24 @@ export class Sql {
         return SqlExpression.create("NULL")
     }
 
-    public static now(): Expr<null, unknown, vDateTime> {
-        return SqlExpression.create("NOW()")
-    }
-
-    public static curDate(): Expr<null, unknown, vDate> {
-        return SqlExpression.create("CURDATE()")
-    }
-
-
+    /**
+     * Any string
+     */
     public static string(value: string | PrepareQueryArgument): Expr<null, unknown, string> {
         return SqlExpression.create(this.escape(value))
     }
 
+    /**
+     * Any number
+     */
     public static number(value: number | PrepareQueryArgument): Expr<null, unknown, number> {
         return SqlExpression.create(this.escape(value))
     }
 
+    /**
+     * Type is the value. (If string "aa" is given, type of the column will be "aa")
+     * Useful for enum values etc.
+     */
     public static literal<Type extends string | number>(value: Type): Expr<null, unknown, Type> {
         return SqlExpression.create(this.escape(value))
     }
@@ -144,32 +145,20 @@ export class Sql {
         return SqlExpression.create(col.expression + " IN( " + this.escape(values) + ")")
     }
 
-    /**
-     * Column = value (If you want to compare column with another column, use EQC method.
-     */
-    public static is<TableRef, Type extends string | number | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, value: Type): Expr<TableRef, unknown, SQL_BOOL> {
-        return Sql.compare(col, "=", value);
+    public static eq<TableRef, Type extends string | number | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, value: Type): Expr<TableRef, unknown, SQL_BOOL>
+    public static eq<TableRef1, TableRef2, Type1>(col1: Expr<TableRef1, string, Type1>, col2: Expr<TableRef2, string, Type1>): Expr<TableRef1 | TableRef2, unknown, SQL_BOOL>
+    public static eq(col1: any, col2: any): any {
+        return Sql.compare(col1, "=", col2);
     }
 
-    public static eq<TableRef1, TableRef2, Type1>(col1: Expr<TableRef1, string, Type1>, col2: Expr<TableRef2, string, Type1>): Expr<TableRef1 | TableRef2, unknown, SQL_BOOL> {
-        return Sql.compareCol(col1, "=", col2);
-    }
+    public static compare<TableRef, Type, TableRef2>(col1: Expr<TableRef, string, Type>, op: COMPARISON_SIGNS, col2: Expr<TableRef2, string | unknown, Type>): Expr<TableRef | TableRef2, unknown, SQL_BOOL>
+    public static compare<TableRef, Type extends string | number | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, op: COMPARISON_SIGNS, value: Type): Expr<TableRef, unknown, SQL_BOOL>
 
-    /**
-     * Column OPERATION value (If you want to compare column with another column, use COMPAREC method.)
-     */
-    public static compare<TableRef, Type extends string | number | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, op: COMPARISON_SIGNS, value: Type): Expr<TableRef, unknown, SQL_BOOL> {
+    public static compare<TableRef, Type>(col: Expr<TableRef, string, Type>, op: COMPARISON_SIGNS, value: any): Expr<TableRef, unknown, SQL_BOOL> {
         if (!ComparisonOperandsLookup.has(op)) {
             throw new Error("Invalid comparison operand '" + op + "'")
         }
-        return SqlExpression.create(col.expression + " " + op + " " + this.escape(value))
-    }
-
-    public static compareCol<TableRef1, TableRef2, Type1>(col1: Expr<TableRef1, string, Type1>, op: COMPARISON_SIGNS, col2: Expr<TableRef2, string | unknown, Type1>): Expr<TableRef1 | TableRef2, unknown, SQL_BOOL> {
-        if (!ComparisonOperandsLookup.has(op)) {
-            throw new Error("Invalid comparison operand '" + op + "'")
-        }
-        return SqlExpression.create(col1.expression + " " + op + " " + col2.expression)
+        return SqlExpression.create(col.expression + " " + op + " " + typeof value === "object" ? value.expression : this.escape(value))
     }
 
     public static like<TableRef, Type extends string | number>(col: (Expr<TableRef, string | unknown, Type>), value: string | PrepareQueryArgument): Expr<TableRef, unknown, SQL_BOOL> {
@@ -249,6 +238,14 @@ export class Sql {
     // -------------------------------------------------------------------
     // DATE MANIPULATION
     // -------------------------------------------------------------------
+
+    public static now(): Expr<null, unknown, vDateTime> {
+        return SqlExpression.create("NOW()")
+    }
+
+    public static curDate(): Expr<null, unknown, vDate> {
+        return SqlExpression.create("CURDATE()")
+    }
 
     public static year<TableRef, Name, Type extends vDate | vDateTime>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
         return SqlExpression.create("YEAR(" + field.expression + ")")
