@@ -26,11 +26,9 @@ export class DbSelect03Columns<Result, Tables, CTX> extends DbSelect<CTX> {
 /**
  * Take array of Col-s and convert to Record<key, value> & ... object.
  */
-type ExtractObj<Columns extends Expr<any, string | unknown, any>[]> = Columns extends Expr<any, string, any>[]
-    ? {
-        [K in Columns[number]['nameAs']]: Extract<Columns[number], { nameAs: K }>['type']
-    }
-    : never;
+type ExtractObj<Columns extends Expr<any, string | unknown, any>[]> = {
+    [K in (Columns[number]['nameAs'] extends string ? Columns[number]['nameAs'] : never)]: Extract<Columns[number], { nameAs: K }>['type']
+}
 
 // --------------------------------------------------------------------
 

@@ -2,12 +2,12 @@ import {DbUtility} from "./DbUtility";
 
 export type Key<Alias extends string> = Record<Alias, true>;
 
-export type Expr<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> = symbol & {
+export type Expr<TableRef, Name, Type extends string | number | unknown> = symbol & {
     tableRef: TableRef
     type: Type
 } & RuntimeExpr<TableRef, Name, Type>
 
-export type RuntimeExpr<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown> = {
+export type RuntimeExpr<TableRef, Name, Type extends string | number | unknown> = {
     nameAs: Name
     expression: string
 

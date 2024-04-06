@@ -102,7 +102,7 @@ test("complex", async () => {
             // subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
             // cFake.name, // ____ERROR, table X is not used in the query
             // c3.username // ____ERROR, table X is not used in the query
-            // Sql.concat(cFake.name, c2.username).as("concated"), // ____ERROR, table X is not used in the query (twice!)
+            // Sql.concat(cFake.name, c2.username).as("concated"), // ____ERROR, table company as c,c2 is not used in the query (twice!)
 
         )
 
