@@ -47,8 +47,8 @@ test("simple", async () => {
                 c.username.isNull(),
                 c.username.notNull()
             ))
-            .groupBy("renamedId", c.id)
-            .orderBy("renamedId", c.id)
+            .groupByF(r => [r.renamedId, c.id])
+            .orderByF(r => [r.renamedId, c.id])
             .noLimit()
             .toString()
         String(query);

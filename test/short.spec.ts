@@ -22,17 +22,17 @@ test("short", async () => {
         .groupByF(r => [
             r.username2,
             c.username,
-            // c2.username
+            // c2.username // ERROR
         ])
         .havingF(r => [
             r.username2.is("asdf"),
             c.username.is("adsf"),
-            // c2.username.is("adsfafs")
+            // c2.username.is("adsfafs")  // ERROR
         ])
         .orderByF(r => [
             r.username2, "asc",
             c.username,
-            // c2.username
+            // c2.username  // ERROR
         ])
         .noLimit()
 

@@ -16,8 +16,8 @@ test("with", async () => {
         .union(q1)
         .all(q2)
         .all(q3)
-        .groupBy("username")
-        .orderBy("id")
+        .groupByF(r => [r.username])
+        .orderByF(r => [r.id])
         .limit(10)
         .as("x")
 
