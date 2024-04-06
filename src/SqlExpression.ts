@@ -1,4 +1,4 @@
-import {COMPARISON_SIGNS, RuntimeExpr, SQL_BOOL, Expr} from "./Types";
+import {COMPARISON_SIGNS, RuntimeExpr, SQL_BOOL, Expr, PrepareQueryArgument} from "./Types";
 import {Sql} from "./Sql";
 
 export class SqlExpression<TableRef extends string, Name extends string | unknown, Type extends string | number | unknown, StrNames> implements RuntimeExpr<TableRef, Name, Type> {
@@ -38,6 +38,10 @@ export class SqlExpression<TableRef extends string, Name extends string | unknow
 
     public notNull(): Expr<TableRef, unknown, SQL_BOOL> {
         return Sql.notNull(this.asValue());
+    }
+
+    public in(values: Type[] | PrepareQueryArgument): Expr<TableRef, unknown, SQL_BOOL> {
+        return Sql.in(this.asValue(), values);
     }
 
     public is(value: Type): Expr<TableRef, unknown, SQL_BOOL> {

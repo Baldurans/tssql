@@ -16,6 +16,7 @@ export type RuntimeExpr<TableRef extends string, Name extends string | unknown, 
 
     isNull: () => Expr<TableRef, unknown, SQL_BOOL>
     notNull: () => Expr<TableRef, unknown, SQL_BOOL>
+    in(values: Type[] | PrepareQueryArgument): Expr<TableRef, unknown, SQL_BOOL>
     is: (value: Type) => Expr<TableRef, unknown, SQL_BOOL>
     eq: <TableRef2 extends string>(value: Expr<TableRef2, string | unknown, Type>) => Expr<TableRef | TableRef2, unknown, SQL_BOOL>
     // GT: (value: Type) => Value<TableRef, unknown, SQL_BOOL>

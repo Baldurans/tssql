@@ -1,5 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
+import {Sql} from "../src";
 
 test("short", async () => {
     const db = new MyDb();
@@ -15,6 +16,7 @@ test("short", async () => {
         .distinct()
         .columns(
             c.username.as("username2"),
+            Sql.literal("10").as("sdfaf")
         )
         .where(c.id.is(input.userId))
         .groupByF(r => [

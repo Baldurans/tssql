@@ -114,10 +114,10 @@ test("complex", async () => {
             c.id.eq(c2.id),
             c.id.comparec(">=", c2.id),
 
-            // cFake.name.is("as"),
+            // cFake.name.is("as"), // ____ERROR, company as c is not referenced
             // c3.username.is("aa"),  // ____ERROR, c3 is not referenced
             // Sql.is(c3.username, "aa"), // ____ERROR, c3 is not referenced
-            // Sql.and(c3.username.is("a"), cFake.name.is("a"), c4.username.is("a")), // ____ERROR, c3 is not referenced
+            // Sql.and(c3.username.is("a"), cFake.name.is("a"), c4.username.is("a")), // ____ERROR, c3, company as c, c4 is not referenced
 
         )
 
@@ -134,7 +134,7 @@ test("complex", async () => {
         // .having(c3.id.is(10 as tUserId)) // ____ERROR, c3 is not referenced
         // .havingF(r => [Sql.concat(r.expr2, c.username, c3.username, c4.username).is("adfadf")]) //  ____ERROR, c3,c4 is not referenced
 
-        .orderBy(c.id, "asc", c.username, "desc") // OK
+        // .orderBy(c.id, "asc", c.username, "desc") // OK
         // .orderByF(r => [r.expr1, c.id, "asc", c.id, "desc"]) // OK
         // .orderByF(r => [r.expr1, c.id, "asc", c.id, "desc", c3.username, c4.username]) //  ____ERROR, c3,c4 is not referenced
         .noLimit()

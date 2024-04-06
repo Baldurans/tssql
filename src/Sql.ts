@@ -5,7 +5,7 @@ import {OrderByStructure, orderByStructureToSqlString} from "./select/DbSelect07
 
 export class Sql {
 
-    public static escape(value: string | number | PrepareQueryArgument): string {
+    public static escape(value: string | number | (string | number)[] | PrepareQueryArgument): string {
         if (isPrepareArgument(value)) {
             if (!/^[A-Za-z]+$/.test(value.name)) {
                 throw new Error("Invalid prepare query argument named '" + value.name + "'. Can only contain ascii letters!")
@@ -140,6 +140,10 @@ export class Sql {
         return SqlExpression.create(col.expression + " IS NOT NULL")
     }
 
+    public static in<TableRef extends string, Type extends (string | number)[] | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, values: Type): Expr<TableRef, unknown, SQL_BOOL> {
+        return SqlExpression.create(col.expression + " IN( " + this.escape(values) + ")")
+    }
+
     /**
      * Column = value (If you want to compare column with another column, use EQC method.
      */
@@ -254,11 +258,11 @@ export class Sql {
         return SqlExpression.create("DATETIME(" + field.expression + ")")
     }
 
-    public static dateFormat<Type, TableRef extends string>(col: Expr<TableRef, string | unknown, Type>, format: string): Expr<TableRef, string, string> {
+    public static dateFormat<Type, TableRef extends string, Name extends string | unknown>(col: Expr<TableRef, Name, Type>, format: string): Expr<TableRef, Name, string> {
         return SqlExpression.create("DATE_FORMAT(" + col.expression + ", " + this.escape(format) + ")")
     }
 
-    public static datediff<Type extends vDate | vDateTime, TableRef1 extends string, TableRef2 extends string>(col1: Expr<TableRef1, string | unknown, Type>, col2: Expr<TableRef2, string | unknown, Type>): Expr<TableRef1 | TableRef2, string, number> {
+    public static datediff<Type extends vDate | vDateTime, TableRef1 extends string, TableRef2 extends string>(col1: Expr<TableRef1, string | unknown, Type>, col2: Expr<TableRef2, string | unknown, Type>): Expr<TableRef1 | TableRef2, unknown, number> {
         return SqlExpression.create("DATEDIFF(" + col1.expression + ", " + col2.expression + ")")
     }
 
