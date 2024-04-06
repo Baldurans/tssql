@@ -71,8 +71,7 @@ export abstract class Db<CTX> {
 
     public static createRef<
         Alias extends string,
-        TableName extends string,
-        TableRef extends `${TableName} as ${Alias}`,
+        TableRef extends `${string} as ${Alias}`,
         Entity,
         NewAlias extends string
     >(table: AliasedTable<Alias, TableRef, Entity, NotUsingWithPart>, newAlias: NewAlias): AliasedTable<NewAlias, `${Alias} as ${NewAlias}`, Entity, Alias> {
