@@ -1,4 +1,4 @@
-import {AliasedTable, Expr, Key, NotUsingWithPart} from "../Types";
+import {AliasedTable, COLUMNS, Expr, Key, NotUsingWithPart} from "../Types";
 import {DbSelect07OrderBy} from "./DbSelect07OrderBy";
 import {DbSelect06Having} from "./DbSelect06Having";
 import {DbSelect09Exec} from "./DbSelect09Exec";
@@ -10,7 +10,7 @@ export class DbSelect05GroupBy<Result, Tables, CTX> extends DbSelect07OrderBy<Re
         TableRef extends string,
         Columns extends Expr<TableRef, string | unknown, any>[]
     >(
-        ...items: isColumnOkToUse<Result, Tables, Columns>
+        ...items: isColumnOkToUse<Tables, Columns>
     ): DbSelect06Having<Result, Tables, CTX> {
         this.builder.groupBy(items as any);
         return new DbSelect06Having(this.builder);
@@ -20,7 +20,7 @@ export class DbSelect05GroupBy<Result, Tables, CTX> extends DbSelect07OrderBy<Re
         TableRef extends string,
         Columns extends Expr<TableRef, string | unknown, any>[]
     >(
-        func: (columnsTable: AliasedTable<"__res", "__res", Result, NotUsingWithPart>) => isColumnOkToUse<Result, Tables & Key<"__res">, Columns>
+        func: (columnsTable: AliasedTable<COLUMNS, COLUMNS, Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<COLUMNS>, Columns>
     ): DbSelect06Having<Result, Tables, CTX> {
         const proxy: any = new Proxy({}, {
             get(target: {}, p: string, receiver: any): any {
@@ -39,17 +39,19 @@ export class DbSelect05GroupBy<Result, Tables, CTX> extends DbSelect07OrderBy<Re
 
 }
 
-type _checkThatTableOrColumnCanBeReferenced<Result, Tables, Expr> =
+type _getMissing<Tables, Check> = Check extends keyof Tables ? never : Check;
+
+type _checkThatTableOrColumnCanBeReferenced<Tables, Expr> =
     Expr extends { tableRef: string } ?
         Expr["tableRef"] extends keyof Tables ?
             Expr
-            : `Table '${Expr["tableRef"]}' is not used in this query!`
+            : `Table '${_getMissing<Tables, Expr["tableRef"]>}' is not used in this query!`
         : Expr
 
-export type isColumnOkToUse<Result, Tables, ColumnExpressions> =
+export type isColumnOkToUse<Tables, ColumnExpressions> =
     ColumnExpressions extends []
         ? ColumnExpressions
         : ColumnExpressions extends [infer A, ...(infer Rest)]
-            ? [_checkThatTableOrColumnCanBeReferenced<Result, Tables, A>, ...isColumnOkToUse<Result, Tables, Rest>]
+            ? [_checkThatTableOrColumnCanBeReferenced<Tables, A>, ...isColumnOkToUse<Tables, Rest>]
             : ColumnExpressions;
 

@@ -121,24 +121,22 @@ test("complex", async () => {
 
         )
 
-        .groupBy(c.id, c.username)
-        // .groupBy(c.username, "expr2", c3.id) // ____ERROR, c3 is not referenced
-        // .groupBy(c.id, c.username, "notDefined") // ____ERROR, notDefined does not exist
-        // .groupBy(c.id, Sql.field("notDefined")) // ____ERROR, notDefined does not exist
-        // .groupBy(c.id, Sql.concat(Sql.field("notDefined")), c.id) // ____ERROR, notDefined does not exist
-        // .groupBy(c.id, Sql.concat(Sql.field("notDefined"), c.id), c.id) // ____ERROR, notDefined does not exist
+        .groupBy(c.id, c.username) // OK
+        // .groupByF(r => [c.id, r.id])  // OK
+        // .groupBy(c.username, c3.id) // ____ERROR, c3 is not referenced
+        // .groupByF(r => [c.username, r.renamedId, c3.id]) // ____ERROR, c3 is not referenced
 
-        // .having(c.id.is(10 as tUserId), Sql.field("expr2").is("asdf"))  // OK
-        // .havingF(r => [c.id.is(10 as tUserId), r.expr2.isNull(), Sql.field("expr2").is("sdafaafsd")])  // OK
+        .having(c.id.is(10 as tUserId))  // OK
+        // .havingF(r => [c.id.is(10 as tUserId), r.expr2.isNull()])  // OK
         // .havingF(r => [Sql.concat(r.expr2, r.expr1).is("adfadf")]) // OK
-        // .having(Sql.field("withSubSub2").is("10"))  // OK
-        // .having(Sql.field("withSubSub2")) // ____ERROR, expression should be of Boolean type.
+        // .having(c.username) // ____ERROR, expression should be of Boolean type.
+        // .havingF(r => [r.renamedId]) // ____ERROR, expression should be of Boolean type.
         // .having(c3.id.is(10 as tUserId)) // ____ERROR, c3 is not referenced
-        // .having(Sql.field("notDefined2").is("asdf")) // ____ERROR, notDefined does not exist
-        .havingF(r => [Sql.concat(r.expr2, r.expr1, c3.username).is("adfadf")]) // ____ERROR, notDefined does not exist
+        // .havingF(r => [Sql.concat(r.expr2, c.username, c3.username, c4.username).is("adfadf")]) //  ____ERROR, c3,c4 is not referenced
 
-        // .orderBy(c.id, "asc", c.id, c.username, "desc")
-        .orderByF(r => [r.expr1, c.id, "asc", c.id, "desc", c4.username])
+        .orderBy(c.id, "asc", c.username, "desc") // OK
+        // .orderByF(r => [r.expr1, c.id, "asc", c.id, "desc"]) // OK
+        // .orderByF(r => [r.expr1, c.id, "asc", c.id, "desc", c3.username, c4.username]) //  ____ERROR, c3,c4 is not referenced
         .noLimit()
 
     console.log(query.toString())

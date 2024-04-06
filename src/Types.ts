@@ -62,6 +62,8 @@ export function isPrepareArgument(arg: unknown): arg is PrepareQueryArgument {
 
 // ----------------------------------------------
 
+export type COLUMNS = "(columns)";
+
 export type SQL_BOOL = 0 | 1;
 
 export type vDate = string & { vDate: true, format: "YYYY-MM-DD" }
