@@ -250,6 +250,10 @@ export class Sql {
     // DATE MANIPULATION
     // -------------------------------------------------------------------
 
+    public static year<TableRef, Name, Type extends vDate | vDateTime>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+        return SqlExpression.create("YEAR(" + field.expression + ")")
+    }
+
     public static date<TableRef, Name, Type extends vDate | vDateTime>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, vDate> {
         return SqlExpression.create("DATE(" + field.expression + ")")
     }
@@ -281,48 +285,48 @@ export class Sql {
         return SqlExpression.create("(" + expression + ")")
     }
 
-    public static abs<TableRef, Name, Type extends number>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
-        return SqlExpression.create("ABS(" + field.expression + ")")
+    public static abs<TableRef, Name, Type extends number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+        return SqlExpression.create("ABS(" + col.expression + ")", col.nameAs)
     }
 
-    public static ceil<TableRef, Name, Type extends number>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
-        return SqlExpression.create("CEIL(" + field.expression + ")")
+    public static ceil<TableRef, Name, Type extends number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+        return SqlExpression.create("CEIL(" + col.expression + ")", col.nameAs)
     }
 
-    public static floor<TableRef, Name, Type extends number>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
-        return SqlExpression.create("FLOOR(" + field.expression + ")")
+    public static floor<TableRef, Name, Type extends number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+        return SqlExpression.create("FLOOR(" + col.expression + ")", col.nameAs)
     }
 
-    public static round<TableRef, Name, Type extends number>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
-        return SqlExpression.create("ROUND(" + field.expression + ")")
+    public static round<TableRef, Name, Type extends number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+        return SqlExpression.create("ROUND(" + col.expression + ")", col.nameAs)
     }
 
-    public static sign<TableRef, Name, Type extends number>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, -1 | 0 | 1> {
-        return SqlExpression.create("SIGN(" + field.expression + ")")
+    public static sign<TableRef, Name, Type extends number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, -1 | 0 | 1> {
+        return SqlExpression.create("SIGN(" + col.expression + ")", col.nameAs)
     }
 
-    public static sqrt<TableRef, Name, Type extends number>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
-        return SqlExpression.create("SQRT(" + field.expression + ")")
+    public static sqrt<TableRef, Name, Type extends number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+        return SqlExpression.create("SQRT(" + col.expression + ")", col.nameAs)
     }
 
     // -------------------------------------------------------------------
     // AGGREGATE FUNCTIONS
     // -------------------------------------------------------------------
 
-    public static min<Type, TableRef>(col: Expr<TableRef, string | unknown, Type>): Expr<TableRef, unknown, Type> {
-        return SqlExpression.create("MIN(" + col.expression + ")")
+    public static min<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, Type> {
+        return SqlExpression.create("MIN(" + col.expression + ")", col.nameAs)
     }
 
-    public static max<Type, TableRef>(col: Expr<TableRef, string | unknown, Type>): Expr<TableRef, unknown, Type> {
-        return SqlExpression.create("MAX(" + col.expression + ")")
+    public static max<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, Type> {
+        return SqlExpression.create("MAX(" + col.expression + ")", col.nameAs)
     }
 
-    public static sum<Type, TableRef>(col: Expr<TableRef, string | unknown, Type>): Expr<TableRef, unknown, Type> {
-        return SqlExpression.create("SUM(" + col.expression + ")")
+    public static sum<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, Type> {
+        return SqlExpression.create("SUM(" + col.expression + ")", col.nameAs)
     }
 
-    public static count<Type, TableRef>(col: Expr<TableRef, string | unknown, Type>): Expr<TableRef, unknown, Type> {
-        return SqlExpression.create("COUNT(" + col.expression + ")")
+    public static count<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, Type> {
+        return SqlExpression.create("COUNT(" + col.expression + ")", col.nameAs)
     }
 
     // -------------------------------------------------------------------

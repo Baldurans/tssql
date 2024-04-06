@@ -12,7 +12,7 @@ export class SqlExpression<TableRef, Name, Type extends string | number | unknow
         Object.freeze(this);
     }
 
-    public static create<TableRef, Name, Type>(expression: string, nameAs?: string | undefined): Expr<TableRef, Name, Type> {
+    public static create<TableRef, Name, Type>(expression: string, nameAs?: string | unknown | undefined): Expr<TableRef, Name, Type> {
         return new SqlExpression(expression, nameAs) as any
     }
 
