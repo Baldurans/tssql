@@ -8,8 +8,7 @@ export class DbSelect05GroupBy<Result, Tables, CTX> extends DbSelect07OrderBy<Re
 
     public groupBy<
         TableRef extends string,
-        Str extends string,
-        Columns extends (Str | Expr<TableRef, string | unknown, any, string | never>)[]
+        Columns extends Expr<TableRef, string | unknown, any>[]
     >(
         ...items: isColumnOkToUse<Result, Tables, Columns>
     ): DbSelect06Having<Result, Tables, CTX> {
@@ -19,7 +18,7 @@ export class DbSelect05GroupBy<Result, Tables, CTX> extends DbSelect07OrderBy<Re
 
     public groupByF<
         TableRef extends string,
-        Columns extends Expr<TableRef, string | unknown, any, string | never>[]
+        Columns extends Expr<TableRef, string | unknown, any>[]
     >(
         func: (columnsTable: AliasedTable<"__res", "__res", Result, NotUsingWithPart>) => isColumnOkToUse<Result, Tables & Key<"__res">, Columns>
     ): DbSelect06Having<Result, Tables, CTX> {
@@ -43,13 +42,9 @@ export class DbSelect05GroupBy<Result, Tables, CTX> extends DbSelect07OrderBy<Re
 type _checkThatTableOrColumnCanBeReferenced<Result, Tables, Expr> =
     Expr extends { tableRef: string, seenResultColumnNames: string | never } ?
         Expr["tableRef"] extends keyof Tables ?
-            Expr["seenResultColumnNames"] extends keyof Result
-                ? Expr
-                : `Column '${Expr["seenResultColumnNames"]}' is not used in this query!` // @TODO Filter out names that exist in the Result
+            Expr
             : `Table '${Expr["tableRef"]}' is not used in this query!`
-        : Expr extends string
-            ? Expr extends keyof Result ? Expr : `Column '${Expr}' is not used in this query!`
-            : Expr
+        : Expr
 
 export type isColumnOkToUse<Result, Tables, ColumnExpressions> =
     ColumnExpressions extends []

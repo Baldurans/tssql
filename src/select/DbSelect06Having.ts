@@ -7,7 +7,7 @@ export class DbSelect06Having<Result, Tables, CTX> extends DbSelect07OrderBy<Res
 
     public having<
         TableRef extends string,
-        Columns extends (Expr<TableRef, string | unknown, SQL_BOOL, string | unknown>)[]
+        Columns extends (Expr<TableRef, string | unknown, SQL_BOOL>)[]
     >(
         ...col: isColumnOkToUse<Result, Tables, Columns>
     ): DbSelect07OrderBy<Result, Tables, CTX> {
@@ -17,8 +17,7 @@ export class DbSelect06Having<Result, Tables, CTX> extends DbSelect07OrderBy<Res
 
     public havingF<
         TableRef extends string,
-        StrNames extends string | never,
-        Columns extends Expr<TableRef, string | unknown, SQL_BOOL, StrNames>[]
+        Columns extends Expr<TableRef, string | unknown, SQL_BOOL>[]
     >(
         func: (columnsTable: AliasedTable<"__res", "__res", Result, NotUsingWithPart>) => isColumnOkToUse<Result, Tables & Key<"__res">, Columns>
     ): DbSelect07OrderBy<Result, Tables, CTX> {

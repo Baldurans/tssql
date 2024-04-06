@@ -60,8 +60,8 @@ test("simple", async () => {
             c.username.notNull()
         ))
 
-        .groupBy("renamedId", c.id)
-        .orderBy("renamedId", c.id)
+        .groupBy(c.id)
+        .orderBy(c.id)
         .noLimit()
 
     console.log(query.toString())

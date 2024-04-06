@@ -7,8 +7,7 @@ export class DbSelect07OrderBy<Result, Tables, CTX> extends DbSelect08Limit<Resu
 
     public orderBy<
         TableRef extends string,
-        Str extends string,
-        Columns extends OrderByStructure<(Str | Expr<TableRef, string | unknown, any, string | never>)>
+        Columns extends OrderByStructure<Expr<TableRef, string | unknown, any>>
     >(
         ...items: isColumnOkToUse<Result, Tables, Columns>
     ): DbSelect08Limit<Result, CTX> {
@@ -18,8 +17,7 @@ export class DbSelect07OrderBy<Result, Tables, CTX> extends DbSelect08Limit<Resu
 
     public orderByF<
         TableRef extends string,
-        StrNames extends string | never,
-        Columns extends OrderByStructure<Expr<TableRef, string | unknown, string | number, StrNames>>
+        Columns extends OrderByStructure<Expr<TableRef, string | unknown, string | number>>
     >(
         func: (columnsTable: AliasedTable<"__res", "__res", Result, NotUsingWithPart>) => isColumnOkToUse<Result, Tables & Key<"__res">, Columns>
     ): DbSelect07OrderBy<Result, Tables, CTX> {
@@ -69,6 +67,7 @@ export type OrderByStructure<A, B = ORDER_BY> =
     | [A, A, A, A, B]
     | [A, A, A, B, A]
     | [A, A, B, A, A]
+    | [A, A, B, A, B]
     | [A, B, A, A, A]
     | [A, B, A, A, B]
     | [A, B, A, B, A]
@@ -77,6 +76,7 @@ export type OrderByStructure<A, B = ORDER_BY> =
     | [A, A, A, A, B, A]
     | [A, A, A, B, A, A]
     | [A, A, B, A, A, A]
+    | [A, A, B, A, B, A]
     | [A, B, A, A, A, A]
     | [A, B, A, A, A, B]
     | [A, B, A, A, B, A]

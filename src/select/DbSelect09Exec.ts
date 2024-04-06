@@ -10,7 +10,7 @@ export class DbSelect09Exec<Result, CTX> extends DbSelect<CTX> {
 
     public asScalar<Alias extends string>(
         alias: Alias & ScalarSubQueryAllowsOnlyOneColumn<Alias, Result> extends never ? "Scalar subquery allows only 1 column!" : Alias
-    ): Expr<null, Alias, Result[keyof Result], never> {
+    ): Expr<null, Alias, Result[keyof Result]> {
         return SqlExpression.create("(\n" + this.builder.toString(2) + TAB + ")", alias);
     }
 
