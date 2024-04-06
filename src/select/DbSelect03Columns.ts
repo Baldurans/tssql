@@ -54,7 +54,7 @@ type _checkThatTableIsReferenced<Tables, Expr> =
     Expr extends { tableRef: string } ?
         Expr["tableRef"] extends keyof Tables
             ? Expr
-            : `Table '${Expr["tableRef"]}' is not used in this query!`
+            : `'${Expr["tableRef"]}' is not used in this query!`
         : Expr
 
 type isColumnOkToAdd<Result, Tables, ColumnExpressions> =

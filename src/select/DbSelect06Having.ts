@@ -1,4 +1,4 @@
-import {AliasedTable, COLUMNS, Key, NotUsingWithPart, SQL_BOOL} from "../Types";
+import {AliasedTable, Key, NotUsingWithPart, SQL_BOOL} from "../Types";
 import {DbSelect07OrderBy} from "./DbSelect07OrderBy";
 import {isColumnOkToUse} from "./DbSelect05GroupBy";
 import {AnyExpr, Expr, SqlExpression} from "../SqlExpression";
@@ -19,7 +19,7 @@ export class DbSelect06Having<Result, Tables, CTX> extends DbSelect07OrderBy<Res
         TableRef,
         Columns extends Expr<TableRef, string | unknown, SQL_BOOL>[]
     >(
-        func: (columnsTable: AliasedTable<COLUMNS, COLUMNS, Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<COLUMNS>, Columns>
+        func: (columnsTable: AliasedTable<"(columns)", "(columns)", Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<"(columns)">, Columns>
     ): DbSelect07OrderBy<Result, Tables, CTX> {
         const proxy: any = new Proxy({}, {
             get(target: {}, p: string, receiver: any): any {

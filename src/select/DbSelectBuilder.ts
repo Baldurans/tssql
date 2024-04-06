@@ -18,6 +18,7 @@ export class DbSelectBuilder<CTX> {
     private _columnStruct: DbTableDefinition<any> = {} as any;
 
     private readonly _joins: string[] = []
+    private readonly _windows: string[] = [];
     private readonly _where: string[] = []
     private readonly _having: string[] = [];
     private readonly _groupBy: string[] = [];
@@ -83,6 +84,11 @@ export class DbSelectBuilder<CTX> {
         return this as any;
     }
 
+    public window(name: string, over: string): void {
+        this._windows.push(name + " AS (" + over + ")")
+        return this as any;
+    }
+
     public distinct() {
         this._distinct = true;
     }
@@ -145,6 +151,7 @@ export class DbSelectBuilder<CTX> {
         return base +
             (this._groupBy.length > 0 ? tabs + "GROUP BY " + this._groupBy.join(", ") + "\n" : "") +
             (this._having.length > 0 ? tabs + "HAVING " + this._having.join("\n" + TAB + " AND ") + "\n" : "") +
+            (this._windows.length > 0 ? tabs + "WINDOW " + this._windows.join(",\n" + TAB) + "\n" : "") +
             (this._orderBy.length > 0 ? tabs + "ORDER BY " + this._orderBy.join(", ") + "\n" : "") +
             (this._limit ? tabs + "LIMIT " + this._limit + "\n" : "") +
             (this._forUpdate && this.unions.length === 0 ? tabs + " FOR UPDATE\n" : "");

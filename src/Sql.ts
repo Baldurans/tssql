@@ -141,24 +141,25 @@ export class Sql {
         return SqlExpression.create(col.expression + " IS NOT NULL")
     }
 
-    public static in<TableRef, Type extends (string | number)[] | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, values: Type): Expr<TableRef, unknown, SQL_BOOL> {
-        return SqlExpression.create(col.expression + " IN( " + this.escape(values) + ")")
+    public static in<TableRef, Type extends (string | number)[] | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, values: Type): Expr<TableRef, unknown, SQL_BOOL>
+    public static in<TableRef1, TableRef2, Type1>(col1: Expr<TableRef1, string, Type1>, col2: Expr<TableRef2, string, Type1>): Expr<TableRef1 | TableRef2, unknown, SQL_BOOL>
+    public static in(col: any, values: any): any {
+        return SqlExpression.create(col.expression + " IN( " + (values instanceof SqlExpression ? values.expression : this.escape(values)) + ")")
     }
 
     public static eq<TableRef, Type extends string | number | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, value: Type): Expr<TableRef, unknown, SQL_BOOL>
-    public static eq<TableRef1, TableRef2, Type1>(col1: Expr<TableRef1, string, Type1>, col2: Expr<TableRef2, string, Type1>): Expr<TableRef1 | TableRef2, unknown, SQL_BOOL>
+    public static eq<TableRef, Type extends string | number | PrepareQueryArgument, TableRef2>(col: Expr<TableRef, string, Type>, col2: Expr<TableRef2, string, Type>): Expr<TableRef | TableRef2, unknown, SQL_BOOL>
     public static eq(col1: any, col2: any): any {
         return Sql.compare(col1, "=", col2);
     }
 
-    public static compare<TableRef, Type, TableRef2>(col1: Expr<TableRef, string, Type>, op: COMPARISON_SIGNS, col2: Expr<TableRef2, string | unknown, Type>): Expr<TableRef | TableRef2, unknown, SQL_BOOL>
     public static compare<TableRef, Type extends string | number | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, op: COMPARISON_SIGNS, value: Type): Expr<TableRef, unknown, SQL_BOOL>
-
+    public static compare<TableRef, Type extends string | number | PrepareQueryArgument, TableRef2>(col1: Expr<TableRef, string, Type>, op: COMPARISON_SIGNS, col2: Expr<TableRef2, string | unknown, Type>): Expr<TableRef | TableRef2, unknown, SQL_BOOL>
     public static compare<TableRef, Type>(col: Expr<TableRef, string, Type>, op: COMPARISON_SIGNS, value: any): Expr<TableRef, unknown, SQL_BOOL> {
         if (!ComparisonOperandsLookup.has(op)) {
             throw new Error("Invalid comparison operand '" + op + "'")
         }
-        return SqlExpression.create(col.expression + " " + op + " " + typeof value === "object" ? value.expression : this.escape(value))
+        return SqlExpression.create(col.expression + " " + op + " " + (value instanceof SqlExpression ? value.expression : this.escape(value)))
     }
 
     public static like<TableRef, Type extends string | number>(col: (Expr<TableRef, string | unknown, Type>), value: string | PrepareQueryArgument): Expr<TableRef, unknown, SQL_BOOL> {
@@ -251,6 +252,10 @@ export class Sql {
         return SqlExpression.create("YEAR(" + field.expression + ")")
     }
 
+    public static unixTimestamp<TableRef, Name, Type extends vDate | vDateTime>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+        return SqlExpression.create("UNIX_TIMESTAMP(" + field.expression + ")")
+    }
+
     public static date<TableRef, Name, Type extends vDate | vDateTime>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, vDate> {
         return SqlExpression.create("DATE(" + field.expression + ")")
     }
@@ -324,6 +329,42 @@ export class Sql {
 
     public static count<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, Type> {
         return SqlExpression.create("COUNT(" + col.expression + ")", col.nameAs)
+    }
+
+    public static rank(): Expr<never, unknown, number> {
+        return SqlExpression.create("RANK()", undefined)
+    }
+
+    public static rowNumber(): Expr<never, unknown, number> {
+        return SqlExpression.create("ROW_NUMBER()", undefined)
+    }
+
+    public static lag<Type, TableRef>(col: Expr<TableRef, unknown, Type>, n?: number, def?: number): Expr<TableRef, unknown, Type> {
+        return SqlExpression.create("LAG(" + col.expression + "," + (n ? Number(n) : 0) + "," + (def ? Number(def) : 0) + ")", undefined)
+    }
+
+    public static lead<Type, TableRef>(col: Expr<TableRef, unknown, Type>, n?: number, def?: number): Expr<TableRef, unknown, Type> {
+        return SqlExpression.create("LEAD(" + col.expression + "," + (n ? Number(n) : 0) + "," + (def ? Number(def) : 0) + ")", undefined)
+    }
+
+    public static firstValue<Type, TableRef>(col: Expr<TableRef, unknown, Type>): Expr<TableRef, unknown, Type> {
+        return SqlExpression.create("FIRST_VALUE(" + col.expression + ")", undefined)
+    }
+
+    public static lastValue<Type, TableRef>(col: Expr<TableRef, unknown, Type>): Expr<TableRef, unknown, Type> {
+        return SqlExpression.create("LAST_VALUE(" + col.expression + ")", undefined)
+    }
+
+    public static nthValue<Type, TableRef>(col: Expr<TableRef, unknown, Type>, value: number): Expr<TableRef, unknown, Type> {
+        return SqlExpression.create("NTH_VALUE(" + col.expression + "," + (value ? Number(value) : 0) + ")", undefined)
+    }
+
+    // -------------------------------------------------------------------
+    // MISC
+    // -------------------------------------------------------------------
+
+    public static binToUuid<TableRef, Name>(col: Expr<TableRef, Name, any>): Expr<TableRef, Name, string> {
+        return SqlExpression.create("BIN_TO_UINT(" + col.expression + ")", col.nameAs)
     }
 
     // -------------------------------------------------------------------

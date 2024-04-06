@@ -9,6 +9,7 @@ export type AliasedTable<Alias extends string, TableRef, Entity, AliasForWithQue
     [DbUtility.SQL_ALIAS]: Alias
     [DbUtility.SQL_EXPRESSION]: TableRef
     [DbUtility.SQL_ALIAS_FOR_WITH_QUERY]: AliasForWithQuery
+    [DbUtility.SQL_ENTITY]: Entity
 } & {
     [K in keyof Entity]: Expr<TableRef, K, Entity[K]>
 }
@@ -24,8 +25,6 @@ export function isPrepareArgument(arg: unknown): arg is PrepareQueryArgument {
 }
 
 // ----------------------------------------------
-
-export type COLUMNS = "(columns)";
 
 export type SQL_BOOL = 0 | 1;
 

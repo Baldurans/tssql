@@ -9,4 +9,8 @@ export interface User {
     age: number;
     isMan: number;
     created: vDateTime
+    tin: number,
+    created_at: vDateTime,
+    updated_at: vDateTime,
+    uuid: string
 }

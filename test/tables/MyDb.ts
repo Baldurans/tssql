@@ -17,7 +17,11 @@ export class MyDb extends Db<undefined> {
             username: true,
             age: true,
             isMan: true,
-            created: true
+            created: true,
+            updated_at: true,
+            tin: true,
+            created_at: true,
+            uuid: true
         }),
         company: Db.getDbTableAliasFunction<"company", Company>("company", {
             id: true,

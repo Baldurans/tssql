@@ -8,6 +8,7 @@ export class DbUtility {
     public static readonly SQL_EXPRESSION = Symbol("Table expression")
     public static readonly SQL_ALIAS = Symbol("Alias")
     public static readonly SQL_ALIAS_FOR_WITH_QUERY = Symbol("RefAlias")
+    public static readonly SQL_ENTITY = Symbol("Entity")
 
     public static defineDbTable<TableName extends string, Alias extends string, Entity>(
         escapedExpression: TableName,

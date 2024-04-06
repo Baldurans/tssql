@@ -25,7 +25,7 @@ export abstract class Db<CTX> {
         TableName extends string,
         TableRef extends `${TableName} as ${Alias}`
     >(
-        table: AliasedTable<Alias, TableRef, any, NotUsingWithPart>
+        table: AliasedTable<Alias, TableRef, object, NotUsingWithPart>
     ): DbSelect00Uses<Key<Alias>, Key<TableRef>, CTX> {
         return new DbSelect00Uses(new DbSelectBuilder<CTX>(this.exec));
     }
@@ -35,7 +35,7 @@ export abstract class Db<CTX> {
         TableName extends string,
         TableRef extends `${TableName} as ${Alias}`
     >(
-        table: AliasedTable<Alias, TableRef, any, NotUsingWithPart>
+        table: AliasedTable<Alias, TableRef, object, NotUsingWithPart>
     ): DbSelect00With<Key<Alias>, CTX> {
         return new DbSelect00With(new DbSelectBuilder<CTX>(this.exec)).with(table as any);
     }

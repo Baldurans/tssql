@@ -1,5 +1,6 @@
 import {COMPARISON_SIGNS, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
 import {Sql} from "./Sql";
+import {OrderByStructure, orderByStructureToSqlString} from "./select/DbSelect07OrderBy";
 
 export type Expr<TableRef, Name, Type extends string | number | unknown> = symbol & {
     tableRef: TableRef
@@ -49,7 +50,9 @@ export class SqlExpression<TableRef, Name, Type extends string | number | unknow
         return Sql.notNull(this.asValue());
     }
 
-    public in(values: Type[] | PrepareQueryArgument): Expr<TableRef, unknown, SQL_BOOL> {
+    public in(values: Type[] | PrepareQueryArgument): Expr<TableRef, unknown, SQL_BOOL>
+    public in<TableRef2, Type1 extends Type>(col: Expr<TableRef2, string | unknown, Type1>): Expr<TableRef | TableRef2, unknown, SQL_BOOL>
+    public in(values: any): any {
         return Sql.in(this.asValue(), values);
     }
 
@@ -87,12 +90,61 @@ export class SqlExpression<TableRef, Name, Type extends string | number | unknow
     // MANIPULATION
     // -------------------------------------------------------------------
 
+    public asUnixTimestamp(): Expr<TableRef, Name, number> {
+        return Sql.unixTimestamp(this.asValue()).as(this.nameAs as any);
+    }
+
     public asDate(): Expr<TableRef, Name, vDate> {
         return Sql.date(this.asValue()).as(this.nameAs as any);
     }
 
     public asDateTime(): Expr<TableRef, Name, vDateTime> {
         return Sql.datetime(this.asValue()).as(this.nameAs as any);
+    }
+
+    // -------------------------------------------------------------------
+    // MISC
+    // -------------------------------------------------------------------
+
+    public over<TableRef1 extends string>(func: (builder: SqlOverClauseBuilder<never>) => SqlOverClauseBuilder<TableRef1>): Expr<TableRef | TableRef1, unknown, Type>
+    //public over<WindowName extends string>(namedWindow: WindowName): Expr<TableRef | `${WINDOW} as ${WindowName}`, unknown, Type>
+    public over<WindowName extends string, TableRef1>(namedWindow: WindowName, func: (builder: SqlOverClauseBuilder<TableRef1>) => void): Expr<TableRef | TableRef1 | `(window) as ${WindowName}`, unknown, Type>
+    public over(a: any, b?: any): any {
+        let namedWindow: string = undefined;
+        let func: (builder: SqlOverClauseBuilder<never>) => void = undefined;
+        if (typeof a === "function") {
+            func = a
+        } else if (typeof a === "string") {
+            namedWindow = a;
+            if (typeof b === "function") {
+                func = b
+            }
+        }
+        const builder = new SqlOverClauseBuilder<{}>();
+        func(builder);
+        return SqlExpression.create(this.expression + " OVER (" + (namedWindow ? Sql.escapeId(namedWindow) + " " : "") + builder.toString() + ")");
+    }
+
+}
+
+export class SqlOverClauseBuilder<TableRef> {
+
+    private _partitionBy: string[];
+    private _orderBy: string[];
+
+    public orderBy<TableRef2>(...cols: OrderByStructure<Expr<TableRef2, string, any>>): SqlOverClauseBuilder<TableRef | TableRef2> {
+        this._orderBy = orderByStructureToSqlString(cols)
+        return this as any;
+    }
+
+    public partitionBy<TableRef2>(...cols: Expr<TableRef2, string, any>[]): SqlOverClauseBuilder<TableRef | TableRef2> {
+        this._partitionBy = cols.map(e => e.expression)
+        return this as any;
+    }
+
+    public toString() {
+        return (this._partitionBy?.length > 0 ? " PARTITION BY " + this._partitionBy.join(", ") : "") +
+            (this._orderBy?.length > 0 ? " ORDER BY " + this._orderBy.join(", ") : "")
     }
 
 }

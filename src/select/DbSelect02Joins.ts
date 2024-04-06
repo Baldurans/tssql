@@ -1,6 +1,6 @@
 import {AliasedTable, AnyAliasedTableDef, isAliasAlreadyUsed, isTableReferenced, Key, NotUsingWithPart, SQL_BOOL} from "../Types";
 import {DbSelect03Columns} from "./DbSelect03Columns";
-import {Expr} from "../SqlExpression";
+import {Expr, SqlOverClauseBuilder} from "../SqlExpression";
 
 export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelect03Columns<{}, Tables, CTX> {
 
@@ -27,6 +27,19 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
         condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
     ): DbSelectJoin<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX> {
         this.builder.join("LEFT JOIN", table as AnyAliasedTableDef, condition as any)
+        return this as any;
+    }
+
+    public window<
+        WindowName extends string,
+        UsedTablesRef extends string
+    >(
+        name: isAliasAlreadyUsed<Aliases & AliasesFromWith, WindowName, WindowName>,
+        func: (builder: SqlOverClauseBuilder<never>) => SqlOverClauseBuilder<UsedTablesRef>
+    ): DbSelectJoin<Aliases & Key<WindowName>, AliasesFromWith, Tables & Key<`(window) as ${WindowName}`>, CTX> {
+        const builder = new SqlOverClauseBuilder()
+        func(builder)
+        this.builder.window(name, builder.toString())
         return this as any;
     }
 }

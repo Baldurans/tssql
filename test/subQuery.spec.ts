@@ -18,8 +18,7 @@ test("simple", async () => {
         //.where(["a","b"])
         .where(
             c.id.eq(c.id),
-            s.id.eq(c.id),
-            c.id.eq(c.id)
+            s.id.eq(c.id)
         )
         .noLimit()
         .asScalar("subColumn");
@@ -50,7 +49,8 @@ test("simple", async () => {
         .where(
             c.id.eq(input.userId),
             c.username.isNull(),
-            c.id.eq(input.userId)
+            c.id.eq(input.userId),
+            c.id.in(scalarSub)
         )
         .noLimit()
 

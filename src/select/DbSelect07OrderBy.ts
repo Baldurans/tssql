@@ -1,4 +1,4 @@
-import {AliasedTable, COLUMNS, Key, NotUsingWithPart} from "../Types";
+import {AliasedTable, Key, NotUsingWithPart} from "../Types";
 import {DbSelect08Limit} from "./DbSelect08Limit";
 import {isColumnOkToUse} from "./DbSelect05GroupBy";
 import {Expr, SqlExpression} from "../SqlExpression";
@@ -19,7 +19,7 @@ export class DbSelect07OrderBy<Result, Tables, CTX> extends DbSelect08Limit<Resu
         TableRef,
         Columns extends OrderByStructure<Expr<TableRef, string | unknown, string | number>>
     >(
-        func: (columnsTable: AliasedTable<COLUMNS, COLUMNS, Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<COLUMNS>, Columns>
+        func: (columnsTable: AliasedTable<"(columns)", "(columns)", Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<"(columns)">, Columns>
     ): DbSelect08Limit<Result, CTX> {
         const proxy: any = new Proxy({}, {
             get(target: {}, p: string, receiver: any): any {
