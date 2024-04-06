@@ -75,7 +75,7 @@ export abstract class Db<CTX> {
         TableRef extends `${TableName} as ${Alias}`,
         Entity,
         NewAlias extends string
-    >(table: AliasedTable<Alias, TableRef, Entity, NotUsingWithPart>, newAlias: NewAlias): AliasedTable<NewAlias, `${TableName} as ${NewAlias}`, Entity, Alias> {
+    >(table: AliasedTable<Alias, TableRef, Entity, NotUsingWithPart>, newAlias: NewAlias): AliasedTable<NewAlias, `${Alias} as ${NewAlias}`, Entity, Alias> {
         const definition: DbTableDefinition<Entity> = {} as any;
         for (const k in table) {
             (definition as any)[k] = (table as any)[k];

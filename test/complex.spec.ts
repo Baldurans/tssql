@@ -103,7 +103,7 @@ test("complex", async () => {
             // cFake.name, // ____ERROR, table X is not used in the query
             // c3.username // ____ERROR, table X is not used in the query
             // Sql.concat(cFake.name, c2.username).as("concated"), // ____ERROR, table company as c,c2 is not used in the query (twice!)
-
+            // withSub2Sub1.subIdRenamed.as("xxxx") // ____ERROR, not used in this query.
         )
 
         .where(
