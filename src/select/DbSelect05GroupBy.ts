@@ -40,7 +40,7 @@ export class DbSelect05GroupBy<Result, Tables, CTX> extends DbSelect07OrderBy<Re
 }
 
 type _checkThatTableOrColumnCanBeReferenced<Result, Tables, Expr> =
-    Expr extends { tableRef: string, seenResultColumnNames: string | never } ?
+    Expr extends { tableRef: string } ?
         Expr["tableRef"] extends keyof Tables ?
             Expr
             : `Table '${Expr["tableRef"]}' is not used in this query!`
