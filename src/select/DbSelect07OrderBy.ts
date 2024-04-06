@@ -6,7 +6,7 @@ import {SqlExpression} from "../SqlExpression";
 export class DbSelect07OrderBy<Result, Tables, CTX> extends DbSelect08Limit<Result, CTX> {
 
     public orderBy<
-        TableRef extends string,
+        TableRef,
         Columns extends OrderByStructure<Expr<TableRef, string | unknown, any>>
     >(
         ...items: isColumnOkToUse<Tables, Columns>
@@ -16,7 +16,7 @@ export class DbSelect07OrderBy<Result, Tables, CTX> extends DbSelect08Limit<Resu
     }
 
     public orderByF<
-        TableRef extends string,
+        TableRef,
         Columns extends OrderByStructure<Expr<TableRef, string | unknown, string | number>>
     >(
         func: (columnsTable: AliasedTable<COLUMNS, COLUMNS, Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<COLUMNS>, Columns>

@@ -6,7 +6,7 @@ import {SqlExpression} from "../SqlExpression";
 export class DbSelect06Having<Result, Tables, CTX> extends DbSelect07OrderBy<Result, Tables, CTX> {
 
     public having<
-        TableRef extends string,
+        TableRef,
         Columns extends (Expr<TableRef, string | unknown, SQL_BOOL>)[]
     >(
         ...col: isColumnOkToUse<Tables, Columns>
@@ -16,7 +16,7 @@ export class DbSelect06Having<Result, Tables, CTX> extends DbSelect07OrderBy<Res
     }
 
     public havingF<
-        TableRef extends string,
+        TableRef,
         Columns extends Expr<TableRef, string | unknown, SQL_BOOL>[]
     >(
         func: (columnsTable: AliasedTable<COLUMNS, COLUMNS, Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<COLUMNS>, Columns>

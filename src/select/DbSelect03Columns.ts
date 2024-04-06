@@ -9,7 +9,7 @@ export class DbSelect03Columns<Result, Tables, CTX> extends DbSelect<CTX> {
     }
 
     public columns<
-        TableRef extends string,
+        TableRef,
         Columns extends Expr<TableRef, string | unknown, any>[]
     >(
         //...columns: Columns - this will enable seeing sources of Result object properties.

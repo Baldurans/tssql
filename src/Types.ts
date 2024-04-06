@@ -37,13 +37,13 @@ export type RuntimeExpr<TableRef, Name, Type extends string | number | unknown> 
     asDateTime: () => Expr<TableRef, Name, vDateTime>
 }
 
-export type AnyBoolExpr<TableRef extends string> = Expr<TableRef, string | unknown, SQL_BOOL>;
+export type AnyBoolExpr<TableRef> = Expr<TableRef, string | unknown, SQL_BOOL>;
 
 export type AnyExpr = Expr<string, string | unknown, string | number | unknown>
 
 // ----------------------------------------------
 
-export type AliasedTable<Alias extends string, TableRef extends string, Entity, AliasForWithQuery extends string | NotUsingWithPart> = {
+export type AliasedTable<Alias extends string, TableRef, Entity, AliasForWithQuery extends string | NotUsingWithPart> = {
     [DbUtility.SQL_ALIAS]: Alias
     [DbUtility.SQL_EXPRESSION]: TableRef
     [DbUtility.SQL_ALIAS_FOR_WITH_QUERY]: AliasForWithQuery

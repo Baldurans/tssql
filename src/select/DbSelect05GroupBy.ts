@@ -7,7 +7,7 @@ import {SqlExpression} from "../SqlExpression";
 export class DbSelect05GroupBy<Result, Tables, CTX> extends DbSelect07OrderBy<Result, Tables, CTX> {
 
     public groupBy<
-        TableRef extends string,
+        TableRef,
         Columns extends Expr<TableRef, string | unknown, any>[]
     >(
         ...items: isColumnOkToUse<Tables, Columns>
@@ -17,7 +17,7 @@ export class DbSelect05GroupBy<Result, Tables, CTX> extends DbSelect07OrderBy<Re
     }
 
     public groupByF<
-        TableRef extends string,
+        TableRef,
         Columns extends Expr<TableRef, string | unknown, any>[]
     >(
         func: (columnsTable: AliasedTable<COLUMNS, COLUMNS, Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<COLUMNS>, Columns>
