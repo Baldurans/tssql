@@ -99,6 +99,7 @@ test("complex", async () => {
             Sql.if(c.id.eq(c2.id), c.username, c2.username).cast<string>().as("expr4"),
             withSubSub1.subIdRenamed.as("withSubSub1"),
             withSubSub2.subIdRenamed.as("withSubSub2"),
+
             Sql.if(c.id.eq(10 as tUserId), c.id, 10 as tUserId).as("X0"),
             db.uses(c).select().from(s).columns(s.id).where(Sql.eq(c.id, s.id)).noLimit().asScalar("someItem"),
             db.uses(c)
