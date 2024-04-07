@@ -6,14 +6,7 @@ import {OrderByStructure, orderByStructureToSqlString} from "./select/DbSelect07
 export class Sql {
 
     public static escape(value: string | number | (string | number)[] | PrepareQueryArgument): string {
-        if (isPrepareArgument(value)) {
-            if (!/^[A-Za-z]+$/.test(value.name)) {
-                throw new Error("Invalid prepare query argument named '" + value.name + "'. Can only contain ascii letters!")
-            }
-            return ":___arg__" + value.name
-        } else {
-            return mysql.escape(value)
-        }
+        return mysql.escape(value)
     }
 
     public static escapeId(value: string): string {
@@ -120,17 +113,16 @@ export class Sql {
     }
 
     public static if<
-        Type2,
-        Type3 extends Type2,
+        Type extends string | number,
         TableRef1 extends string = never,
         TableRef2 extends string = never,
         TableRef3 extends string = never
     >(
         col: Expr<TableRef1, string | unknown, SQL_BOOL>,
-        col2: Expr<TableRef2, string | unknown, Type2> | Type2,
-        col3: Expr<TableRef3, string | unknown, Type3> | Type3
-    ): Expr<TableRef1 | TableRef2 | TableRef3, unknown, Type2 | Type3> {
-        return SqlExpression.create("IF(" + col.expression + "," + this._toSqlArg(col2) + "," + this._toSqlArg(col3) + ")")
+        col2: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument,
+        col3: Type | Expr<TableRef3, string | unknown, Type> | PrepareQueryArgument
+    ): Expr<TableRef1 | TableRef2 | TableRef3, unknown, Type | Type> {
+        return SqlExpression.create("IF( " + col.expression + ", " + this._toSqlArg(col2) + ", " + this._toSqlArg(col3) + " )")
     }
 
     public static isNull<TableRef, Name, Type extends string | number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, SQL_BOOL> {
@@ -141,49 +133,61 @@ export class Sql {
         return SqlExpression.create(col.expression + " IS NOT NULL")
     }
 
-    public static in<TableRef, Type extends (string | number)[] | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, values: Type): Expr<TableRef, unknown, SQL_BOOL>
-    public static in<TableRef1, TableRef2, Type1>(col1: Expr<TableRef1, string, Type1>, col2: Expr<TableRef2, string, Type1>): Expr<TableRef1 | TableRef2, unknown, SQL_BOOL>
-    public static in(col: any, values: any): any {
-        return SqlExpression.create(col.expression + " IN( " + (values instanceof SqlExpression ? values.expression : this.escape(values)) + ")")
+    // public static in<TableRef, Type extends (string | number)[] | PrepareQueryArgument>(
+    //     col: Expr<TableRef, string, Type>,
+    //     values: Type
+    // ): Expr<TableRef, unknown, SQL_BOOL>
+    public static in<Type extends string | number, TableRef1 = never, TableRef2 = never>(
+        col1: Type | Expr<TableRef1, string | unknown, Type> | PrepareQueryArgument,
+        col2: Type[] | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument
+    ): Expr<TableRef1 | TableRef2, unknown, Type> {
+        return SqlExpression.create(this._toSqlArg(col1) + " IN ( " + this._toSqlArg(col2) + ")")
     }
 
-    public static eq<TableRef, Type extends string | number | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, value: Type): Expr<TableRef, unknown, SQL_BOOL>
-    public static eq<TableRef, Type extends string | number | PrepareQueryArgument, TableRef2>(col: Expr<TableRef, string, Type>, col2: Expr<TableRef2, string, Type>): Expr<TableRef | TableRef2, unknown, SQL_BOOL>
-    public static eq(col1: any, col2: any): any {
+    // public static eq<TableRef, Type extends string | number | PrepareQueryArgument>(
+    //     col: Expr<TableRef, string, Type>,
+    //     value: Type
+    // ): Expr<TableRef, unknown, SQL_BOOL>
+    public static eq<Type1 extends string | number, TableRef1 = never, TableRef2 = never>(
+        col1: Type1 | Expr<TableRef1, string | unknown, Type1> | PrepareQueryArgument,
+        col2: Type1 | Expr<TableRef2, string | unknown, Type1> | PrepareQueryArgument
+    ): Expr<TableRef1 | TableRef2, unknown, SQL_BOOL> {
         return Sql.compare(col1, "=", col2);
     }
 
-    public static compare<TableRef, Type extends string | number | PrepareQueryArgument>(col: Expr<TableRef, string, Type>, op: COMPARISON_SIGNS, value: Type): Expr<TableRef, unknown, SQL_BOOL>
-    public static compare<TableRef, Type extends string | number | PrepareQueryArgument, TableRef2>(col1: Expr<TableRef, string, Type>, op: COMPARISON_SIGNS, col2: Expr<TableRef2, string | unknown, Type>): Expr<TableRef | TableRef2, unknown, SQL_BOOL>
-    public static compare<TableRef, Type>(col: Expr<TableRef, string, Type>, op: COMPARISON_SIGNS, value: any): Expr<TableRef, unknown, SQL_BOOL> {
+    public static compare<Type extends string | number, TableRef = never, TableRef2 = never>(
+        col1: Type | Expr<TableRef, string | unknown, Type> | PrepareQueryArgument,
+        op: COMPARISON_SIGNS,
+        col2: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument
+    ): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
         if (!ComparisonOperandsLookup.has(op)) {
             throw new Error("Invalid comparison operand '" + op + "'")
         }
-        return SqlExpression.create(col.expression + " " + op + " " + (value instanceof SqlExpression ? value.expression : this.escape(value)))
+        return SqlExpression.create(this._toSqlArg(col1) + " " + op + " " + this._toSqlArg(col2))
     }
 
-    public static like<TableRef, Type extends string | number>(col: (Expr<TableRef, string | unknown, Type>), value: string | PrepareQueryArgument): Expr<TableRef, unknown, SQL_BOOL> {
+    public static like<TableRef>(col: (Expr<TableRef, string | unknown, string | number>), value: string | PrepareQueryArgument): Expr<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(col.expression + " LIKE " + this.escape(value));
     }
 
     /**
      * Does LIKE %X% search.
      */
-    public static contains<TableRef, Type extends string | number>(col: (Expr<TableRef, string | unknown, Type>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
+    public static contains<TableRef>(col: (Expr<TableRef, string | unknown, string | number>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(col.expression + " LIKE " + this.escape("%" + value + "%"));
     }
 
     /**
      * Does LIKE X% search.
      */
-    public static startsWith<TableRef, Type extends string | number>(col: (Expr<TableRef, string | unknown, Type>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
+    public static startsWith<TableRef>(col: (Expr<TableRef, string | unknown, string | number>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(col.expression + " LIKE " + this.escape(value + "%"));
     }
 
     /**
      * Does LIKE %X search.
      */
-    public static endsWith<TableRef, Type extends string | number>(col: (Expr<TableRef, string | unknown, Type>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
+    public static endsWith<TableRef>(col: (Expr<TableRef, string | unknown, string | number>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
         return SqlExpression.create(col.expression + " LIKE " + this.escape("%" + value));
     }
 
@@ -191,22 +195,22 @@ export class Sql {
     // STRING MANIPULATION
     // -------------------------------------------------------------------
 
-    public static trim<Type extends string, TableRef>(value: string | PrepareQueryArgument): Expr<TableRef, unknown, Type> {
-        return SqlExpression.create("TRIM(" + this.escape(value) + ")")
+    public static trim<Type extends string, TableRef = never>(value: string | Expr<TableRef, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef, unknown, Type> {
+        return SqlExpression.create("TRIM(" + this._toSqlArg(value) + ")")
     }
 
     /**
      * normal SQL length function, but JS does not allow usage of length.
      */
-    public static length2<Type extends string, TableRef>(value: string | PrepareQueryArgument | Expr<TableRef, string | unknown, Type>): Expr<TableRef, unknown, number> {
-        return SqlExpression.create("LENGTH(" + this.escape(this._toSqlArg(value)) + ")")
+    public static length2<TableRef = never>(value: string | Expr<TableRef, string | unknown, string> | PrepareQueryArgument): Expr<TableRef, unknown, number> {
+        return SqlExpression.create("LENGTH(" + this._toSqlArg(value) + ")")
     }
 
-    public static concat<TableRef>(...expr: (string | PrepareQueryArgument | Expr<TableRef, any, any>)[]): Expr<TableRef, unknown, string> {
+    public static concat<TableRef = never>(...expr: (string | PrepareQueryArgument | Expr<TableRef, any, any>)[]): Expr<TableRef, unknown, string> {
         return SqlExpression.create("CONCAT (" + expr.map(this._toSqlArg) + ")")
     }
 
-    public static concat_ws<TableRef>(separator: string, ...expr: (string | PrepareQueryArgument | Expr<TableRef, any, any>)[]): Expr<TableRef, unknown, string> {
+    public static concat_ws<TableRef = never>(separator: string, ...expr: (string | PrepareQueryArgument | Expr<TableRef, any, any>)[]): Expr<TableRef, unknown, string> {
         return SqlExpression.create("CONCAT_WS(" + this.escape(separator) + "," + expr.map(this._toSqlArg) + ")")
     }
 
@@ -240,43 +244,46 @@ export class Sql {
     // DATE MANIPULATION
     // -------------------------------------------------------------------
 
-    public static now(): Expr<null, unknown, vDateTime> {
+    public static now(): Expr<never, unknown, vDateTime> {
         return SqlExpression.create("NOW()")
     }
 
-    public static curDate(): Expr<null, unknown, vDate> {
+    public static curDate(): Expr<never, unknown, vDate> {
         return SqlExpression.create("CURDATE()")
     }
 
-    public static year<TableRef, Name, Type extends vDate | vDateTime>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+    public static year<Name, TableRef>(field: Expr<TableRef, Name, vDate | vDateTime>): Expr<TableRef, Name, number> {
         return SqlExpression.create("YEAR(" + field.expression + ")")
     }
 
-    public static unixTimestamp<TableRef, Name, Type extends vDate | vDateTime>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+    public static unixTimestamp<Name, TableRef>(field: Expr<TableRef, Name, vDate>): Expr<TableRef, Name, number> {
         return SqlExpression.create("UNIX_TIMESTAMP(" + field.expression + ")")
     }
 
-    public static date<TableRef, Name, Type extends vDate | vDateTime>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, vDate> {
+    public static date<Name, TableRef>(field: Expr<TableRef, Name, vDate | vDateTime>): Expr<TableRef, Name, vDate> {
         return SqlExpression.create("DATE(" + field.expression + ")")
     }
 
-    public static datetime<TableRef, Name, Type extends vDate | vDateTime>(field: Expr<TableRef, Name, Type>): Expr<TableRef, Name, vDateTime> {
+    public static datetime<Name, TableRef>(field: Expr<TableRef, Name, vDateTime>): Expr<TableRef, Name, vDateTime> {
         return SqlExpression.create("DATETIME(" + field.expression + ")")
     }
 
-    public static dateFormat<Type, TableRef, Name extends string | unknown>(col: Expr<TableRef, Name, Type>, format: string): Expr<TableRef, Name, string> {
-        return SqlExpression.create("DATE_FORMAT(" + col.expression + ", " + this.escape(format) + ")")
+    public static dateFormat<Name, TableRef = never>(col: vDate | vDateTime | Expr<TableRef, Name, vDate | vDateTime>, format: string): Expr<TableRef, Name, string> {
+        return SqlExpression.create("DATE_FORMAT(" + this._toSqlArg(col) + ", " + this.escape(format) + ")")
     }
 
-    public static datediff<Type extends vDate | vDateTime, TableRef1, TableRef2>(col1: Expr<TableRef1, string | unknown, Type>, col2: Expr<TableRef2, string | unknown, Type>): Expr<TableRef1 | TableRef2, unknown, number> {
-        return SqlExpression.create("DATEDIFF(" + col1.expression + ", " + col2.expression + ")")
+    public static dateDiff<TableRef1 = never, TableRef2 = never>(
+        col1: vDate | vDateTime | Expr<TableRef1, string | unknown, vDate | vDateTime> | PrepareQueryArgument,
+        col2: vDate | vDateTime | Expr<TableRef2, string | unknown, vDate | vDateTime> | PrepareQueryArgument
+    ): Expr<TableRef1 | TableRef2, unknown, number> {
+        return SqlExpression.create("DATEDIFF(" + this._toSqlArg(col1) + ", " + this._toSqlArg(col2) + ")")
     }
 
     // -------------------------------------------------------------------
     // NUMBER MANIPULATION
     // -------------------------------------------------------------------
 
-    public static math<TableRef, Name>(expression: string, args: Expr<TableRef, Name, number>[]): Expr<TableRef, Name, number> {
+    public static math<Name, TableRef>(expression: string, args: Expr<TableRef, Name, number>[]): Expr<TableRef, Name, number> {
         const pattern = /^[0-9+\-*/()?. ]*$/
         if (!pattern.test(expression)) {
             throw new Error("Invalid expression. Expression must match this pattern: " + pattern)
@@ -287,27 +294,27 @@ export class Sql {
         return SqlExpression.create("(" + expression + ")")
     }
 
-    public static abs<TableRef, Name, Type extends number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+    public static abs<Name, TableRef>(col: Expr<TableRef, Name, number>): Expr<TableRef, Name, number> {
         return SqlExpression.create("ABS(" + col.expression + ")", col.nameAs)
     }
 
-    public static ceil<TableRef, Name, Type extends number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+    public static ceil<Name, TableRef>(col: Expr<TableRef, Name, number>): Expr<TableRef, Name, number> {
         return SqlExpression.create("CEIL(" + col.expression + ")", col.nameAs)
     }
 
-    public static floor<TableRef, Name, Type extends number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+    public static floor<Name, TableRef>(col: Expr<TableRef, Name, number>): Expr<TableRef, Name, number> {
         return SqlExpression.create("FLOOR(" + col.expression + ")", col.nameAs)
     }
 
-    public static round<TableRef, Name, Type extends number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+    public static round<Name, TableRef>(col: Expr<TableRef, Name, number>): Expr<TableRef, Name, number> {
         return SqlExpression.create("ROUND(" + col.expression + ")", col.nameAs)
     }
 
-    public static sign<TableRef, Name, Type extends number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, -1 | 0 | 1> {
+    public static sign<Name, TableRef>(col: Expr<TableRef, Name, number>): Expr<TableRef, Name, -1 | 0 | 1> {
         return SqlExpression.create("SIGN(" + col.expression + ")", col.nameAs)
     }
 
-    public static sqrt<TableRef, Name, Type extends number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+    public static sqrt<Name, TableRef>(col: Expr<TableRef, Name, number>): Expr<TableRef, Name, number> {
         return SqlExpression.create("SQRT(" + col.expression + ")", col.nameAs)
     }
 
@@ -315,22 +322,20 @@ export class Sql {
     // AGGREGATE FUNCTIONS
     // -------------------------------------------------------------------
 
-    public static min<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): ExprWithOver<TableRef, Name, Type> {
+    public static min<Type, Name, TableRef>(col: Expr<TableRef, Name, Type>): ExprWithOver<TableRef, Name, Type> {
         return SqlExpression.createWithOver("MIN(" + col.expression + ")", col.nameAs)
     }
 
-    public static max<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): ExprWithOver<TableRef, Name, Type> {
+    public static max<Type, Name, TableRef>(col: Expr<TableRef, Name, Type>): ExprWithOver<TableRef, Name, Type> {
         return SqlExpression.createWithOver("MAX(" + col.expression + ")", col.nameAs)
     }
 
-    public static sum<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): ExprWithOver<TableRef, Name, Type> {
-        return SqlExpression.createWithOver("SUM(" + col.expression + ")", col.nameAs)
+    public static sum<Type, Name, TableRef = never>(col: Type | Expr<TableRef, Name, Type>): ExprWithOver<TableRef, Name, number> {
+        return SqlExpression.createWithOver("SUM(" + this._toSqlArg(col) + ")", (col instanceof SqlExpression ? col.nameAs : undefined))
     }
 
-    public static count<Type, TableRef, Name>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, number>
-    public static count(value: number): ExprWithOver<never, unknown, number>
-    public static count(col: any): any {
-        return SqlExpression.createWithOver("COUNT(" + (col instanceof SqlExpression ? col.expression : Number(col)) + ")", col.nameAs)
+    public static count<Type, Name, TableRef = never>(col: Type | Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
+        return SqlExpression.createWithOver("COUNT(" + this._toSqlArg(col) + ")", (col instanceof SqlExpression ? col.nameAs : undefined))
     }
 
     public static rank(): ExprWithOver<never, unknown, number> {
@@ -341,23 +346,23 @@ export class Sql {
         return SqlExpression.createWithOver("ROW_NUMBER()", undefined)
     }
 
-    public static lag<Type, TableRef>(col: Expr<TableRef, unknown, Type>, n?: number, def?: number): ExprWithOver<TableRef, unknown, Type> {
+    public static lag<Type, TableRef>(col: Expr<TableRef, string | unknown, Type>, n?: number, def?: number): ExprWithOver<TableRef, unknown, Type> {
         return SqlExpression.createWithOver("LAG(" + col.expression + "," + (n ? Number(n) : 0) + "," + (def ? Number(def) : 0) + ")", undefined)
     }
 
-    public static lead<Type, TableRef>(col: Expr<TableRef, unknown, Type>, n?: number, def?: number): ExprWithOver<TableRef, unknown, Type> {
+    public static lead<Type, TableRef>(col: Expr<TableRef, string | unknown, Type>, n?: number, def?: number): ExprWithOver<TableRef, unknown, Type> {
         return SqlExpression.createWithOver("LEAD(" + col.expression + "," + (n ? Number(n) : 0) + "," + (def ? Number(def) : 0) + ")", undefined)
     }
 
-    public static firstValue<Type, TableRef>(col: Expr<TableRef, unknown, Type>): ExprWithOver<TableRef, unknown, Type> {
+    public static firstValue<Type, TableRef>(col: Expr<TableRef, string | unknown, Type>): ExprWithOver<TableRef, unknown, Type> {
         return SqlExpression.createWithOver("FIRST_VALUE(" + col.expression + ")", undefined)
     }
 
-    public static lastValue<Type, TableRef>(col: Expr<TableRef, unknown, Type>): ExprWithOver<TableRef, unknown, Type> {
+    public static lastValue<Type, TableRef>(col: Expr<TableRef, string | unknown, Type>): ExprWithOver<TableRef, unknown, Type> {
         return SqlExpression.createWithOver("LAST_VALUE(" + col.expression + ")", undefined)
     }
 
-    public static nthValue<Type, TableRef>(col: Expr<TableRef, unknown, Type>, value: number): ExprWithOver<TableRef, unknown, Type> {
+    public static nthValue<Type, TableRef>(col: Expr<TableRef, string | unknown, Type>, value: number): ExprWithOver<TableRef, unknown, Type> {
         return SqlExpression.createWithOver("NTH_VALUE(" + col.expression + "," + (value ? Number(value) : 0) + ")", undefined)
     }
 
@@ -373,17 +378,21 @@ export class Sql {
     // UTILITY
     // -------------------------------------------------------------------
 
-    private static _toSqlArg = (e: unknown | string | PrepareQueryArgument | AnyExpr): string | number => {
+    private static _toSqlArg = (e: unknown | number | string | boolean | PrepareQueryArgument | AnyExpr): string | number => {
         if (typeof e === "string") {
             return this.escape(e);
         } else if (typeof e === "number") {
             return Number(e);
-        } else if (isPrepareArgument(e)) {
-            return this.escape(e);
-        } else if (e instanceof SqlExpression) {
-            return e.expression
         } else if (e === null || e === undefined) {
             return "NULL";
+        } else if (e === true) {
+            return "1";
+        } else if (e === false) {
+            return "0";
+        } else if (e instanceof SqlExpression) {
+            return e.expression
+        } else if (isPrepareArgument(e)) {
+            return e.expression;
         } else {
             throw new Error("Invalid argument " + String(e));
         }

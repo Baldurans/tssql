@@ -53,15 +53,21 @@ test("complex", async () => {
         .as("sub")
 
 
-    // const xxx1 = c.id.eq(10 as tUserId) // ____ERROR, giving value to a method that expects SqlExpression.
-    // const xxx2 = Sql.is(Sql.date(c2.username), "2024.03.09" as vDate) // ____ERROR - wrong type DATE(c.name) = '2024.03.09',
-    // const xxx3 = c.id.is(10) // ____ERROR, 10 is not tUser
-    // const xxx4 = Sql.is(c.id, 10)  // ____ERROR, as 10 is not tUserId
+    // const xxx1 = c.id.eq(10 as tUserId)
+    // const xxx2 = Sql.eq(Sql.date(c2.username), "2024.03.09" as vDate) // ____ERROR - wrong type DATE(c.name) = '2024.03.09',
+    // const xxx3 = c.id.eq(10) // ____ERROR, 10 is not tUser
+    // const xxx4 = Sql.eq(c.id, 10)  // ____ERROR, as 10 is not tUserId
     // const xxx5 = Sql.eq(c.id, cFake.id)  // ____ERROR, as tUser can't be applied over tCompanyId
     // const xxx5 = c.id.eq(cFake.id)  // ____ERROR, as tUser can't be applied over tCompanyId
     // const xxx6 = c.id.eq(12 as tCompanyId)  // ____ERROR, as tUser can't be applied over tCompanyId
-    const xxx7 = Sql.if(c.age.eq(10), c.age, 10).as("X0");
-    const xxx8 = Sql.if(c.age.eq(10), "a", "b").as("X0");
+    // const xxx7 = Sql.if(c.age.eq(10), c.age, 10).as("X0");
+    // const xxx8 = Sql.if(c.age.eq(10), "a", "b").as("X0");
+    // const xxx09 = Sql.in(c.age, [1, 2, 3, 4]).as("X0");
+    // const sa = db.select().from(c).columns(c.age).noWhere().noLimit().asScalar("c");
+    // const xxx10 = Sql.in(10, sa).as("X0");
+    // const xxx11 = Sql.in(c.id, sa).as("X0");
+    // const xxx12 = Sql.in(10, [1, 2, 3, 4]).as("X0");
+    // const xxx13 = Sql.date(c.created)
 
     const query = db
         .with(withSub)
@@ -87,13 +93,13 @@ test("complex", async () => {
             subQueryTable.subIdRenamed.as("subIdRenamedAgain"),
             c.id.as("renamedId"),
             Sql.date(c.created).as("myDate"),
-            c.id.comparec("<=", c2.id).as("expr1"),
-            c.id.comparec(">", c2.id).as("expr2"),
+            c.id.compare("<=", c2.id).as("expr1"),
+            c.id.compare(">", c2.id).as("expr2"),
             Sql.__veryDangerousUnsafeSqlExpression({I_DID_NOT_USE_UNSAFE_VARIABLES_TO_CONSTRUCT_THIS_STRING: ["100 + ROUND(", c.id, " > ", c2.id, ")"]}).cast<number>().as("expr3"),
             Sql.if(c.id.eq(c2.id), c.username, c2.username).cast<string>().as("expr4"),
             withSubSub1.subIdRenamed.as("withSubSub1"),
             withSubSub2.subIdRenamed.as("withSubSub2"),
-            Sql.if(c.id.eq(10 as tUserId), c.id, 10).as("X0"),
+            Sql.if(c.id.eq(10 as tUserId), c.id, 10 as tUserId).as("X0"),
             db.uses(c).select().from(s).columns(s.id).where(Sql.eq(c.id, s.id)).noLimit().asScalar("someItem"),
             db.uses(c)
                 .select()
@@ -119,7 +125,7 @@ test("complex", async () => {
             Sql.date(c.created).compare(">=", "2024.03.09" as vDate),
             c.id.eq(10 as tUserId),
             c.id.eq(c2.id),
-            c.id.comparec(">=", c2.id),
+            c.id.compare(">=", c2.id),
 
             // cFake.name.eq("as"), // ____ERROR, company as c is not referenced
             // c3.username.eq("aa"),  // ____ERROR, c3 is not referenced

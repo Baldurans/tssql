@@ -58,24 +58,16 @@ export class SqlExpression<TableRef, Name, Type extends string | number | unknow
         return Sql.notNull(this.asValue());
     }
 
-    public in(values: Type[] | PrepareQueryArgument): Expr<TableRef, unknown, SQL_BOOL>
-    public in<TableRef2, Type1 extends Type>(col: Expr<TableRef2, string | unknown, Type1>): Expr<TableRef | TableRef2, unknown, SQL_BOOL>
-    public in(values: any): any {
+    public in<TableRef2 = never>(values: Type[] | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
         return Sql.in(this.asValue(), values);
     }
 
-    public eq<Type2 extends (string | number) & Type>(value: Type2): Expr<TableRef, unknown, SQL_BOOL>
-    public eq<TableRef2, Type1 extends Type>(col: Expr<TableRef2, string | unknown, Type1>): Expr<TableRef | TableRef2, unknown, SQL_BOOL>
-    public eq(col: any): any {
-        return Sql.compare(this.asValue(), "=", col);
+    public eq<TableRef2 = never>(col2: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return Sql.compare(this.asValue(), "=", col2);
     }
 
-    public compare(op: COMPARISON_SIGNS, value: Type): Expr<TableRef, unknown, SQL_BOOL> {
+    public compare<TableRef2 = never>(op: COMPARISON_SIGNS, value: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
         return Sql.compare(this.asValue(), op, value)
-    }
-
-    public comparec<TableRef2>(op: COMPARISON_SIGNS, col2: Expr<TableRef2, string | unknown, Type>): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return Sql.compare(this.asValue(), op, col2)
     }
 
     public like(value: string): Expr<TableRef, unknown, SQL_BOOL> {

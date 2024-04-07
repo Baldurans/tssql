@@ -24,7 +24,7 @@ test("prepare", async () => {
         const sub = db
             .select()
             .from(c)
-            .columns(c.id, c.username)
+            .columns(c.id, c.username, Sql.if(c.id.eq(10 as tUserId), args.age, args.id).as("weird"))
             .where(Sql.or(
                 c.username.like(args.search),
                 c.created.like(args.search)

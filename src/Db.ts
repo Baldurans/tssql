@@ -53,11 +53,15 @@ export abstract class Db<CTX> {
             if (sqlQuery === undefined) {
                 const p: PrepareQueryArguments = new Proxy({}, {
                     get(_: {}, p: string): PrepareQueryArgument {
-                        return {__prepare_argument: true, name: p};
+                        if (!/^[A-Za-z]+$/.test(p)) {
+                            throw new Error("Invalid prepare query argument named '" + p + "'. Can only contain ascii letters!")
+                        }
+                        return {__prepare_argument: true, expression: ":" + p};
                     }
                 }) as any
                 sqlQuery = func(p).toString();
             }
+            console.log(sqlQuery)
             return sqlQuery;
         }
         return {

@@ -18,7 +18,7 @@ export type AnyAliasedTableDef = AliasedTable<string, string, {}, string | NotUs
 
 export type NotUsingWithPart = { __not_referenced: true }
 
-export type PrepareQueryArgument = { __prepare_argument: true, name: string }
+export type PrepareQueryArgument = { __prepare_argument: true, expression: string }
 
 export function isPrepareArgument(arg: unknown): arg is PrepareQueryArgument {
     return (arg as any)?.__prepare_argument === true;
