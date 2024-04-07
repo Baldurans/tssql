@@ -23,25 +23,25 @@ test("simple", async () => {
                 c.username,
                 c.id,
                 c.id.as("renamedId"),
-                Sql.value(null as string).as("emptyValue"),
-                Sql.date(c.created).as("myDate"),
-                Sql.if(
+                Sql.VALUE(null as string).as("emptyValue"),
+                Sql.DATE(c.created).as("myDate"),
+                Sql.IF(
                     c.id.eq(10 as tUserId),
                     c.id,
                     c2.id
                 ).as("userIdFromIf"),
-                Sql.or(
+                Sql.OR(
                     c.username.isNull(),
                     c.username.notNull(),
                     c.username.isNull()
                 ).as("or"),
-                Sql.and(
+                Sql.AND(
                     c.username.isNull(),
                     c.username.notNull(),
                     c2.username.isNull()
                 ).as("and")
             )
-            .where(Sql.and(
+            .where(Sql.AND(
                 c.id.eq(input.userId),
                 c.username.isNull(),
                 c.username.isNull(),

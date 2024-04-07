@@ -54,7 +54,7 @@ test("window2", async () => {
             c.id,
             c.created_at,
             c.updated_at,
-            Sql.rank().over(f => f.partitionBy(c.age).orderBy(c.created, "desc")).as("latest")
+            Sql.RANK().over(f => f.partitionBy(c.age).orderBy(c.created, "desc")).as("latest")
         )
         .where(
             c.username.eq("asd"), // type = ${this.db.escape(type)}
@@ -70,7 +70,7 @@ test("window2", async () => {
         .from(ref)
         .columns(
             ref.id,
-            Sql.binToUuid(ref.id).as("uuid"),
+            Sql.BIN_TO_UUID(ref.id).as("uuid"),
             ref.created_at.asUnixTimestamp(),
             ref.updated_at.asUnixTimestamp()
         )

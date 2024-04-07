@@ -51,39 +51,39 @@ export class SqlExpression<TableRef, Name, Type extends string | number | unknow
     // -------------------------------------------------------------------
 
     public isNull(): Expr<TableRef, unknown, SQL_BOOL> {
-        return Sql.isNull(this.asValue());
+        return Sql.IS_NULL(this.asValue());
     }
 
     public notNull(): Expr<TableRef, unknown, SQL_BOOL> {
-        return Sql.notNull(this.asValue());
+        return Sql.NOT_NULL(this.asValue());
     }
 
     public in<TableRef2 = never>(values: Type[] | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return Sql.in(this.asValue(), values);
+        return Sql.IN(this.asValue(), values);
     }
 
     public eq<TableRef2 = never>(col2: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return Sql.compare(this.asValue(), "=", col2);
+        return Sql.COMPARE(this.asValue(), "=", col2);
     }
 
     public compare<TableRef2 = never>(op: COMPARISON_SIGNS, value: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return Sql.compare(this.asValue(), op, value)
+        return Sql.COMPARE(this.asValue(), op, value)
     }
 
     public like(value: string): Expr<TableRef, unknown, SQL_BOOL> {
-        return Sql.like(this.asValue(), value);
+        return Sql.LIKE(this.asValue(), value);
     }
 
     public contains(value: string): Expr<TableRef, unknown, SQL_BOOL> {
-        return Sql.contains(this.asValue(), value);
+        return Sql.CONTAINS(this.asValue(), value);
     }
 
     public startsWith(value: string): Expr<TableRef, unknown, SQL_BOOL> {
-        return Sql.startsWith(this.asValue(), value);
+        return Sql.STARTS_WITH(this.asValue(), value);
     }
 
     public endsWith(value: string): Expr<TableRef, unknown, SQL_BOOL> {
-        return Sql.endsWith(this.asValue(), value);
+        return Sql.ENDS_WITH(this.asValue(), value);
     }
 
     // -------------------------------------------------------------------
@@ -91,15 +91,15 @@ export class SqlExpression<TableRef, Name, Type extends string | number | unknow
     // -------------------------------------------------------------------
 
     public asUnixTimestamp(): Expr<TableRef, Name, number> {
-        return Sql.unixTimestamp(this.asValue()).as(this.nameAs as any);
+        return Sql.UNIX_TIMESTAMP(this.asValue()).as(this.nameAs as any);
     }
 
     public asDate(): Expr<TableRef, Name, vDate> {
-        return Sql.date(this.asValue()).as(this.nameAs as any);
+        return Sql.DATE(this.asValue()).as(this.nameAs as any);
     }
 
     public asDateTime(): Expr<TableRef, Name, vDateTime> {
-        return Sql.datetime(this.asValue()).as(this.nameAs as any);
+        return Sql.DATE_TIME(this.asValue()).as(this.nameAs as any);
     }
 
 }

@@ -48,7 +48,7 @@ test("complex", async () => {
             s.username,
             s.id.as("subIdRenamed")
         )
-        .where(Sql.eq(s.id, c.id))
+        .where(Sql.EQ(s.id, c.id))
         .noLimit()
         .as("sub")
 
@@ -92,16 +92,16 @@ test("complex", async () => {
             subQueryTable.id.as("sId"),
             subQueryTable.subIdRenamed.as("subIdRenamedAgain"),
             c.id.as("renamedId"),
-            Sql.date(c.created).as("myDate"),
+            Sql.DATE(c.created).as("myDate"),
             c.id.compare("<=", c2.id).as("expr1"),
             c.id.compare(">", c2.id).as("expr2"),
             Sql.__veryDangerousUnsafeSqlExpression({I_DID_NOT_USE_UNSAFE_VARIABLES_TO_CONSTRUCT_THIS_STRING: ["100 + ROUND(", c.id, " > ", c2.id, ")"]}).cast<number>().as("expr3"),
-            Sql.if(c.id.eq(c2.id), c.username, c2.username).cast<string>().as("expr4"),
+            Sql.IF(c.id.eq(c2.id), c.username, c2.username).cast<string>().as("expr4"),
             withSubSub1.subIdRenamed.as("withSubSub1"),
             withSubSub2.subIdRenamed.as("withSubSub2"),
 
-            Sql.if(c.id.eq(10 as tUserId), c.id, 10 as tUserId).as("X0"),
-            db.uses(c).select().from(s).columns(s.id).where(Sql.eq(c.id, s.id)).noLimit().asScalar("someItem"),
+            Sql.IF(c.id.eq(10 as tUserId), c.id, 10 as tUserId).as("X0"),
+            db.uses(c).select().from(s).columns(s.id).where(Sql.EQ(c.id, s.id)).noLimit().asScalar("someItem"),
             db.uses(c)
                 .select()
                 .from(s)
@@ -123,7 +123,7 @@ test("complex", async () => {
         .where(
             c.id.eq(10 as tUserId),
             c.id.eq(c2.id),
-            Sql.date(c.created).compare(">=", "2024.03.09" as vDate),
+            Sql.DATE(c.created).compare(">=", "2024.03.09" as vDate),
             c.id.eq(10 as tUserId),
             c.id.eq(c2.id),
             c.id.compare(">=", c2.id),

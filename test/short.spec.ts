@@ -16,7 +16,7 @@ test("short", async () => {
         .distinct()
         .columns(
             c.username.as("username2"),
-            Sql.value(10).as("sdfaf")
+            Sql.VALUE(10).as("sdfaf")
         )
         .where(c.id.eq(input.userId))
         .groupByF(r => [

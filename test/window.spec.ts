@@ -19,15 +19,15 @@ test("window", async () => {
         .window("w1", r => r.partitionBy(c.id).orderBy(c.id, "asc"))
         .columns(
             c.id,
-            Sql.rowNumber().over("w1", f => f.orderBy(c.id)).as("rowNum"),
-            Sql.rank().over("w1", f => f.orderBy(c.id)).as("col1"),
+            Sql.ROW_NUMBER().over("w1", f => f.orderBy(c.id)).as("rowNum"),
+            Sql.RANK().over("w1", f => f.orderBy(c.id)).as("col1"),
             //Sql.rank().over("w2").as("col2"),
-            Sql.rank().over(f => f.partitionBy(c.username).orderBy(c.username)).as("col3"),
-            Sql.firstValue(c.id).over("w1", f => f.orderBy(c.id)).as("first"),
-            Sql.lastValue(c.id).over("w1", f => f.orderBy(c.id)).as("last"),
-            Sql.nthValue(c.id, 2).over("w1", f => f.orderBy(c.id)).as("nth5"),
+            Sql.RANK().over(f => f.partitionBy(c.username).orderBy(c.username)).as("col3"),
+            Sql.FIRST_VALUE(c.id).over("w1", f => f.orderBy(c.id)).as("first"),
+            Sql.LAST_VALUE(c.id).over("w1", f => f.orderBy(c.id)).as("last"),
+            Sql.NTH_VALUE(c.id, 2).over("w1", f => f.orderBy(c.id)).as("nth5"),
             Sql.lag(c.id, 2).over("w1", f => f.orderBy(c.id)).as("lag"),
-            Sql.lead(c.id, 2).over("w1", f => f.orderBy(c.id)).as("lead")
+            Sql.LEAD(c.id, 2).over("w1", f => f.orderBy(c.id)).as("lead")
         )
         .where(
             c.id.eq(input.userId),

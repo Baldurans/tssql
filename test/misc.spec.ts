@@ -51,25 +51,25 @@ test("simple", async () => {
             GROUP_CONCAT( [c.id, c.id],  [c.id, "asc"], ",").as("sdaf"),
 
             // with builder
-            Sql.groupConcat(f => f.distinct(c.id).orderBy().separator(",")).as("aaaaa"),
-            Sql.groupConcat(f => f.all(c.id).orderBy().separator(",")).as("aaaaa"),
-            Sql.groupConcat(f => f.all(c.id).separator(",")).as("aaaaa"),
-            Sql.groupConcat(f => f.all(c.id)).as("aaaaa"),
+            Sql.GROUP_CONCAT(f => f.distinct(c.id).orderBy().separator(",")).as("aaaaa"),
+            Sql.GROUP_CONCAT(f => f.all(c.id).orderBy().separator(",")).as("aaaaa"),
+            Sql.GROUP_CONCAT(f => f.all(c.id).separator(",")).as("aaaaa"),
+            Sql.GROUP_CONCAT(f => f.all(c.id)).as("aaaaa"),
 
             // weird
-            Sql.groupConcat(c.id, ",").as("aaaaa"),
+            Sql.GROUP_CONCAT(c.id, ",").as("aaaaa"),
 
             // methods
-            Sql.groupConcat([c.id], [c.id], ",", true).as("aaaaa"), // last 3 optional
-            Sql.groupConcat([c.id], [c.id], ",", "DISTINCT").as("aaaaa"), // last 3 optional
+            Sql.GROUP_CONCAT([c.id], [c.id], ",", true).as("aaaaa"), // last 3 optional
+            Sql.GROUP_CONCAT([c.id], [c.id], ",", "DISTINCT").as("aaaaa"), // last 3 optional
 
             // using strings (not sure if practical)
-            Sql.groupConcat("DISTINCT", [c.id], "ORDER BY", [c.id], "SEPARATOR", ",").as("aaaaa"),
-            Sql.groupConcat([c.id], "ORDER BY", [c.id], "SEPARATOR", ",").as("aaaaa"),
-            Sql.groupConcat([c.id], "SEPARATOR", ",").as("aaaaa"),
+            Sql.GROUP_CONCAT("DISTINCT", [c.id], "ORDER BY", [c.id], "SEPARATOR", ",").as("aaaaa"),
+            Sql.GROUP_CONCAT([c.id], "ORDER BY", [c.id], "SEPARATOR", ",").as("aaaaa"),
+            Sql.GROUP_CONCAT([c.id], "SEPARATOR", ",").as("aaaaa"),
 
         )
-        .where(Sql.and(
+        .where(Sql.AND(
             c.id.eq(input.userId),
             c.username.isNull(),
             val && c.username.isNull(),
