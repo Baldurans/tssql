@@ -60,6 +60,8 @@ test("complex", async () => {
     // const xxx5 = Sql.eq(c.id, cFake.id)  // ____ERROR, as tUser can't be applied over tCompanyId
     // const xxx5 = c.id.eq(cFake.id)  // ____ERROR, as tUser can't be applied over tCompanyId
     // const xxx6 = c.id.eq(12 as tCompanyId)  // ____ERROR, as tUser can't be applied over tCompanyId
+    const xxx7 = Sql.if(c.age.eq(10), c.age, 10).as("X0");
+    const xxx8 = Sql.if(c.age.eq(10), "a", "b").as("X0");
 
     const query = db
         .with(withSub)
@@ -91,6 +93,7 @@ test("complex", async () => {
             Sql.if(c.id.eq(c2.id), c.username, c2.username).cast<string>().as("expr4"),
             withSubSub1.subIdRenamed.as("withSubSub1"),
             withSubSub2.subIdRenamed.as("withSubSub2"),
+            Sql.if(c.id.eq(10 as tUserId), c.id, 10).as("X0"),
             db.uses(c).select().from(s).columns(s.id).where(Sql.eq(c.id, s.id)).noLimit().asScalar("someItem"),
             db.uses(c)
                 .select()

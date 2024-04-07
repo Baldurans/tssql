@@ -120,17 +120,17 @@ export class Sql {
     }
 
     public static if<
-        TableRef1,
-        TableRef2,
         Type2,
-        TableRef3 extends string,
-        Type3
+        Type3 extends Type2,
+        TableRef1 extends string = never,
+        TableRef2 extends string = never,
+        TableRef3 extends string = never
     >(
         col: Expr<TableRef1, string | unknown, SQL_BOOL>,
-        col2: Expr<TableRef2, string | unknown, Type2>,
-        col3: Expr<TableRef3, string | unknown, Type3>
+        col2: Expr<TableRef2, string | unknown, Type2> | Type2,
+        col3: Expr<TableRef3, string | unknown, Type3> | Type3
     ): Expr<TableRef1 | TableRef2 | TableRef3, unknown, Type2 | Type3> {
-        return SqlExpression.create("IF(" + col.expression + "," + col2.expression + "," + col3.expression + ")")
+        return SqlExpression.create("IF(" + col.expression + "," + this._toSqlArg(col2) + "," + this._toSqlArg(col3) + ")")
     }
 
     public static isNull<TableRef, Name, Type extends string | number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, SQL_BOOL> {
@@ -373,15 +373,17 @@ export class Sql {
     // UTILITY
     // -------------------------------------------------------------------
 
-    private static _toSqlArg = (e: unknown | string | PrepareQueryArgument | AnyExpr) => {
+    private static _toSqlArg = (e: unknown | string | PrepareQueryArgument | AnyExpr): string | number => {
         if (typeof e === "string") {
             return this.escape(e);
         } else if (typeof e === "number") {
             return Number(e);
         } else if (isPrepareArgument(e)) {
             return this.escape(e);
-        } else if (e !== undefined && e !== null) {
-            return (e as AnyExpr).expression
+        } else if (e instanceof SqlExpression) {
+            return e.expression
+        } else if (e === null || e === undefined) {
+            return "NULL";
         } else {
             throw new Error("Invalid argument " + String(e));
         }
