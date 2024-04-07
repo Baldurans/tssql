@@ -42,7 +42,7 @@ export class SqlExpression<TableRef, Name, Type extends string | number | unknow
         return new SqlExpression<TableRef, T, Type>(this.expression, name) as any;
     }
 
-    private asValue(): Expr<TableRef, any, any> {
+    private asValue(): Expr<TableRef, string | unknown, any> {
         return this as any;
     }
 

@@ -1,6 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {Sql} from "../src";
+import {AND, CONCAT, DATE, GROUP_CONCAT, IF, MATH, OR, Sql, VALUE} from "../src";
 
 enum MyEnum {
     aa = "aa",
@@ -8,7 +8,13 @@ enum MyEnum {
     dd = 123
 }
 
+xxx(1, OR, 2, AND, 3)
+xxx(1, OR, 2, AND, 3)
+xxx("(", 1, OR, 2, ")", AND, 3)
+
+
 test("simple", async () => {
+
 
     const db = new MyDb();
     const input: { userId: tUserId } = {userId: 10 as tUserId}
@@ -29,31 +35,31 @@ test("simple", async () => {
             c.username,
             c.id,
             c.id.as("renamedId"),
-            Sql.value(null as string).as("emptyValue"),
-            Sql.date(c.created).as("myDate"),
-            c.created.asDate(),
-            Sql.value(MyEnum.aa).as("enumValue"),
-            Sql.value(10).as("literal"),
-            Sql.concat(c.username, "X").as("concated1"),
-            Sql.groupConcatOrderBy([Sql.concat(c.username, "X")], [c.username]).as("concated2"),
-            Sql.math("(? * 100 / (? - ?))", [c.id, c.id, c.id]).as("math"),
-            Sql.if(
+            VALUE(null as string).as("emptyValue"),
+            DATE(c.created).as("myDate"),
+            DATE(c.created),
+            VALUE(MyEnum.aa).as("enumValue"),
+            VALUE(10).as("literal"),
+            CONCAT(c.username, "X").as("concated1"),
+            GROUP_CONCAT([CONCAT(c.username, "X")], [c.username]).as("concated2"),
+            MATH("(? * 100 / (? - ?))", [c.id, c.id, c.id]).as("math"),
+            IF(
                 c.id.eq(10 as tUserId),
                 c.id,
                 c2.id
             ).as("userIdFromIf"),
-            Sql.or(
+            OR(
                 c.username.isNull(),
                 c.username.notNull(),
                 c.username.isNull()
             ).as("or"),
-            Sql.and(
+            AND(
                 c.username.isNull(),
                 c.username.notNull(),
                 c2.username.isNull()
             ).as("and")
         )
-        .where(Sql.and(
+        .where(AND(
             c.id.eq(input.userId),
             c.username.isNull(),
             val && c.username.isNull(),

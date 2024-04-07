@@ -381,3 +381,36 @@ export class Sql {
     }
 
 }
+
+const VALUE = Sql.value;
+export {VALUE}
+const DATE = Sql.date;
+export {DATE}
+const DATE_TIME = Sql.datetime;
+export {DATE_TIME}
+const DATE_DIFF = Sql.dateDiff;
+export {DATE_DIFF}
+const YEAR = Sql.year;
+export {YEAR}
+const CONCAT = Sql.concat;
+export {CONCAT}
+const GROUP_CONCAT = Sql.groupConcatOrderBy;
+export {GROUP_CONCAT}
+const MATH = Sql.math;
+export {MATH}
+const IF = Sql.if;
+export {IF}
+const OR = Sql.or;
+export {OR}
+const AND = Sql.and;
+export {AND}
+const MAX = Sql.max;
+export {MAX}
+const MIN = Sql.min;
+export {MIN}
+const CUR_DATE = Sql.curDate;
+export {CUR_DATE}
+const SUM = Sql.sum;
+export {SUM}
+const LENGTH = Sql.length2;
+export {LENGTH}
