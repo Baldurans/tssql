@@ -23,7 +23,7 @@ test("simple", async () => {
                 c.username,
                 c.id,
                 c.id.as("renamedId"),
-                Sql.null<string>().as("emptyValue"),
+                Sql.value(null as string).as("emptyValue"),
                 Sql.date(c.created).as("myDate"),
                 Sql.if(
                     c.id.eq(10 as tUserId),

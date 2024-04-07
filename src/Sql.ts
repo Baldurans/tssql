@@ -31,29 +31,11 @@ export class Sql {
         return SqlExpression.create("(" + arg.I_DID_NOT_USE_UNSAFE_VARIABLES_TO_CONSTRUCT_THIS_STRING.map(e => typeof e === "string" ? e : e.expression).join("") + ")")
     }
 
-    public static null<Type = null>(): Expr<null, unknown, Type> {
-        return SqlExpression.create("NULL")
-    }
-
-    /**
-     * Any string
-     */
-    public static string(value: string | PrepareQueryArgument): Expr<null, unknown, string> {
-        return SqlExpression.create(this.escape(value))
-    }
-
-    /**
-     * Any number
-     */
-    public static number(value: number | PrepareQueryArgument): Expr<null, unknown, number> {
-        return SqlExpression.create(this.escape(value))
-    }
-
     /**
      * Type is the value. (If string "aa" is given, type of the column will be "aa")
      * Useful for enum values etc.
      */
-    public static literal<Type extends string | number>(value: Type): Expr<null, unknown, Type> {
+    public static value<Type extends string | number>(value: Type): Expr<never, unknown, Type> {
         return SqlExpression.create(this.escape(value))
     }
 
