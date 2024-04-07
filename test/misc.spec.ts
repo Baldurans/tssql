@@ -18,6 +18,22 @@ test("simple", async () => {
     const s = db.tables.user("s")
 
     const val: any = undefined;
+
+    SELECT(db)
+        .FROM(c)
+        .JOIN(c2, c2.id.EQ(c.id))
+        .DISTINCT()
+        .COLUMNS(
+            USES(c).SELECT().FROM(s).COLUMNS(s.id).WHERE(s.id.eq(c.id)).LIMIT(10).AS_SCALAR("subSolumnb"),
+            CONCAT(c.id, ",", c.id).AS("haha"),
+        )
+        .WHERE(c.id.EQ(10))
+        .ORDER_BY(c.id)
+        .NO_LIMIT();
+
+
+
+
     const query = db
         .select()
         .forUpdate()
