@@ -1,6 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {Sql} from "../src";
+import {AND, DATE, IF, OR, VALUE} from "../src";
 
 test("simple", async () => {
 
@@ -23,25 +23,25 @@ test("simple", async () => {
                 c.username,
                 c.id,
                 c.id.as("renamedId"),
-                Sql.VALUE(null as string).as("emptyValue"),
-                Sql.DATE(c.created).as("myDate"),
-                Sql.IF(
+                VALUE(null as string).as("emptyValue"),
+                DATE(c.created).as("myDate"),
+                IF(
                     c.id.eq(10 as tUserId),
                     c.id,
                     c2.id
                 ).as("userIdFromIf"),
-                Sql.OR(
+                OR(
                     c.username.isNull(),
                     c.username.notNull(),
                     c.username.isNull()
                 ).as("or"),
-                Sql.AND(
+                AND(
                     c.username.isNull(),
                     c.username.notNull(),
                     c2.username.isNull()
                 ).as("and")
             )
-            .where(Sql.AND(
+            .where(AND(
                 c.id.eq(input.userId),
                 c.username.isNull(),
                 c.username.isNull(),

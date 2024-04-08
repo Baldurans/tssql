@@ -12,3 +12,6 @@ export * from './Db';
 export * from './Sql';
 export * from './SqlExpression';
 export * from './Types';
+export {SqlOverClauseBuilder} from "./SqlExpressionWithOver";
+export {SqlExpressionWithOver} from "./SqlExpressionWithOver";
+export {ExprWithOver} from "./SqlExpressionWithOver";

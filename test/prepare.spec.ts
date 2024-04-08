@@ -1,7 +1,7 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {tCompanyId} from "./tables/Company";
-import {Sql} from "../src";
+import {IF, OR} from "../src";
 
 
 interface Arguments {
@@ -24,8 +24,8 @@ test("prepare", async () => {
         const sub = db
             .select()
             .from(c)
-            .columns(c.id, c.username, Sql.IF(c.id.eq(10 as tUserId), args.age, args.id).as("weird"))
-            .where(Sql.OR(
+            .columns(c.id, c.username, IF(c.id.eq(10 as tUserId), args.age, args.id).as("weird"))
+            .where(OR(
                 c.username.like(args.search),
                 c.created.like(args.search)
             ))

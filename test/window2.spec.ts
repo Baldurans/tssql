@@ -1,6 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {Sql} from "../src";
+import {BIN_TO_UUID, RANK, UNIX_TIMESTAMP} from "../src";
 
 test("window2", async () => {
 
@@ -54,7 +54,7 @@ test("window2", async () => {
             c.id,
             c.created_at,
             c.updated_at,
-            Sql.RANK().over(f => f.partitionBy(c.age).orderBy(c.created, "desc")).as("latest")
+            RANK().over(f => f.partitionBy(c.age).orderBy(c.created, "desc")).as("latest")
         )
         .where(
             c.username.eq("asd"), // type = ${this.db.escape(type)}
@@ -70,9 +70,9 @@ test("window2", async () => {
         .from(ref)
         .columns(
             ref.id,
-            Sql.BIN_TO_UUID(ref.id).as("uuid"),
-            ref.created_at.asUnixTimestamp(),
-            ref.updated_at.asUnixTimestamp()
+            BIN_TO_UUID(ref.id).as("uuid"),
+            UNIX_TIMESTAMP(ref.created_at),
+            UNIX_TIMESTAMP(ref.updated_at)
         )
         .where(ref.latest.eq(1))
         .orderBy(ref.created_at, "desc")
