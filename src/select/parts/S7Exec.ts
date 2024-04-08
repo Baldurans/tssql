@@ -1,11 +1,11 @@
 import {AliasedTable, NotUsingWithPart} from "../../Types";
 import {Expr, SqlExpression} from "../../SqlExpression";
 import {SelectQueryPart} from "../SelectQueryPart";
-import {DbTableDefinition, Db} from "../../Db";
+import {Db, DbTableDefinition} from "../../Db";
 
 const TAB = "  ";
 
-export class S7Exec<Result, CTX> extends SelectQueryPart<CTX> {
+export class S7Exec<Result> extends SelectQueryPart {
 
     public asScalar<Alias extends string>(
         alias: Alias & ScalarSubQueryAllowsOnlyOneColumn<Alias, Result> extends never ? "Scalar subquery allows only 1 column!" : Alias
@@ -23,14 +23,6 @@ export class S7Exec<Result, CTX> extends SelectQueryPart<CTX> {
 
     public getColumnStruct(): DbTableDefinition<any> {
         return this.builder.getColumnStruct();
-    }
-
-    public async exec(ctx: CTX): Promise<Result[]> {
-        return await this.builder.exec(ctx);
-    }
-
-    public async execOne<ExpectedResult>(ctx: CTX): Promise<Result | undefined> {
-        return (await this.exec(ctx))?.[0];
     }
 
 }

@@ -8,9 +8,9 @@ import {escapeId} from "../escape";
 const TAB = "  ";
 
 
-export class SelectBuilder<CTX> {
+export type execFunction = (query: string, args?: object) => Promise<any[]>;
 
-    private readonly _exec: (ctx: CTX, query: string) => Promise<any[]>
+export class SelectBuilder {
 
     private _withQueries: Map<string, string> = new Map()
     private _from: string;
@@ -31,9 +31,6 @@ export class SelectBuilder<CTX> {
     private _distinct: boolean = false;
     private _forUpdate: boolean = false;
 
-    constructor(exec: (ctx: CTX, query: string) => Promise<any[]>) {
-        this._exec = exec;
-    }
 
     public getColumnStruct(): DbTableDefinition<any> {
         return this._columnStruct;
@@ -157,11 +154,11 @@ export class SelectBuilder<CTX> {
             (this._forUpdate && this.unions.length === 0 ? tabs + " FOR UPDATE\n" : "");
     }
 
-    public async exec(ctx: CTX): Promise<any[]> {
-        return this._exec(ctx, this.toString());
+    public async exec(exec: execFunction): Promise<any[]> {
+        return exec(this.toString());
     }
 
-    public async execOne(ctx: CTX): Promise<any> {
-        return (await this._exec(ctx, this.toString()))?.[0];
+    public async execOne(exec: execFunction): Promise<any> {
+        return (await exec(this.toString()))?.[0];
     }
 }

@@ -3,8 +3,8 @@ import {SelectQueryPart} from "../SelectQueryPart";
 import {S3GroupBy} from "./S3GroupBy";
 import {AnyExpr, Expr} from "../../SqlExpression";
 
-export class S2Where<Result, Tables, CTX> extends SelectQueryPart<CTX> {
-    public noWhere(): S3GroupBy<Result, Tables, CTX> {
+export class S2Where<Result, Tables> extends SelectQueryPart {
+    public noWhere(): S3GroupBy<Result, Tables> {
         return new S3GroupBy(this.builder)
     }
 
@@ -23,37 +23,37 @@ export class S2Where<Result, Tables, CTX> extends SelectQueryPart<CTX> {
 
     public where<T1 extends string, T = Tables>(
         c1: C<T, T1>,
-    ): S3GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables>
     public where<T1 extends string, T2 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>,
-    ): S3GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables>
     public where<T1 extends string, T2 extends string, T3 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>
-    ): S3GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>
-    ): S3GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>, c5: C<T, T5>
-    ): S3GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>, c5: C<T, T5>, c6: C<T, T6>
-    ): S3GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T7 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>, c5: C<T, T5>, c6: C<T, T6>, c7: C<T, T7>
-    ): S3GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T7 extends string, T8 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>, c5: C<T, T5>, c6: C<T, T6>, c7: C<T, T7>, c8: C<T, T8>
-    ): S3GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T7 extends string, T8 extends string, T9 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>, c5: C<T, T5>, c6: C<T, T6>, c7: C<T, T7>, c8: C<T, T8>, c9: C<T, T9>
-    ): S3GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T7 extends string, T8 extends string, T9 extends string, T10 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>, c5: C<T, T5>, c6: C<T, T6>, c7: C<T, T7>, c8: C<T, T8>, c9: C<T, T9>, c10: C<T, T10>
-    ): S3GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables>
     public where(
         ...cols: any[]
-    ): S3GroupBy<Result, Tables, CTX> {
+    ): S3GroupBy<Result, Tables> {
 
         for (let i = 0; i < cols.length; i++) {
             this.builder.where(cols[i] as unknown as AnyExpr)

@@ -2,6 +2,8 @@ import {tUserId} from "./tables/User";
 import {DANGEROUS_SQL_EXPRESSION, DATE, EQ, IF} from "../src/SqlFunctions";
 import {MyDb} from "./tables/MyDb";
 import {vDate} from "../src";
+import {SqlQuery} from "../src/select/SqlQuery";
+import {execOne} from "./tables/exec";
 
 test("complex", async () => {
 
@@ -19,7 +21,7 @@ test("complex", async () => {
 
     // NOTICE: It is very hard to mess up field names, as it most certainly means some hacking as you always reference fields from table objects.
 
-    const withSub = db
+    const withSub = new SqlQuery()
         .select()
         .from(s)
         .columns(s.id, s.created, s.username, s.age, s.id.as("subIdRenamed"))
@@ -29,7 +31,7 @@ test("complex", async () => {
     const withSubSub1 = MyDb.createRef(withSub, "withSubSub1");
     const withSubSub2 = MyDb.createRef(withSub, "withSubSub2");
 
-    const withSub2 = db
+    const withSub2 = new SqlQuery()
         .select()
         .from(s)
         .columns(s.id, s.created, s.username, s.age, s.id.as("subIdRenamed"))
@@ -39,7 +41,7 @@ test("complex", async () => {
     const withSub2Sub1 = MyDb.createRef(withSub2, "withSub2Sub1")
     String(withSub2Sub1)
 
-    const subQueryTable = db
+    const subQueryTable = new SqlQuery()
         .uses(c)
         .select()
         .from(s)
@@ -69,7 +71,7 @@ test("complex", async () => {
     // const xxx12 = Sql.in(10, [1, 2, 3, 4]).as("X0");
     // const xxx13 = Sql.date(c.created)
 
-    const query = db
+    const query = new SqlQuery()
         .with(withSub)
         .select()
         // //.from(withSub) // Alias is already used!
@@ -101,8 +103,8 @@ test("complex", async () => {
             withSubSub2.subIdRenamed.as("withSubSub2"),
 
             IF(c.id.eq(10 as tUserId), c.id, 10 as tUserId).as("X0"),
-            db.uses(c).select().from(s).columns(s.id).where(EQ(c.id, s.id)).noLimit().asScalar("someItem"),
-            db.uses(c)
+            new SqlQuery().uses(c).select().from(s).columns(s.id).where(EQ(c.id, s.id)).noLimit().asScalar("someItem"),
+            new SqlQuery().uses(c)
                 .select()
                 .from(s)
                 .columns(
@@ -155,7 +157,7 @@ test("complex", async () => {
 
     console.log(query.toString())
 
-    const res = await query.execOne(undefined)
+    const res = await execOne(query)
     console.log(
         res.id, // type tUserId
         res.renamedId,  // type tUserId

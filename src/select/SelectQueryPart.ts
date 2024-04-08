@@ -1,10 +1,10 @@
 import {SelectBuilder} from "./SelectBuilder";
 
-export abstract class SelectQueryPart<CTX> {
+export abstract class SelectQueryPart {
 
-    protected readonly builder: SelectBuilder<CTX>;
+    protected readonly builder: SelectBuilder;
 
-    constructor(builder: SelectBuilder<CTX>) {
+    constructor(builder: SelectBuilder) {
         this.builder = builder;
     }
 

@@ -2,7 +2,7 @@ import {AliasedTable, AnyAliasedTableDef, isAliasAlreadyUsed, isTableReferenced,
 import {S2Columns} from "./S2Columns";
 import {Expr, Over} from "../../SqlExpression";
 
-export class S1Join<Aliases, AliasesFromWith, Tables, CTX> extends S2Columns<{}, Tables, CTX> {
+export class S1Join<Aliases, AliasesFromWith, Tables> extends S2Columns<{}, Tables> {
 
     public join<
         Alias extends string,
@@ -12,7 +12,7 @@ export class S1Join<Aliases, AliasesFromWith, Tables, CTX> extends S2Columns<{},
     >(
         table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
         condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
-    ): S1Join<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX> {
+    ): S1Join<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>> {
         this.builder.join("JOIN", table as AnyAliasedTableDef, condition as any)
         return this as any;
     }
@@ -25,7 +25,7 @@ export class S1Join<Aliases, AliasesFromWith, Tables, CTX> extends S2Columns<{},
     >(
         table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
         condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
-    ): S1Join<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX> {
+    ): S1Join<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>> {
         this.builder.join("LEFT JOIN", table as AnyAliasedTableDef, condition as any)
         return this as any;
     }
@@ -36,7 +36,7 @@ export class S1Join<Aliases, AliasesFromWith, Tables, CTX> extends S2Columns<{},
     >(
         name: isAliasAlreadyUsed<Aliases & AliasesFromWith, WindowName, WindowName>,
         func: (builder: Over<never>) => Over<UsedTablesRef>
-    ): S1Join<Aliases & Key<WindowName>, AliasesFromWith, Tables & Key<`(window) as ${WindowName}`>, CTX> {
+    ): S1Join<Aliases & Key<WindowName>, AliasesFromWith, Tables & Key<`(window) as ${WindowName}`>> {
         const builder = new Over()
         func(builder)
         this.builder.window(name, builder.toString())

@@ -1,19 +1,19 @@
 import {S3GroupBy} from "./S3GroupBy";
 import {S7Exec} from "./S7Exec";
 
-export class S0Union<Result, CTX> extends S3GroupBy<Result, {}, CTX> {
+export class S0Union<Result> extends S3GroupBy<Result, {}> {
 
     public distinct<Result2>(
-        table: CompareObjects<Result, Result2, S7Exec<Result2, CTX>>
-    ): S0Union<Result, CTX> {
-        this.builder.union("", table.toString(1), (table as S7Exec<any, CTX>).getColumnStruct())
+        table: CompareObjects<Result, Result2, S7Exec<Result2>>
+    ): S0Union<Result> {
+        this.builder.union("", table.toString(1), (table as S7Exec<any>).getColumnStruct())
         return this as any;
     }
 
     public all<Result2>(
-        table: CompareObjects<Result, Result2, S7Exec<Result2, CTX>>
-    ): S0Union<Result, CTX> {
-        this.builder.union("ALL", table.toString(1), (table as S7Exec<any, CTX>).getColumnStruct())
+        table: CompareObjects<Result, Result2, S7Exec<Result2>>
+    ): S0Union<Result> {
+        this.builder.union("ALL", table.toString(1), (table as S7Exec<any>).getColumnStruct())
         return this as any;
     }
 

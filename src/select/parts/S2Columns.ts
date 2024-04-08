@@ -2,7 +2,7 @@ import {S2Where} from "./S2Where";
 import {SelectQueryPart} from "../SelectQueryPart";
 import {AnyExpr, Expr} from "../../SqlExpression";
 
-export class S2Columns<Result, Tables, CTX> extends SelectQueryPart<CTX> {
+export class S2Columns<Result, Tables> extends SelectQueryPart {
     public distinct(): this {
         this.builder.distinct();
         return this;
@@ -14,7 +14,7 @@ export class S2Columns<Result, Tables, CTX> extends SelectQueryPart<CTX> {
     >(
         //...columns: Columns - this will enable seeing sources of Result object properties.
         ...columns: isColumnOkToAdd<Result, Tables, Columns>
-    ): S2Where<Result & ExtractObj<Columns>, Tables, CTX> {
+    ): S2Where<Result & ExtractObj<Columns>, Tables> {
         this.builder.columns(columns as unknown as AnyExpr[]);
         return new S2Where(this.builder);
     }
