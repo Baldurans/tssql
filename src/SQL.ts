@@ -11,10 +11,23 @@ import {SqlExpression} from "./SqlExpression";
 
 export class SQL {
 
+    /**
+     * Start building a select query.
+     */
     public static select(): S0From<{}, {}, {}> {
         return new S0From(new SelectBuilder()) as any
     }
 
+    /**
+     * Start building a select query that most probably will be used as a scalar subquery.
+     *
+     * for example:
+     * SELECT
+     *    (SELECT id FROM child WHERE child.id = parent.id ) <--- scalar subquery
+     * FROM parent
+     *
+     * In the uses part you add parent table refererence.
+     */
     public static uses<
         Alias extends string,
         TableName extends string,
@@ -25,6 +38,18 @@ export class SQL {
         return new S0Uses(new SelectBuilder());
     }
 
+    /**
+     * Start building a select query that uses WITH queries.
+     *
+     * for example:
+     * WITH user2 AS (
+     *      SELECT id FROM user <-- this query AliasedTable is argument to this method. ( SQL.select()...as("user2") )
+     * )
+     * SELECT *
+     * FROM user2
+     *
+     * With a
+     */
     public static with<
         Alias extends string,
         TableName extends string,
@@ -35,10 +60,29 @@ export class SQL {
         return new S0With(new SelectBuilder()).with(table as any);
     }
 
+    /**
+     * Creates a union query.
+     */
     public static union<Result>(table: S7Exec<Result>): S0Union<Result> {
         return new S0Union<Result>(new SelectBuilder()).all(table as any);
     }
 
+    /**
+     * Creates a prepared query.
+     *
+     * Prepared query is a fixed query that will be prebuilt for higher performance. It will only replace arguments in a prebuilt SQL query string.
+     * Main drawback of this is that query has to be static and can't have anything dynamic in it.
+     *
+     * Usage
+     *
+     * const prepared = SQL.prepare( ( args:{id: number} ) => {
+     *     const c = MyDb.user("c");
+     *     return SQL.select().from(c)...where( c.id.eq(args.id).noLimit()
+     * })
+     *
+     * exec(prepared({id: 10}))
+     *
+     */
     public static prepare<PrepareQueryArguments extends { [key: string]: any }, Result>(func: (args: PrepareQueryArguments) => S7Exec<Result>): (args: PrepareQueryArguments) => SqlQuery<Result> {
         let sqlQuery: string = undefined;
         const getSqlString = () => {
@@ -66,6 +110,9 @@ export class SQL {
         }
     }
 
+    /**
+     * Create a reference for a query that is used in WITH part and you want to use it in from(X) or join(X) call.
+     */
     public static createRef<
         Alias extends string,
         TableRef extends `${string} as ${Alias}`,
@@ -79,6 +126,9 @@ export class SQL {
         return this.defineDbTable(escapeId(table[SQL_ALIAS]), newAlias, definition) as any;
     }
 
+    /**
+     * Helper method to define a table structure that allows defining alias for a table.
+     */
     public static getDbTableAliasFunction<TableName extends string, Entity>(
         tableName: TableName,
         columns: DbTableDefinition<Entity>
@@ -86,6 +136,9 @@ export class SQL {
         return <Alias extends string>(alias: Alias) => this.defineDbTable<TableName, Alias, Entity>(escapeId(tableName) as TableName, alias, columns);
     }
 
+    /**
+     * Define a table structure with alias.
+     */
     public static defineDbTable<TableName extends string, Alias extends string, Entity>(
         escapedExpression: TableName,
         alias: string,
