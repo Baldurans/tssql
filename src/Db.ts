@@ -6,8 +6,8 @@ import {DbSelect01From} from "./select/DbSelect01From";
 import {DbSelect00Union} from "./select/DbSelect00Union";
 import {DbSelect09Exec} from "./select/DbSelect09Exec";
 import {SqlExpression} from "./SqlExpression";
-import {Sql} from "./Sql";
 import {SQL_ALIAS, SQL_EXPRESSION} from "./Symbols";
+import {escapeId} from "./escape";
 
 export type DbExecFunc<CTX> = (ctx: CTX, sql: string, args?: { [key: string]: string | number }) => Promise<any[]>;
 
@@ -89,14 +89,14 @@ export abstract class Db<CTX> {
         for (const k in table) {
             (definition as any)[k] = (table as any)[k];
         }
-        return Db.defineDbTable(Sql.escapeId(table[SQL_ALIAS]), newAlias, definition) as any;
+        return Db.defineDbTable(escapeId(table[SQL_ALIAS]), newAlias, definition) as any;
     }
 
     public static getDbTableAliasFunction<TableName extends string, Entity>(
         tableName: TableName,
         columns: DbTableDefinition<Entity>
     ): <Alias extends string>(alias: Alias) => AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> {
-        return <Alias extends string>(alias: Alias) => Db.defineDbTable<TableName, Alias, Entity>(Sql.escapeId(tableName) as TableName, alias, columns);
+        return <Alias extends string>(alias: Alias) => Db.defineDbTable<TableName, Alias, Entity>(escapeId(tableName) as TableName, alias, columns);
     }
 
     public static defineDbTable<TableName extends string, Alias extends string, Entity>(
@@ -109,7 +109,7 @@ export abstract class Db<CTX> {
             [SQL_ALIAS]: alias
         } as any;
         for (const columnName in columns) {
-            (tbl as any)[columnName] = new SqlExpression(Sql.escapeId(alias) + "." + Sql.escapeId(columnName), columnName)
+            (tbl as any)[columnName] = new SqlExpression(escapeId(alias) + "." + escapeId(columnName), columnName)
         }
         Object.freeze(tbl)
         return tbl

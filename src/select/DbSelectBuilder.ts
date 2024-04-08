@@ -3,7 +3,7 @@ import {AnyExpr, SqlExpression} from "../SqlExpression";
 import {AnyAliasedTableDef, OrderByStructure} from "../Types";
 import {orderByStructureToSqlString} from "../SqlFunctions";
 import {SQL_ALIAS, SQL_EXPRESSION} from "../Symbols";
-import {Sql} from "../Sql";
+import {escapeId} from "../escape";
 
 const TAB = "  ";
 
@@ -67,11 +67,11 @@ export class DbSelectBuilder<CTX> {
 
     public with(table: AnyAliasedTableDef): void {
         const alias = table[SQL_ALIAS]
-        this._withQueries.set(alias, Sql.escapeId(alias) + " AS " + table[SQL_EXPRESSION])
+        this._withQueries.set(alias, escapeId(alias) + " AS " + table[SQL_EXPRESSION])
     }
 
     public from(table: AnyAliasedTableDef): void {
-        this._from = table[SQL_EXPRESSION] + " as " + Sql.escapeId(table[SQL_ALIAS]);
+        this._from = table[SQL_EXPRESSION] + " as " + escapeId(table[SQL_ALIAS]);
     }
 
     public forUpdate() {
@@ -79,7 +79,7 @@ export class DbSelectBuilder<CTX> {
     }
 
     public join(joinType: "JOIN" | "LEFT JOIN", table: AnyAliasedTableDef, condition: AnyExpr): void {
-        const sql = this._withQueries.has(table[SQL_ALIAS]) ? Sql.escapeId(table[SQL_ALIAS]) : table[SQL_EXPRESSION] + " as " + Sql.escapeId(table[SQL_ALIAS])
+        const sql = this._withQueries.has(table[SQL_ALIAS]) ? escapeId(table[SQL_ALIAS]) : table[SQL_EXPRESSION] + " as " + escapeId(table[SQL_ALIAS])
         this._joins.push(joinType + " " + sql + " ON (" + condition.expression + ")")
         return this as any;
     }
@@ -97,7 +97,7 @@ export class DbSelectBuilder<CTX> {
         const columns = cols as unknown as SqlExpression<string, string, any>[]
         for (let i = 0; i < columns.length; i++) {
             const col = columns[i];
-            this._columns.push(col.expression + (col.nameAs ? " as " + Sql.escapeId(col.nameAs) : ""));
+            this._columns.push(col.expression + (col.nameAs ? " as " + escapeId(col.nameAs) : ""));
             (this._columnStruct as any)[col.nameAs] = true;
         }
     }

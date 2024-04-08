@@ -1,13 +1,13 @@
 import {COMPARISON_SIGNS, ComparisonOperandsLookup, isPrepareArgument, OrderByStructure, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
 import {AnyBoolExpr, AnyExpr, Expr, ExprWithOver, SqlExpression, SqlExpressionWithOver} from "./SqlExpression";
-import {Sql} from "./Sql";
+import {escape} from "./escape";
 
 /**
  * Type is the value. (If string "aa" is given, type of the column will be "aa")
  * Useful for enum values etc.
  */
 export function VALUE<Type>(value: Type): Expr<never, unknown, Type> {
-    return SqlExpression.create(Sql.escape(value as any))
+    return SqlExpression.create(escape(value as any))
 }
 
 /**
@@ -138,28 +138,28 @@ export function COMPARE<Type extends string | number, TableRef = never, TableRef
 }
 
 export function LIKE<TableRef>(col: (Expr<TableRef, string | unknown, string | number>), value: string | PrepareQueryArgument): Expr<TableRef, unknown, SQL_BOOL> {
-    return SqlExpression.create(col.expression + " LIKE " + Sql.escape(value));
+    return SqlExpression.create(col.expression + " LIKE " + escape(value));
 }
 
 /**
  * Does LIKE %X% search.
  */
 export function CONTAINS<TableRef>(col: (Expr<TableRef, string | unknown, string | number>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
-    return SqlExpression.create(col.expression + " LIKE " + Sql.escape("%" + value + "%"));
+    return SqlExpression.create(col.expression + " LIKE " + escape("%" + value + "%"));
 }
 
 /**
  * Does LIKE X% search.
  */
 export function STARTS_WITH<TableRef>(col: (Expr<TableRef, string | unknown, string | number>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
-    return SqlExpression.create(col.expression + " LIKE " + Sql.escape(value + "%"));
+    return SqlExpression.create(col.expression + " LIKE " + escape(value + "%"));
 }
 
 /**
  * Does LIKE %X search.
  */
 export function ENDS_WITH<TableRef>(col: (Expr<TableRef, string | unknown, string | number>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
-    return SqlExpression.create(col.expression + " LIKE " + Sql.escape("%" + value));
+    return SqlExpression.create(col.expression + " LIKE " + escape("%" + value));
 }
 
 // -------------------------------------------------------------------
@@ -182,7 +182,7 @@ export function CONCAT<TableRef = never>(...expr: (string | PrepareQueryArgument
 }
 
 export function CONCAT_WS<TableRef = never>(separator: string, ...expr: (string | PrepareQueryArgument | Expr<TableRef, any, any>)[]): Expr<TableRef, unknown, string> {
-    return SqlExpression.create("CONCAT_WS(" + Sql.escape(separator) + "," + expr.map(toSql) + ")")
+    return SqlExpression.create("CONCAT_WS(" + escape(separator) + "," + expr.map(toSql) + ")")
 }
 
 export function GROUP_CONCAT<TableRef>(
@@ -193,7 +193,7 @@ export function GROUP_CONCAT<TableRef>(
     return SqlExpression.create("GROUP_CONCAT(" +
         (distinct ? "DISTINCT " : "") +
         "" + expr.map(toSql) +
-        (separator ? " SEPARATOR " + Sql.escape(separator) : "") +
+        (separator ? " SEPARATOR " + escape(separator) : "") +
         ")");
 }
 
@@ -207,7 +207,7 @@ export function GROUP_CONCAT_2<TableRef, OrderByTableRef>(
         (distinct ? "DISTINCT " : "") +
         "" + expr.map(toSql) +
         (orderBy && orderBy.length > 0 ? " ORDER BY " + orderByStructureToSqlString(orderBy).join(", ") : "") +
-        (separator ? " SEPARATOR " + Sql.escape(separator) : "") +
+        (separator ? " SEPARATOR " + escape(separator) : "") +
         ")");
 }
 
@@ -240,7 +240,7 @@ export function DATE_TIME<Name, TableRef>(field: Expr<TableRef, Name, vDateTime>
 }
 
 export function DATE_FORMAT<Name, TableRef = never>(col: vDate | vDateTime | Expr<TableRef, Name, vDate | vDateTime>, format: string): Expr<TableRef, Name, string> {
-    return SqlExpression.create("DATE_FORMAT(" + toSql(col) + ", " + Sql.escape(format) + ")")
+    return SqlExpression.create("DATE_FORMAT(" + toSql(col) + ", " + escape(format) + ")")
 }
 
 export function DATE_DIFF<TableRef1 = never, TableRef2 = never>(
@@ -367,7 +367,7 @@ export function orderByStructureToSqlString(items: [] | OrderByStructure<any>): 
 
 function toSql(e: unknown | number | string | boolean | PrepareQueryArgument | AnyExpr): string | number {
     if (typeof e === "string") {
-        return Sql.escape(e);
+        return escape(e);
     } else if (typeof e === "number") {
         return Number(e);
     } else if (e === null || e === undefined) {

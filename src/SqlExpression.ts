@@ -1,6 +1,6 @@
 import {COMPARISON_SIGNS, OrderByStructure, PrepareQueryArgument, SQL_BOOL} from "./Types";
 import {COMPARE, CONTAINS, ENDS_WITH, IN, IS_NULL, LIKE, NOT_NULL, orderByStructureToSqlString, STARTS_WITH} from "./SqlFunctions";
-import {Sql} from "./Sql";
+import {escapeId} from "./escape";
 
 export type Expr<TableRef, Name, Type extends string | number | unknown> =
     symbol &
@@ -108,7 +108,7 @@ export class SqlExpressionWithOver<TableRef, Name, Type extends string | number 
         }
         const builder = new SqlOverClauseBuilder<{}>();
         func(builder);
-        return SqlExpression.create(this.expression + " OVER (" + (namedWindow ? Sql.escapeId(namedWindow) + " " : "") + builder.toString() + ")");
+        return SqlExpression.create(this.expression + " OVER (" + (namedWindow ? escapeId(namedWindow) + " " : "") + builder.toString() + ")");
     }
 
 }
