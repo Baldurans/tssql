@@ -2,7 +2,7 @@ import {AliasedTable, DbTableDefinition, NotUsingWithPart, SqlQuery} from "../..
 import {Expr, SqlExpression} from "../../SqlExpression";
 import {SelectQueryPart} from "../SelectQueryPart";
 import {SQL_ENTITY} from "../../Symbols";
-import {SQL} from "../../SQL";
+import {MysqlTable} from "../../MysqlTable";
 
 const TAB = "  ";
 
@@ -17,7 +17,7 @@ export class S7Exec<Result> extends SelectQueryPart implements SqlQuery<Result> 
     }
 
     public as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result, NotUsingWithPart> {
-        return SQL.defineDbTable<"(SUBQUERY)", Alias, Result>("(\n" + this.builder.toString(2) + ")" as "(SUBQUERY)", alias, this.builder.getColumnStruct())
+        return MysqlTable.defineDbTable<"(SUBQUERY)", Alias, Result>("(\n" + this.builder.toString(2) + ")" as "(SUBQUERY)", alias, this.builder.getColumnStruct())
     }
 
     public toString(lvl: number = 0): string {

@@ -1,5 +1,5 @@
 import {tUserId} from "./tables/User";
-import {DANGEROUS_SQL_EXPRESSION, DATE, EQ, IF} from "../src/SqlFunctions";
+import {DANGEROUS_SQL_EXPRESSION, DATE, EQ, IF, SET_TO_ARRAY} from "../src/SqlFunctions";
 import {MyDb} from "./tables/MyDb";
 import {vDate} from "../src";
 import {SQL} from "../src/SQL";
@@ -7,15 +7,13 @@ import {execOne} from "./tables/exec";
 
 test("complex", async () => {
 
-    const c = MyDb.user("c")
-    const cFake = MyDb.company("c")
-    const c2 = MyDb.user("c2")
-    const c3 = MyDb.user("c3")
-    const c4 = MyDb.user("c4")
-    const c5 = MyDb.user("c5")
-
-    const s = MyDb.user("s")
-
+    const c = MyDb.user.as("c")
+    const cFake = MyDb.company.as("c")
+    const c2 = MyDb.user.as("c2")
+    const c3 = MyDb.user.as("c3")
+    const c4 = MyDb.user.as("c4")
+    const c5 = MyDb.user.as("c5")
+    const s = MyDb.user.as("s")
 
     // NOTICE: It is very hard to mess up field names, as it most certainly means some hacking as you always reference fields from table objects.
 
@@ -99,6 +97,7 @@ test("complex", async () => {
             IF(c.id.eq(c2.id), c.username, c2.username).cast<string>().as("expr4"),
             withSubSub1.subIdRenamed.as("withSubSub1"),
             withSubSub2.subIdRenamed.as("withSubSub2"),
+            SET_TO_ARRAY(c.username),
 
             IF(c.id.eq(10 as tUserId), c.id, 10 as tUserId).as("X0"),
             SQL.uses(c).select().from(s).columns(s.id).where(EQ(c.id, s.id)).noLimit().asScalar("someItem"),

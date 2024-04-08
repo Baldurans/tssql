@@ -1,10 +1,10 @@
 import {User} from "./User";
 import {Company} from "./Company";
-import {SQL} from "../../src";
+import {MysqlTable} from "../../src/MysqlTable";
 
 export class MyDb {
 
-    public static user = SQL.getDbTableAliasFunction<"user", User>("user", {
+    public static user = new MysqlTable<"user", User>("user", {
         id: true,
         username: true,
         age: true,
@@ -16,7 +16,7 @@ export class MyDb {
         uuid: true
     })
 
-    public static company = SQL.getDbTableAliasFunction<"company", Company>("company", {
+    public static company = new MysqlTable<"company", Company>("company", {
         id: true,
         name: true,
     })

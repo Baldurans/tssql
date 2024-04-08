@@ -7,7 +7,7 @@ test("with", async () => {
 
     const input: { userId: tUserId } = {userId: 10 as tUserId}
 
-    const c = MyDb.user("c")
+    const c = MyDb.user.as("c")
 
     const q1 = SQL.select().from(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
     const q2 = SQL.select().from(c).columns(c.username, c.id,).where(c.id.eq(input.userId)).noLimit()

@@ -7,9 +7,9 @@ test("with", async () => {
 
     const input: { userId: tUserId } = {userId: 10 as tUserId}
 
-    const c = MyDb.user("c")
-    const c2 = MyDb.user("c2")
-    const s = MyDb.user("s")
+    const c = MyDb.user.as("c")
+    const c2 = MyDb.user.as("c2")
+    const s = MyDb.user.as("s")
 
     const part1 = SQL
         .select()

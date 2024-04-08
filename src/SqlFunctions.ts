@@ -10,6 +10,15 @@ export function VALUE<Type>(value: Type): Expr<never, unknown, Type> {
     return SqlExpression.create(escape(value as any))
 }
 
+
+export function NULL<Name extends string = never>(as?: Name): Expr<never, Name, null> {
+    return SqlExpression.create("NULL", as)
+}
+
+export function SET_TO_ARRAY<TableRef, Name extends string | unknown, Type>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, Type[]> {
+    return SqlExpression.create(col.expression, col.nameAs)
+}
+
 /**
  * DO NOT USE THIS METHOD :)
  *

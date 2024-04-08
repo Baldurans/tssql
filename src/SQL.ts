@@ -5,9 +5,9 @@ import {S0Uses} from "./select/parts/S0Uses";
 import {S0With} from "./select/parts/S0With";
 import {S7Exec} from "./select/parts/S7Exec";
 import {S0Union} from "./select/parts/S0Union";
-import {SQL_ALIAS, SQL_ENTITY, SQL_EXPRESSION} from "./Symbols";
-import {escapeId} from "./escape";
-import {SqlExpression} from "./SqlExpression";
+import {SQL_ALIAS, SQL_ENTITY} from "./Symbols";
+import {escape, escapeId} from "./escape";
+import {MysqlTable} from "./MysqlTable";
 
 export class SQL {
 
@@ -73,6 +73,8 @@ export class SQL {
      * Prepared query is a fixed query that will be prebuilt for higher performance. It will only replace arguments in a prebuilt SQL query string.
      * Main drawback of this is that query has to be static and can't have anything dynamic in it.
      *
+     * This is not Mysql prepared statement, it is only preparing and caching a string of the SQL query.
+     *
      * Usage
      *
      * const prepared = SQL.prepare( ( args:{id: number} ) => {
@@ -85,6 +87,7 @@ export class SQL {
      */
     public static prepare<PrepareQueryArguments extends { [key: string]: any }, Result>(func: (args: PrepareQueryArguments) => S7Exec<Result>): (args: PrepareQueryArguments) => SqlQuery<Result> {
         let sqlQuery: string = undefined;
+        const seenArguments: Map<string, string> = new Map();
         const getSqlString = () => {
             if (sqlQuery === undefined) {
                 const p: PrepareQueryArguments = new Proxy({}, {
@@ -92,7 +95,9 @@ export class SQL {
                         if (!/^[A-Za-z]+$/.test(p)) {
                             throw new Error("Invalid prepare query argument named '" + p + "'. Can only contain ascii letters!")
                         }
-                        return {__prepare_argument: true, expression: ":" + p};
+                        const variable = "<<|_arg:|>>" + p + "<<|:_arg|>>";
+                        seenArguments.set(p, variable);
+                        return {__prepare_argument: true, expression: variable};
                     }
                 }) as any
                 sqlQuery = func(p).toString();
@@ -103,8 +108,11 @@ export class SQL {
             return {
                 [SQL_ENTITY]: undefined,
                 toString: (): string => {
-                    // @TODO Replace arguments!
-                    return getSqlString()
+                    let usedQuery = getSqlString();
+                    seenArguments.forEach((variable, key) => {
+                        usedQuery = usedQuery.replace(variable, escape(args[key]));
+                    })
+                    return usedQuery
                 },
             }
         }
@@ -123,36 +131,8 @@ export class SQL {
         for (const k in table) {
             (definition as any)[k] = (table as any)[k];
         }
-        return this.defineDbTable(escapeId(table[SQL_ALIAS]), newAlias, definition) as any;
+        return MysqlTable.defineDbTable(escapeId(table[SQL_ALIAS]), newAlias, definition) as any;
     }
 
-    /**
-     * Helper method to define a table structure that allows defining alias for a table.
-     */
-    public static getDbTableAliasFunction<TableName extends string, Entity>(
-        tableName: TableName,
-        columns: DbTableDefinition<Entity>
-    ): <Alias extends string>(alias: Alias) => AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> {
-        return <Alias extends string>(alias: Alias) => this.defineDbTable<TableName, Alias, Entity>(escapeId(tableName) as TableName, alias, columns);
-    }
-
-    /**
-     * Define a table structure with alias.
-     */
-    public static defineDbTable<TableName extends string, Alias extends string, Entity>(
-        escapedExpression: TableName,
-        alias: string,
-        columns: DbTableDefinition<Entity>
-    ): AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> {
-        const tbl: AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> = {
-            [SQL_EXPRESSION]: escapedExpression,
-            [SQL_ALIAS]: alias
-        } as any;
-        for (const columnName in columns) {
-            (tbl as any)[columnName] = new SqlExpression(escapeId(alias) + "." + escapeId(columnName), columnName)
-        }
-        Object.freeze(tbl)
-        return tbl
-    }
 }
 

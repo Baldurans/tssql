@@ -17,7 +17,7 @@ test("prepare", async () => {
 
     // lazy prepare, prepares actually after first call.
     const preparedQuery = SQL.prepare((args: Arguments) => {
-        const c = MyDb.user("c")
+        const c = MyDb.user.as("c")
 
         const cond = c.age.eq(args.age)
 
