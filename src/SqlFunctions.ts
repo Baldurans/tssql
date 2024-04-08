@@ -4,26 +4,6 @@ import {OrderByStructure, orderByStructureToSqlString} from "./select/DbSelect07
 import {ExprWithOver, SqlExpressionWithOver} from "./SqlExpressionWithOver";
 import {Db} from "./Db";
 
-function toSql(e: unknown | number | string | boolean | PrepareQueryArgument | AnyExpr): string | number {
-    if (typeof e === "string") {
-        return Db.escape(e);
-    } else if (typeof e === "number") {
-        return Number(e);
-    } else if (e === null || e === undefined) {
-        return "NULL";
-    } else if (e === true) {
-        return "1";
-    } else if (e === false) {
-        return "0";
-    } else if (e instanceof SqlExpression) {
-        return e.expression
-    } else if (isPrepareArgument(e)) {
-        return e.expression;
-    } else {
-        throw new Error("Invalid argument " + String(e));
-    }
-}
-
 /**
  * Type is the value. (If string "aa" is given, type of the column will be "aa")
  * Useful for enum values etc.
@@ -368,3 +348,26 @@ export function BIN_TO_UUID<TableRef, Name>(col: Expr<TableRef, Name, any>): Exp
     return SqlExpression.create("BIN_TO_UINT(" + col.expression + ")", col.nameAs)
 }
 
+// -------------------------------------------------------------------
+// UTILITY
+// -------------------------------------------------------------------
+
+function toSql(e: unknown | number | string | boolean | PrepareQueryArgument | AnyExpr): string | number {
+    if (typeof e === "string") {
+        return Db.escape(e);
+    } else if (typeof e === "number") {
+        return Number(e);
+    } else if (e === null || e === undefined) {
+        return "NULL";
+    } else if (e === true) {
+        return "1";
+    } else if (e === false) {
+        return "0";
+    } else if (e instanceof SqlExpression) {
+        return e.expression
+    } else if (isPrepareArgument(e)) {
+        return e.expression;
+    } else {
+        throw new Error("Invalid argument " + String(e));
+    }
+}

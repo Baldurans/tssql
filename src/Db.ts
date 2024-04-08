@@ -1,12 +1,12 @@
-import {AliasedTable, Key, NotUsingWithPart, PrepareQueryArgument} from "./Types";
+import {AliasedTable, Key, NotUsingWithPart, PrepareQueryArgument, SQL_ALIAS, SQL_EXPRESSION} from "./Types";
 import {DbSelect00Uses} from "./select/DbSelect00Uses";
 import {DbSelect00With} from "./select/DbSelect00With";
 import {DbSelectBuilder} from "./select/DbSelectBuilder";
 import {DbSelect01From} from "./select/DbSelect01From";
-import {DbUtility} from "./DbUtility";
 import {DbSelect00Union} from "./select/DbSelect00Union";
 import {DbSelect09Exec} from "./select/DbSelect09Exec";
 import mysql from "mysql";
+import {SqlExpression} from "./SqlExpression";
 
 export type DbExecFunc<CTX> = (ctx: CTX, sql: string, args?: { [key: string]: string | number }) => Promise<any[]>;
 
@@ -86,6 +86,22 @@ export abstract class Db<CTX> {
 
     // -------------------------------------------------------
 
+    public static defineDbTable<TableName extends string, Alias extends string, Entity>(
+        escapedExpression: TableName,
+        alias: string,
+        columns: DbTableDefinition<Entity>
+    ): AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> {
+        const tbl: AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> = {
+            [SQL_EXPRESSION]: escapedExpression,
+            [SQL_ALIAS]: alias
+        } as any;
+        for (const columnName in columns) {
+            (tbl as any)[columnName] = new SqlExpression(Db.escapeId(alias) + "." + Db.escapeId(columnName), columnName)
+        }
+        Object.freeze(tbl)
+        return tbl
+    }
+
     public static createRef<
         Alias extends string,
         TableRef extends `${string} as ${Alias}`,
@@ -96,14 +112,14 @@ export abstract class Db<CTX> {
         for (const k in table) {
             (definition as any)[k] = (table as any)[k];
         }
-        return DbUtility.defineDbTable(Db.escapeId(table[DbUtility.SQL_ALIAS]), newAlias, definition) as any;
+        return Db.defineDbTable(Db.escapeId(table[SQL_ALIAS]), newAlias, definition) as any;
     }
 
     public static getDbTableAliasFunction<TableName extends string, Entity>(
         tableName: TableName,
         columns: DbTableDefinition<Entity>
     ): <Alias extends string>(alias: Alias) => AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> {
-        return <Alias extends string>(alias: Alias) => DbUtility.defineDbTable<TableName, Alias, Entity>(Db.escapeId(tableName) as TableName, alias, columns);
+        return <Alias extends string>(alias: Alias) => Db.defineDbTable<TableName, Alias, Entity>(Db.escapeId(tableName) as TableName, alias, columns);
     }
 
 }

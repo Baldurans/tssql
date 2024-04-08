@@ -2,7 +2,8 @@ import {OrderByStructure, orderByStructureToSqlString} from "./select/DbSelect07
 import {Expr, SqlExpression} from "./SqlExpression";
 import {Db} from "./Db";
 
-export type ExprWithOver<TableRef, Name, Type extends string | number | unknown> = symbol
+export type ExprWithOver<TableRef, Name, Type extends string | number | unknown> =
+    symbol
     & Expr<TableRef, Name, Type>
     & SqlExpressionWithOver<TableRef, Name, Type>
 

@@ -1,16 +1,16 @@
 import {COMPARISON_SIGNS, PrepareQueryArgument, SQL_BOOL} from "./Types";
 import {COMPARE, CONTAINS, ENDS_WITH, IN, IS_NULL, LIKE, NOT_NULL, STARTS_WITH} from "./SqlFunctions";
 
-export type Expr<TableRef, Name, Type extends string | number | unknown> = symbol & {
-    tableRef: TableRef
-    type: Type
-} & SqlExpression<TableRef, Name, Type>
+export type Expr<TableRef, Name, Type extends string | number | unknown> =
+    symbol &
+    { tableRef: TableRef, type: Type } &
+    SqlExpression<TableRef, Name, Type>
 
 export type AnyBoolExpr<TableRef> = Expr<TableRef, string | unknown, SQL_BOOL>;
 
 export type AnyExpr = Expr<string, string | unknown, string | number | unknown>
 
-export class SqlExpression<TableRef, Name, Type extends string | number | unknown> {
+export class SqlExpression<TableRef, Name extends string | unknown | undefined, Type extends string | number | unknown> {
 
     public readonly expression: string;
     public readonly nameAs: Name | undefined;

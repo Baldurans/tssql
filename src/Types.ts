@@ -1,15 +1,27 @@
-import {DbUtility} from "./DbUtility";
 import {Expr} from "./SqlExpression";
 
 export type Key<Alias extends string> = Record<Alias, true>;
 
+
+// ----------------------------------------------
+
+const SQL_EXPRESSION = Symbol("Table expression")
+const SQL_ALIAS = Symbol("Alias")
+const SQL_ALIAS_FOR_WITH_QUERY = Symbol("RefAlias")
+const SQL_ENTITY = Symbol("Entity")
+
+export {SQL_ENTITY};
+export {SQL_ALIAS_FOR_WITH_QUERY};
+export {SQL_ALIAS};
+export {SQL_EXPRESSION};
+
 // ----------------------------------------------
 
 export type AliasedTable<Alias extends string, TableRef, Entity, AliasForWithQuery extends string | NotUsingWithPart> = {
-    [DbUtility.SQL_ALIAS]: Alias
-    [DbUtility.SQL_EXPRESSION]: TableRef
-    [DbUtility.SQL_ALIAS_FOR_WITH_QUERY]: AliasForWithQuery
-    [DbUtility.SQL_ENTITY]: Entity
+    [SQL_ALIAS]: Alias
+    [SQL_EXPRESSION]: TableRef
+    [SQL_ALIAS_FOR_WITH_QUERY]: AliasForWithQuery
+    [SQL_ENTITY]: Entity
 } & {
     [K in keyof Entity]: Expr<TableRef, K, Entity[K]>
 }
@@ -32,7 +44,7 @@ export type vDate = string & { vDate: true, format: "YYYY-MM-DD" }
 
 export type vDateTime = string & { vDateTime: true, format: "YYYY-MM-DD HH:II:SS" }
 
-export type COMPARISON_SIGNS = "!=" | "=" | ">=" | ">" | "<" | "<=" | "LIKE" | "NOT LIKE"
+export type COMPARISON_SIGNS = "!=" | "<>" | "=" | ">=" | ">" | "<" | "<=" | "LIKE" | "NOT LIKE"
 
 const ComparisonOperandsLookup: Set<COMPARISON_SIGNS> = new Set(["!=", "=", ">=", ">", "<", "<=", "LIKE", "NOT LIKE"] as const)
 

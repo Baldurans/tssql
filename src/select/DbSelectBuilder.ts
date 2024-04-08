@@ -1,7 +1,6 @@
 import {Db, DbTableDefinition} from "../Db";
 import {AnyExpr, SqlExpression} from "../SqlExpression";
-import {AnyAliasedTableDef} from "../Types";
-import {DbUtility} from "../DbUtility";
+import {AnyAliasedTableDef, SQL_ALIAS, SQL_EXPRESSION} from "../Types";
 import {OrderByStructure, orderByStructureToSqlString} from "./DbSelect07OrderBy";
 
 const TAB = "  ";
@@ -65,12 +64,12 @@ export class DbSelectBuilder<CTX> {
     }
 
     public with(table: AnyAliasedTableDef): void {
-        const alias = table[DbUtility.SQL_ALIAS]
-        this._withQueries.set(alias, Db.escapeId(alias) + " AS " + table[DbUtility.SQL_EXPRESSION])
+        const alias = table[SQL_ALIAS]
+        this._withQueries.set(alias, Db.escapeId(alias) + " AS " + table[SQL_EXPRESSION])
     }
 
     public from(table: AnyAliasedTableDef): void {
-        this._from = table[DbUtility.SQL_EXPRESSION] + " as " + Db.escapeId(table[DbUtility.SQL_ALIAS]);
+        this._from = table[SQL_EXPRESSION] + " as " + Db.escapeId(table[SQL_ALIAS]);
     }
 
     public forUpdate() {
@@ -78,7 +77,7 @@ export class DbSelectBuilder<CTX> {
     }
 
     public join(joinType: "JOIN" | "LEFT JOIN", table: AnyAliasedTableDef, condition: AnyExpr): void {
-        const sql = this._withQueries.has(table[DbUtility.SQL_ALIAS]) ? Db.escapeId(table[DbUtility.SQL_ALIAS]) : table[DbUtility.SQL_EXPRESSION] + " as " + Db.escapeId(table[DbUtility.SQL_ALIAS])
+        const sql = this._withQueries.has(table[SQL_ALIAS]) ? Db.escapeId(table[SQL_ALIAS]) : table[SQL_EXPRESSION] + " as " + Db.escapeId(table[SQL_ALIAS])
         this._joins.push(joinType + " " + sql + " ON (" + condition.expression + ")")
         return this as any;
     }

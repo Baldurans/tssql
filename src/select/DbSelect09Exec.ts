@@ -1,8 +1,7 @@
 import {AliasedTable, NotUsingWithPart} from "../Types";
 import {Expr, SqlExpression} from "../SqlExpression";
 import {DbSelect} from "./DbSelect";
-import {DbUtility} from "../DbUtility";
-import {DbTableDefinition} from "../Db";
+import {DbTableDefinition, Db} from "../Db";
 
 const TAB = "  ";
 
@@ -15,7 +14,7 @@ export class DbSelect09Exec<Result, CTX> extends DbSelect<CTX> {
     }
 
     public as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result, NotUsingWithPart> {
-        return DbUtility.defineDbTable<"(SUBQUERY)", Alias, Result>("(\n" + this.builder.toString(2) + ")" as "(SUBQUERY)", alias, this.builder.getColumnStruct())
+        return Db.defineDbTable<"(SUBQUERY)", Alias, Result>("(\n" + this.builder.toString(2) + ")" as "(SUBQUERY)", alias, this.builder.getColumnStruct())
     }
 
     public toString(lvl: number = 0): string {
