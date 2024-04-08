@@ -1,5 +1,5 @@
 import {tUserId} from "./tables/User";
-import {DATE, EQ, IF, Sql} from "../src/Sql";
+import {DANGEROUS_SQL_EXPRESSION, DATE, EQ, IF} from "../src/SqlFunctions";
 import {MyDb} from "./tables/MyDb";
 import {vDate} from "../src";
 
@@ -95,7 +95,7 @@ test("complex", async () => {
             DATE(c.created).as("myDate"),
             c.id.compare("<=", c2.id).as("expr1"),
             c.id.compare(">", c2.id).as("expr2"),
-            Sql.__veryDangerousUnsafeSqlExpression({I_DID_NOT_USE_UNSAFE_VARIABLES_TO_CONSTRUCT_THIS_STRING: ["100 + ROUND(", c.id, " > ", c2.id, ")"]}).cast<number>().as("expr3"),
+            DANGEROUS_SQL_EXPRESSION({I_DID_NOT_USE_UNSAFE_VARIABLES_TO_CONSTRUCT_THIS_STRING: ["100 + ROUND(", c.id, " > ", c2.id, ")"]}).cast<number>().as("expr3"),
             IF(c.id.eq(c2.id), c.username, c2.username).cast<string>().as("expr4"),
             withSubSub1.subIdRenamed.as("withSubSub1"),
             withSubSub2.subIdRenamed.as("withSubSub2"),

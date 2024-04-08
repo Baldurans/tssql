@@ -1,6 +1,6 @@
-import {Sql} from "./Sql";
 import {OrderByStructure, orderByStructureToSqlString} from "./select/DbSelect07OrderBy";
 import {Expr, SqlExpression} from "./SqlExpression";
+import {Db} from "./Db";
 
 export type ExprWithOver<TableRef, Name, Type extends string | number | unknown> = symbol
     & Expr<TableRef, Name, Type>
@@ -28,7 +28,7 @@ export class SqlExpressionWithOver<TableRef, Name, Type extends string | number 
         }
         const builder = new SqlOverClauseBuilder<{}>();
         func(builder);
-        return SqlExpression.create(this.expression + " OVER (" + (namedWindow ? Sql.escapeId(namedWindow) + " " : "") + builder.toString() + ")");
+        return SqlExpression.create(this.expression + " OVER (" + (namedWindow ? Db.escapeId(namedWindow) + " " : "") + builder.toString() + ")");
     }
 
 }

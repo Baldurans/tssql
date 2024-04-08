@@ -1,5 +1,5 @@
 import {COMPARISON_SIGNS, PrepareQueryArgument, SQL_BOOL} from "./Types";
-import {COMPARE, CONTAINS, ENDS_WITH, IN, IS_NULL, LIKE, NOT_NULL, STARTS_WITH} from "./Sql";
+import {COMPARE, CONTAINS, ENDS_WITH, IN, IS_NULL, LIKE, NOT_NULL, STARTS_WITH} from "./SqlFunctions";
 
 export type Expr<TableRef, Name, Type extends string | number | unknown> = symbol & {
     tableRef: TableRef

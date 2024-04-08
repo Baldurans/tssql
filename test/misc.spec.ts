@@ -1,6 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {Sql} from "../src";
+import {Db} from "../src";
 
 enum MyEnum {
     aa = "aa",
@@ -51,25 +51,25 @@ test("simple", async () => {
             GROUP_CONCAT( [c.id, c.id],  [c.id, "asc"], ",").as("sdaf"),
 
             // with builder
-            Sql.GROUP_CONCAT(f => f.distinct(c.id).orderBy().separator(",")).as("aaaaa"),
-            Sql.GROUP_CONCAT(f => f.all(c.id).orderBy().separator(",")).as("aaaaa"),
-            Sql.GROUP_CONCAT(f => f.all(c.id).separator(",")).as("aaaaa"),
-            Sql.GROUP_CONCAT(f => f.all(c.id)).as("aaaaa"),
+            Db.GROUP_CONCAT(f => f.distinct(c.id).orderBy().separator(",")).as("aaaaa"),
+            Db.GROUP_CONCAT(f => f.all(c.id).orderBy().separator(",")).as("aaaaa"),
+            Db.GROUP_CONCAT(f => f.all(c.id).separator(",")).as("aaaaa"),
+            Db.GROUP_CONCAT(f => f.all(c.id)).as("aaaaa"),
 
             // weird
-            Sql.GROUP_CONCAT(c.id, ",").as("aaaaa"),
+            Db.GROUP_CONCAT(c.id, ",").as("aaaaa"),
 
             // methods
-            Sql.GROUP_CONCAT([c.id], [c.id], ",", true).as("aaaaa"), // last 3 optional
-            Sql.GROUP_CONCAT([c.id], [c.id], ",", "DISTINCT").as("aaaaa"), // last 3 optional
+            Db.GROUP_CONCAT([c.id], [c.id], ",", true).as("aaaaa"), // last 3 optional
+            Db.GROUP_CONCAT([c.id], [c.id], ",", "DISTINCT").as("aaaaa"), // last 3 optional
 
             // using strings (not sure if practical)
-            Sql.GROUP_CONCAT("DISTINCT", [c.id], "ORDER BY", [c.id], "SEPARATOR", ",").as("aaaaa"),
-            Sql.GROUP_CONCAT([c.id], "ORDER BY", [c.id], "SEPARATOR", ",").as("aaaaa"),
-            Sql.GROUP_CONCAT([c.id], "SEPARATOR", ",").as("aaaaa"),
+            Db.GROUP_CONCAT("DISTINCT", [c.id], "ORDER BY", [c.id], "SEPARATOR", ",").as("aaaaa"),
+            Db.GROUP_CONCAT([c.id], "ORDER BY", [c.id], "SEPARATOR", ",").as("aaaaa"),
+            Db.GROUP_CONCAT([c.id], "SEPARATOR", ",").as("aaaaa"),
 
         )
-        .where(Sql.AND(
+        .where(Db.AND(
             c.id.eq(input.userId),
             c.username.isNull(),
             val && c.username.isNull(),

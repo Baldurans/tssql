@@ -1,41 +1,12 @@
 import {COMPARISON_SIGNS, ComparisonOperandsLookup, isPrepareArgument, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
-import mysql from "mysql";
 import {AnyBoolExpr, AnyExpr, Expr, SqlExpression} from "./SqlExpression";
 import {OrderByStructure, orderByStructureToSqlString} from "./select/DbSelect07OrderBy";
 import {ExprWithOver, SqlExpressionWithOver} from "./SqlExpressionWithOver";
+import {Db} from "./Db";
 
-export class Sql {
-
-    public static escape(value: string | number | (string | number)[] | PrepareQueryArgument): string {
-        return mysql.escape(value)
-    }
-
-    public static escapeId(value: string): string {
-        return mysql.escapeId(value);
-    }
-
-    /**
-     * DO NOT USE THIS METHOD :)
-     *
-     * Using this method is very dangerous, it DOES NOT escape strings passed to the function.
-     * If you use a unsafe variable from somewhere to construct a string you are open to SQL injection.
-     *
-     * If you do happen to use it, make all strings as literals and DO NOT use any variables to construct the string. It will bite you!
-     *
-     * To safely use columns do this (but in practice this example is dumb, you should do Sql.round(c.price)): ("ROUND(", c.price,")")
-     *
-     * DO NOT USE THIS METHOD :)
-     */
-    public static __veryDangerousUnsafeSqlExpression<TableRef>(arg: {
-        I_DID_NOT_USE_UNSAFE_VARIABLES_TO_CONSTRUCT_THIS_STRING: (string | Expr<TableRef, string | unknown, string | number | unknown>)[]
-    }): Expr<TableRef, unknown, unknown> {
-        return SqlExpression.create("(" + arg.I_DID_NOT_USE_UNSAFE_VARIABLES_TO_CONSTRUCT_THIS_STRING.map(e => typeof e === "string" ? e : e.expression).join("") + ")")
-    }
-}
-
-function _toSqlArg(e: unknown | number | string | boolean | PrepareQueryArgument | AnyExpr): string | number {
+function toSql(e: unknown | number | string | boolean | PrepareQueryArgument | AnyExpr): string | number {
     if (typeof e === "string") {
-        return Sql.escape(e);
+        return Db.escape(e);
     } else if (typeof e === "number") {
         return Number(e);
     } else if (e === null || e === undefined) {
@@ -58,7 +29,25 @@ function _toSqlArg(e: unknown | number | string | boolean | PrepareQueryArgument
  * Useful for enum values etc.
  */
 export function VALUE<Type>(value: Type): Expr<never, unknown, Type> {
-    return SqlExpression.create(Sql.escape(value as any))
+    return SqlExpression.create(Db.escape(value as any))
+}
+
+/**
+ * DO NOT USE THIS METHOD :)
+ *
+ * Using this method is very dangerous, it DOES NOT escape strings passed to the function.
+ * If you use a unsafe variable from somewhere to construct a string you are open to SQL injection.
+ *
+ * If you do happen to use it, make all strings as literals and DO NOT use any variables to construct the string. It will bite you!
+ *
+ * To safely use columns do this (but in practice this example is dumb, you should do Sql.round(c.price)): ("ROUND(", c.price,")")
+ *
+ * DO NOT USE THIS METHOD :)
+ */
+export function DANGEROUS_SQL_EXPRESSION<TableRef>(arg: {
+    I_DID_NOT_USE_UNSAFE_VARIABLES_TO_CONSTRUCT_THIS_STRING: (string | Expr<TableRef, string | unknown, string | number | unknown>)[]
+}): Expr<TableRef, unknown, unknown> {
+    return SqlExpression.create("(" + arg.I_DID_NOT_USE_UNSAFE_VARIABLES_TO_CONSTRUCT_THIS_STRING.map(e => typeof e === "string" ? e : e.expression).join("") + ")")
 }
 
 // -------------------------------------------------------------------
@@ -126,7 +115,7 @@ export function IF<
     col2: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument,
     col3: Type | Expr<TableRef3, string | unknown, Type> | PrepareQueryArgument
 ): Expr<TableRef1 | TableRef2 | TableRef3, unknown, Type | Type> {
-    return SqlExpression.create("IF( " + col.expression + ", " + _toSqlArg(col2) + ", " + _toSqlArg(col3) + " )")
+    return SqlExpression.create("IF( " + col.expression + ", " + toSql(col2) + ", " + toSql(col3) + " )")
 }
 
 export function IS_NULL<TableRef, Name, Type extends string | number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, SQL_BOOL> {
@@ -145,7 +134,7 @@ export function IN<Type extends string | number, TableRef1 = never, TableRef2 = 
     col1: Type | Expr<TableRef1, string | unknown, Type> | PrepareQueryArgument,
     col2: Type[] | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument
 ): Expr<TableRef1 | TableRef2, unknown, Type> {
-    return SqlExpression.create(_toSqlArg(col1) + " IN ( " + _toSqlArg(col2) + ")")
+    return SqlExpression.create(toSql(col1) + " IN ( " + toSql(col2) + ")")
 }
 
 // export function eq<TableRef, Type extends string | number | PrepareQueryArgument>(
@@ -167,32 +156,32 @@ export function COMPARE<Type extends string | number, TableRef = never, TableRef
     if (!ComparisonOperandsLookup.has(op)) {
         throw new Error("Invalid comparison operand '" + op + "'")
     }
-    return SqlExpression.create(_toSqlArg(col1) + " " + op + " " + _toSqlArg(col2))
+    return SqlExpression.create(toSql(col1) + " " + op + " " + toSql(col2))
 }
 
 export function LIKE<TableRef>(col: (Expr<TableRef, string | unknown, string | number>), value: string | PrepareQueryArgument): Expr<TableRef, unknown, SQL_BOOL> {
-    return SqlExpression.create(col.expression + " LIKE " + Sql.escape(value));
+    return SqlExpression.create(col.expression + " LIKE " + Db.escape(value));
 }
 
 /**
  * Does LIKE %X% search.
  */
 export function CONTAINS<TableRef>(col: (Expr<TableRef, string | unknown, string | number>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
-    return SqlExpression.create(col.expression + " LIKE " + Sql.escape("%" + value + "%"));
+    return SqlExpression.create(col.expression + " LIKE " + Db.escape("%" + value + "%"));
 }
 
 /**
  * Does LIKE X% search.
  */
 export function STARTS_WITH<TableRef>(col: (Expr<TableRef, string | unknown, string | number>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
-    return SqlExpression.create(col.expression + " LIKE " + Sql.escape(value + "%"));
+    return SqlExpression.create(col.expression + " LIKE " + Db.escape(value + "%"));
 }
 
 /**
  * Does LIKE %X search.
  */
 export function ENDS_WITH<TableRef>(col: (Expr<TableRef, string | unknown, string | number>), value: string): Expr<TableRef, unknown, SQL_BOOL> {
-    return SqlExpression.create(col.expression + " LIKE " + Sql.escape("%" + value));
+    return SqlExpression.create(col.expression + " LIKE " + Db.escape("%" + value));
 }
 
 // -------------------------------------------------------------------
@@ -200,22 +189,22 @@ export function ENDS_WITH<TableRef>(col: (Expr<TableRef, string | unknown, strin
 // -------------------------------------------------------------------
 
 export function TRIM<Type extends string, TableRef = never>(value: string | Expr<TableRef, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef, unknown, Type> {
-    return SqlExpression.create("TRIM(" + _toSqlArg(value) + ")")
+    return SqlExpression.create("TRIM(" + toSql(value) + ")")
 }
 
 /**
  * normal SQL length function, but JS does not allow usage of length.
  */
 export function LENGTH<TableRef = never>(value: string | Expr<TableRef, string | unknown, string> | PrepareQueryArgument): Expr<TableRef, unknown, number> {
-    return SqlExpression.create("LENGTH(" + _toSqlArg(value) + ")")
+    return SqlExpression.create("LENGTH(" + toSql(value) + ")")
 }
 
 export function CONCAT<TableRef = never>(...expr: (string | PrepareQueryArgument | Expr<TableRef, any, any>)[]): Expr<TableRef, unknown, string> {
-    return SqlExpression.create("CONCAT (" + expr.map(_toSqlArg) + ")")
+    return SqlExpression.create("CONCAT (" + expr.map(toSql) + ")")
 }
 
 export function CONCAT_WS<TableRef = never>(separator: string, ...expr: (string | PrepareQueryArgument | Expr<TableRef, any, any>)[]): Expr<TableRef, unknown, string> {
-    return SqlExpression.create("CONCAT_WS(" + Sql.escape(separator) + "," + expr.map(_toSqlArg) + ")")
+    return SqlExpression.create("CONCAT_WS(" + Db.escape(separator) + "," + expr.map(toSql) + ")")
 }
 
 export function GROUP_CONCAT<TableRef>(
@@ -225,8 +214,8 @@ export function GROUP_CONCAT<TableRef>(
 ): Expr<TableRef, unknown, string> {
     return SqlExpression.create("GROUP_CONCAT(" +
         (distinct ? "DISTINCT " : "") +
-        "" + expr.map(_toSqlArg) +
-        (separator ? " SEPARATOR " + Sql.escape(separator) : "") +
+        "" + expr.map(toSql) +
+        (separator ? " SEPARATOR " + Db.escape(separator) : "") +
         ")");
 }
 
@@ -238,9 +227,9 @@ export function GROUP_CONCAT_2<TableRef, OrderByTableRef>(
 ): Expr<TableRef | OrderByTableRef, unknown, string> {
     return SqlExpression.create("GROUP_CONCAT(" +
         (distinct ? "DISTINCT " : "") +
-        "" + expr.map(_toSqlArg) +
+        "" + expr.map(toSql) +
         (orderBy && orderBy.length > 0 ? " ORDER BY " + orderByStructureToSqlString(orderBy).join(", ") : "") +
-        (separator ? " SEPARATOR " + Sql.escape(separator) : "") +
+        (separator ? " SEPARATOR " + Db.escape(separator) : "") +
         ")");
 }
 
@@ -273,14 +262,14 @@ export function DATE_TIME<Name, TableRef>(field: Expr<TableRef, Name, vDateTime>
 }
 
 export function DATE_FORMAT<Name, TableRef = never>(col: vDate | vDateTime | Expr<TableRef, Name, vDate | vDateTime>, format: string): Expr<TableRef, Name, string> {
-    return SqlExpression.create("DATE_FORMAT(" + _toSqlArg(col) + ", " + Sql.escape(format) + ")")
+    return SqlExpression.create("DATE_FORMAT(" + toSql(col) + ", " + Db.escape(format) + ")")
 }
 
 export function DATE_DIFF<TableRef1 = never, TableRef2 = never>(
     col1: vDate | vDateTime | Expr<TableRef1, string | unknown, vDate | vDateTime> | PrepareQueryArgument,
     col2: vDate | vDateTime | Expr<TableRef2, string | unknown, vDate | vDateTime> | PrepareQueryArgument
 ): Expr<TableRef1 | TableRef2, unknown, number> {
-    return SqlExpression.create("DATEDIFF(" + _toSqlArg(col1) + ", " + _toSqlArg(col2) + ")")
+    return SqlExpression.create("DATEDIFF(" + toSql(col1) + ", " + toSql(col2) + ")")
 }
 
 // -------------------------------------------------------------------
@@ -335,11 +324,11 @@ export function MAX<Type, Name, TableRef>(col: Expr<TableRef, Name, Type>): Expr
 }
 
 export function SUM<Type, Name, TableRef = never>(col: Type | Expr<TableRef, Name, Type>): ExprWithOver<TableRef, Name, number> {
-    return SqlExpressionWithOver.create("SUM(" + _toSqlArg(col) + ")", (col instanceof SqlExpression ? col.nameAs : undefined))
+    return SqlExpressionWithOver.create("SUM(" + toSql(col) + ")", (col instanceof SqlExpression ? col.nameAs : undefined))
 }
 
 export function COUNT<Type, Name, TableRef = never>(col: Type | Expr<TableRef, Name, Type>): Expr<TableRef, Name, number> {
-    return SqlExpressionWithOver.create("COUNT(" + _toSqlArg(col) + ")", (col instanceof SqlExpression ? col.nameAs : undefined))
+    return SqlExpressionWithOver.create("COUNT(" + toSql(col) + ")", (col instanceof SqlExpression ? col.nameAs : undefined))
 }
 
 export function RANK(): ExprWithOver<never, unknown, number> {
