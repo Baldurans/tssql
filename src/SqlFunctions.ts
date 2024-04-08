@@ -186,33 +186,33 @@ export function CONCAT_WS<TableRef = never>(separator: string, ...expr: (string 
 }
 
 export function GROUP_CONCAT<TableRef, TableRef2 = never>(
-    call?: (arg: GC<TableRef2>) => GC<TableRef2>
+    call?: (arg: GroupConcat<TableRef2>) => GroupConcat<TableRef2>
 ): Expr<TableRef | TableRef2, unknown, string> {
-    const builder = new GC();
+    const builder = new GroupConcat();
     call(builder);
     return SqlExpression.create("GROUP_CONCAT(" + builder.toString() + ")");
 }
 
 
-export class GC<TableRef = never> {
+export class GroupConcat<TableRef = never> {
 
     private _columns: any[] = [];
     private _distinct: boolean = false;
     private _orderBy: string[] = [];
     private _separator: string = undefined;
 
-    public all<TableRef2>(...args: (string | PrepareQueryArgument | Expr<TableRef2, any, any>)[]): GC<TableRef | TableRef2> {
+    public all<TableRef2>(...args: (string | PrepareQueryArgument | Expr<TableRef2, any, any>)[]): GroupConcat<TableRef | TableRef2> {
         this._columns = args.map(toSql);
         return this;
     }
 
-    public distinct<TableRef2>(...args: (string | PrepareQueryArgument | Expr<TableRef2, any, any>)[]): GC<TableRef | TableRef2> {
+    public distinct<TableRef2>(...args: (string | PrepareQueryArgument | Expr<TableRef2, any, any>)[]): GroupConcat<TableRef | TableRef2> {
         this._distinct = true;
         this._columns = args.map(toSql);
         return this;
     }
 
-    public orderBy<TableRef2>(...cols: OrderByStructure<Expr<TableRef2, string, any>>): GC<TableRef | TableRef2> {
+    public orderBy<TableRef2>(...cols: OrderByStructure<Expr<TableRef2, string, any>>): GroupConcat<TableRef | TableRef2> {
         this._orderBy = orderByStructureToSqlString(cols)
         return this;
     }
@@ -226,8 +226,7 @@ export class GC<TableRef = never> {
         return (this._distinct ? "DISTINCT " : "") +
             "" + this._columns +
             (this._orderBy && this._orderBy.length > 0 ? " ORDER BY " + this._orderBy.join(", ") : "") +
-            (this._separator ? " SEPARATOR " + escape(this._separator) : "") +
-            ")"
+            (this._separator ? " SEPARATOR " + escape(this._separator) : "");
     }
 
 }
