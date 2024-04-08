@@ -1,4 +1,4 @@
-import {escape} from "../escape";
+import {escape} from "./escape";
 
 export class MysqlTableStructureParser {
 
@@ -35,13 +35,13 @@ export class MysqlTableStructureParser {
             }
             tables.get(row.tableName).columns.push(this.parseColumn(row));
         }
-        return Array.from(tables.values());
+        return Array.from(tables.values()).sort((a, b) => a.name >= b.name ? 1 : -1);
     }
 
     private static parseColumn(row: SchemaRow): AnyColumn {
         const type = row.dataType.toUpperCase() as ColumnDataType;
         const column: Column = {
-            type: null,
+            type: type,
             name: row.columnName,
             tsType: MYSQL_TYPE_TO_TS_TYPE.get(type),
             isNullable: row.isNullable.toUpperCase().indexOf("YES") >= 0,
@@ -113,11 +113,12 @@ export class MysqlTableStructureParser {
 
     private static parseColumnKey(columnKey: string): KeyType[] {
         return columnKey.split(",").map((e) => {
-            if (e === "pri") {
+            const key = e.toUpperCase();
+            if (key === "PRI") {
                 return KeyType.PRIMARY
-            } else if (e === "uni") {
+            } else if (key === "UNI") {
                 return KeyType.UNIQUE
-            } else if (e === "mul") {
+            } else if (key === "MUL") {
                 return KeyType.MULTIPLE
             } else {
                 return null;
@@ -128,7 +129,7 @@ export class MysqlTableStructureParser {
 
 export interface TableStructure {
     name: string;
-    columns: Column[];
+    columns: AnyColumn[];
 }
 
 export enum ColumnDataType {
@@ -182,7 +183,7 @@ const MYSQL_TYPE_TO_TS_TYPE: Map<ColumnDataType, string> = new Map([
 ])
 
 
-export type AnyColumn = ColumnText | ColumnChar | ColumnNumber | ColumnSet | ColumnEnum
+export type AnyColumn = ColumnText | ColumnChar | ColumnNumber | ColumnSet | ColumnEnum | ColumnDateTimeLike
 
 export interface Column {
     type: ColumnDataType;
@@ -193,6 +194,13 @@ export interface Column {
     columnKey: KeyType[];
     extra: string;
     comment: string;
+}
+
+export interface ColumnDateTimeLike extends Column {
+    type: ColumnDataType.DATE |
+        ColumnDataType.DATETIME |
+        ColumnDataType.TIMESTAMP |
+        ColumnDataType.YEAR
 }
 
 export interface ColumnText extends Column {
