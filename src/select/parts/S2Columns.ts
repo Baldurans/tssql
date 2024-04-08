@@ -1,8 +1,8 @@
-import {DbSelect04Where} from "./DbSelect04Where";
-import {DbSelect} from "./DbSelect";
-import {AnyExpr, Expr} from "../SqlExpression";
+import {S2Where} from "./S2Where";
+import {SelectQueryPart} from "../SelectQueryPart";
+import {AnyExpr, Expr} from "../../SqlExpression";
 
-export class DbSelect03Columns<Result, Tables, CTX> extends DbSelect<CTX> {
+export class S2Columns<Result, Tables, CTX> extends SelectQueryPart<CTX> {
     public distinct(): this {
         this.builder.distinct();
         return this;
@@ -14,9 +14,9 @@ export class DbSelect03Columns<Result, Tables, CTX> extends DbSelect<CTX> {
     >(
         //...columns: Columns - this will enable seeing sources of Result object properties.
         ...columns: isColumnOkToAdd<Result, Tables, Columns>
-    ): DbSelect04Where<Result & ExtractObj<Columns>, Tables, CTX> {
+    ): S2Where<Result & ExtractObj<Columns>, Tables, CTX> {
         this.builder.columns(columns as unknown as AnyExpr[]);
-        return new DbSelect04Where(this.builder);
+        return new S2Where(this.builder);
     }
 
 }

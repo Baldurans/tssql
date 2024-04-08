@@ -1,10 +1,10 @@
 import {AliasedTable, Key, NotUsingWithPart, PrepareQueryArgument} from "./Types";
-import {DbSelect00Uses} from "./select/DbSelect00Uses";
-import {DbSelect00With} from "./select/DbSelect00With";
-import {DbSelectBuilder} from "./select/DbSelectBuilder";
-import {DbSelect01From} from "./select/DbSelect01From";
-import {DbSelect00Union} from "./select/DbSelect00Union";
-import {DbSelect09Exec} from "./select/DbSelect09Exec";
+import {S0Uses} from "./select/parts/S0Uses";
+import {S0With} from "./select/parts/S0With";
+import {SelectBuilder} from "./select/SelectBuilder";
+import {S0From} from "./select/parts/S0From";
+import {S0Union} from "./select/parts/S0Union";
+import {S7Exec} from "./select/parts/S7Exec";
 import {SqlExpression} from "./SqlExpression";
 import {SQL_ALIAS, SQL_EXPRESSION} from "./Symbols";
 import {escapeId} from "./escape";
@@ -19,8 +19,8 @@ export abstract class Db<CTX> {
 
     // -------------------------------------------------------
 
-    public select(): DbSelect01From<{}, {}, {}, CTX> {
-        return new DbSelect01From(new DbSelectBuilder<CTX>(this.exec)) as any
+    public select(): S0From<{}, {}, {}, CTX> {
+        return new S0From(new SelectBuilder<CTX>(this.exec)) as any
     }
 
     public uses<
@@ -29,8 +29,8 @@ export abstract class Db<CTX> {
         TableRef extends `${TableName} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, object, NotUsingWithPart>
-    ): DbSelect00Uses<Key<Alias>, Key<TableRef>, CTX> {
-        return new DbSelect00Uses(new DbSelectBuilder<CTX>(this.exec));
+    ): S0Uses<Key<Alias>, Key<TableRef>, CTX> {
+        return new S0Uses(new SelectBuilder<CTX>(this.exec));
     }
 
     public with<
@@ -39,15 +39,15 @@ export abstract class Db<CTX> {
         TableRef extends `${TableName} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, object, NotUsingWithPart>
-    ): DbSelect00With<Key<Alias>, CTX> {
-        return new DbSelect00With(new DbSelectBuilder<CTX>(this.exec)).with(table as any);
+    ): S0With<Key<Alias>, CTX> {
+        return new S0With(new SelectBuilder<CTX>(this.exec)).with(table as any);
     }
 
-    public union<Result>(table: DbSelect09Exec<Result, CTX>): DbSelect00Union<Result, CTX> {
-        return new DbSelect00Union<Result, CTX>(new DbSelectBuilder<CTX>(this.exec)).all(table as any);
+    public union<Result>(table: S7Exec<Result, CTX>): S0Union<Result, CTX> {
+        return new S0Union<Result, CTX>(new SelectBuilder<CTX>(this.exec)).all(table as any);
     }
 
-    public prepare<PrepareQueryArguments extends { [key: string]: any }, Result>(func: (args: PrepareQueryArguments) => DbSelect09Exec<Result, CTX>): {
+    public prepare<PrepareQueryArguments extends { [key: string]: any }, Result>(func: (args: PrepareQueryArguments) => S7Exec<Result, CTX>): {
         exec: (ctx: CTX, args: PrepareQueryArguments) => Promise<Result[]>,
         execOne: (ctx: CTX, args: PrepareQueryArguments) => Promise<Result | undefined>
     } {

@@ -1,11 +1,11 @@
-import {isTableReferenced, SQL_BOOL, Key} from "../Types";
-import {DbSelect} from "./DbSelect";
-import {DbSelect05GroupBy} from "./DbSelect05GroupBy";
-import {AnyExpr, Expr} from "../SqlExpression";
+import {isTableReferenced, SQL_BOOL, Key} from "../../Types";
+import {SelectQueryPart} from "../SelectQueryPart";
+import {S3GroupBy} from "./S3GroupBy";
+import {AnyExpr, Expr} from "../../SqlExpression";
 
-export class DbSelect04Where<Result, Tables, CTX> extends DbSelect<CTX> {
-    public noWhere(): DbSelect05GroupBy<Result, Tables, CTX> {
-        return new DbSelect05GroupBy(this.builder)
+export class S2Where<Result, Tables, CTX> extends SelectQueryPart<CTX> {
+    public noWhere(): S3GroupBy<Result, Tables, CTX> {
+        return new S3GroupBy(this.builder)
     }
 
 
@@ -23,42 +23,42 @@ export class DbSelect04Where<Result, Tables, CTX> extends DbSelect<CTX> {
 
     public where<T1 extends string, T = Tables>(
         c1: C<T, T1>,
-    ): DbSelect05GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables, CTX>
     public where<T1 extends string, T2 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>,
-    ): DbSelect05GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables, CTX>
     public where<T1 extends string, T2 extends string, T3 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>
-    ): DbSelect05GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables, CTX>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>
-    ): DbSelect05GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables, CTX>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>, c5: C<T, T5>
-    ): DbSelect05GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables, CTX>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>, c5: C<T, T5>, c6: C<T, T6>
-    ): DbSelect05GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables, CTX>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T7 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>, c5: C<T, T5>, c6: C<T, T6>, c7: C<T, T7>
-    ): DbSelect05GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables, CTX>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T7 extends string, T8 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>, c5: C<T, T5>, c6: C<T, T6>, c7: C<T, T7>, c8: C<T, T8>
-    ): DbSelect05GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables, CTX>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T7 extends string, T8 extends string, T9 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>, c5: C<T, T5>, c6: C<T, T6>, c7: C<T, T7>, c8: C<T, T8>, c9: C<T, T9>
-    ): DbSelect05GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables, CTX>
     public where<T1 extends string, T2 extends string, T3 extends string, T4 extends string, T5 extends string, T6 extends string, T7 extends string, T8 extends string, T9 extends string, T10 extends string, T = Tables>(
         c1: C<T, T1>, c2: C<T, T2>, c3: C<T, T3>, c4: C<T, T4>, c5: C<T, T5>, c6: C<T, T6>, c7: C<T, T7>, c8: C<T, T8>, c9: C<T, T9>, c10: C<T, T10>
-    ): DbSelect05GroupBy<Result, Tables, CTX>
+    ): S3GroupBy<Result, Tables, CTX>
     public where(
         ...cols: any[]
-    ): DbSelect05GroupBy<Result, Tables, CTX> {
+    ): S3GroupBy<Result, Tables, CTX> {
 
         for (let i = 0; i < cols.length; i++) {
             this.builder.where(cols[i] as unknown as AnyExpr)
         }
-        return new DbSelect05GroupBy(this.builder)
+        return new S3GroupBy(this.builder)
     }
 }
 

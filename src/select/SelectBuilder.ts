@@ -8,7 +8,7 @@ import {escapeId} from "../escape";
 const TAB = "  ";
 
 
-export class DbSelectBuilder<CTX> {
+export class SelectBuilder<CTX> {
 
     private readonly _exec: (ctx: CTX, query: string) => Promise<any[]>
 

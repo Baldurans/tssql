@@ -1,8 +1,8 @@
-import {AliasedTable, AnyAliasedTableDef, isAliasAlreadyUsed, isTableReferenced, Key, NotUsingWithPart, SQL_BOOL} from "../Types";
-import {DbSelect03Columns} from "./DbSelect03Columns";
-import {Expr, Over} from "../SqlExpression";
+import {AliasedTable, AnyAliasedTableDef, isAliasAlreadyUsed, isTableReferenced, Key, NotUsingWithPart, SQL_BOOL} from "../../Types";
+import {S2Columns} from "./S2Columns";
+import {Expr, Over} from "../../SqlExpression";
 
-export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelect03Columns<{}, Tables, CTX> {
+export class S1Join<Aliases, AliasesFromWith, Tables, CTX> extends S2Columns<{}, Tables, CTX> {
 
     public join<
         Alias extends string,
@@ -12,7 +12,7 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
     >(
         table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
         condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
-    ): DbSelectJoin<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX> {
+    ): S1Join<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX> {
         this.builder.join("JOIN", table as AnyAliasedTableDef, condition as any)
         return this as any;
     }
@@ -25,7 +25,7 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
     >(
         table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
         condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
-    ): DbSelectJoin<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX> {
+    ): S1Join<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX> {
         this.builder.join("LEFT JOIN", table as AnyAliasedTableDef, condition as any)
         return this as any;
     }
@@ -36,7 +36,7 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
     >(
         name: isAliasAlreadyUsed<Aliases & AliasesFromWith, WindowName, WindowName>,
         func: (builder: Over<never>) => Over<UsedTablesRef>
-    ): DbSelectJoin<Aliases & Key<WindowName>, AliasesFromWith, Tables & Key<`(window) as ${WindowName}`>, CTX> {
+    ): S1Join<Aliases & Key<WindowName>, AliasesFromWith, Tables & Key<`(window) as ${WindowName}`>, CTX> {
         const builder = new Over()
         func(builder)
         this.builder.window(name, builder.toString())

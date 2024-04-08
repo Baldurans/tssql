@@ -1,11 +1,11 @@
-import {AliasedTable, NotUsingWithPart} from "../Types";
-import {Expr, SqlExpression} from "../SqlExpression";
-import {DbSelect} from "./DbSelect";
-import {DbTableDefinition, Db} from "../Db";
+import {AliasedTable, NotUsingWithPart} from "../../Types";
+import {Expr, SqlExpression} from "../../SqlExpression";
+import {SelectQueryPart} from "../SelectQueryPart";
+import {DbTableDefinition, Db} from "../../Db";
 
 const TAB = "  ";
 
-export class DbSelect09Exec<Result, CTX> extends DbSelect<CTX> {
+export class S7Exec<Result, CTX> extends SelectQueryPart<CTX> {
 
     public asScalar<Alias extends string>(
         alias: Alias & ScalarSubQueryAllowsOnlyOneColumn<Alias, Result> extends never ? "Scalar subquery allows only 1 column!" : Alias
