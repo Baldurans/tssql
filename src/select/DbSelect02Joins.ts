@@ -1,6 +1,6 @@
 import {AliasedTable, AnyAliasedTableDef, isAliasAlreadyUsed, isTableReferenced, Key, NotUsingWithPart, SQL_BOOL} from "../Types";
 import {DbSelect03Columns} from "./DbSelect03Columns";
-import {Expr, SqlOverClauseBuilder} from "../SqlExpression";
+import {Expr, Over} from "../SqlExpression";
 
 export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelect03Columns<{}, Tables, CTX> {
 
@@ -35,9 +35,9 @@ export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelec
         UsedTablesRef extends string
     >(
         name: isAliasAlreadyUsed<Aliases & AliasesFromWith, WindowName, WindowName>,
-        func: (builder: SqlOverClauseBuilder<never>) => SqlOverClauseBuilder<UsedTablesRef>
+        func: (builder: Over<never>) => Over<UsedTablesRef>
     ): DbSelectJoin<Aliases & Key<WindowName>, AliasesFromWith, Tables & Key<`(window) as ${WindowName}`>, CTX> {
-        const builder = new SqlOverClauseBuilder()
+        const builder = new Over()
         func(builder)
         this.builder.window(name, builder.toString())
         return this as any;

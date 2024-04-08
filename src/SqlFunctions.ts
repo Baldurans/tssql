@@ -186,40 +186,35 @@ export function CONCAT_WS<TableRef = never>(separator: string, ...expr: (string 
 }
 
 export function GROUP_CONCAT<TableRef, TableRef2 = never>(
-    fields: (string | PrepareQueryArgument | Expr<TableRef, any, any>)[],
-    call?: (arg: SqlGroupConcatArgumentBuilder<TableRef2>) => SqlGroupConcatArgumentBuilder<TableRef2>
+    call?: (arg: GC<TableRef2>) => GC<TableRef2>
 ): Expr<TableRef | TableRef2, unknown, string> {
-
-    const fieldsStr = fields.map(toSql).join(", ");
-    if (call) {
-        const builder = new SqlGroupConcatArgumentBuilder(fieldsStr);
-        call(builder);
-        return SqlExpression.create("GROUP_CONCAT(" + builder.toString() + ")");
-    } else {
-        return SqlExpression.create("GROUP_CONCAT(" + fieldsStr + ")")
-    }
+    const builder = new GC();
+    call(builder);
+    return SqlExpression.create("GROUP_CONCAT(" + builder.toString() + ")");
 }
 
 
-export class SqlGroupConcatArgumentBuilder<TableRef> {
+export class GC<TableRef = never> {
 
-    private readonly _columns: string;
+    private _columns: any[] = [];
     private _distinct: boolean = false;
     private _orderBy: string[] = [];
     private _separator: string = undefined;
 
-    constructor(columns: string) {
-        this._columns = columns;
-    }
-
-    public distinct(): this {
-        this._distinct = true;
+    public all<TableRef2>(...args: (string | PrepareQueryArgument | Expr<TableRef2, any, any>)[]): GC<TableRef | TableRef2> {
+        this._columns = args.map(toSql);
         return this;
     }
 
-    public orderBy<TableRef2>(...cols: OrderByStructure<Expr<TableRef2, string, any>>): SqlGroupConcatArgumentBuilder<TableRef | TableRef2> {
+    public distinct<TableRef2>(...args: (string | PrepareQueryArgument | Expr<TableRef2, any, any>)[]): GC<TableRef | TableRef2> {
+        this._distinct = true;
+        this._columns = args.map(toSql);
+        return this;
+    }
+
+    public orderBy<TableRef2>(...cols: OrderByStructure<Expr<TableRef2, string, any>>): GC<TableRef | TableRef2> {
         this._orderBy = orderByStructureToSqlString(cols)
-        return this as any;
+        return this;
     }
 
     public separator(separator: string): this {

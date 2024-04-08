@@ -92,12 +92,12 @@ export class SqlExpressionWithOver<TableRef, Name, Type extends string | number 
         return new SqlExpressionWithOver(expression, nameAs) as any
     }
 
-    public over<TableRef1 extends string>(func: (builder: SqlOverClauseBuilder<never>) => SqlOverClauseBuilder<TableRef1>): Expr<TableRef | TableRef1, unknown, Type>
+    public over<TableRef1 extends string>(func: (builder: Over<never>) => Over<TableRef1>): Expr<TableRef | TableRef1, unknown, Type>
     //public over<WindowName extends string>(namedWindow: WindowName): Expr<TableRef | `${WINDOW} as ${WindowName}`, unknown, Type>
-    public over<WindowName extends string, TableRef1>(namedWindow: WindowName, func: (builder: SqlOverClauseBuilder<TableRef1>) => void): Expr<TableRef | TableRef1 | `(window) as ${WindowName}`, unknown, Type>
+    public over<WindowName extends string, TableRef1>(namedWindow: WindowName, func: (builder: Over<TableRef1>) => void): Expr<TableRef | TableRef1 | `(window) as ${WindowName}`, unknown, Type>
     public over(a: any, b?: any): any {
         let namedWindow: string = undefined;
-        let func: (builder: SqlOverClauseBuilder<never>) => void = undefined;
+        let func: (builder: Over<never>) => void = undefined;
         if (typeof a === "function") {
             func = a
         } else if (typeof a === "string") {
@@ -106,24 +106,24 @@ export class SqlExpressionWithOver<TableRef, Name, Type extends string | number 
                 func = b
             }
         }
-        const builder = new SqlOverClauseBuilder<{}>();
+        const builder = new Over<{}>();
         func(builder);
         return SqlExpression.create(this.expression + " OVER (" + (namedWindow ? escapeId(namedWindow) + " " : "") + builder.toString() + ")");
     }
 
 }
 
-export class SqlOverClauseBuilder<TableRef> {
+export class Over<TableRef> {
 
     private _partitionBy: string[];
     private _orderBy: string[];
 
-    public orderBy<TableRef2>(...cols: OrderByStructure<Expr<TableRef2, string, any>>): SqlOverClauseBuilder<TableRef | TableRef2> {
+    public orderBy<TableRef2>(...cols: OrderByStructure<Expr<TableRef2, string, any>>): Over<TableRef | TableRef2> {
         this._orderBy = orderByStructureToSqlString(cols)
         return this as any;
     }
 
-    public partitionBy<TableRef2>(...cols: Expr<TableRef2, string, any>[]): SqlOverClauseBuilder<TableRef | TableRef2> {
+    public partitionBy<TableRef2>(...cols: Expr<TableRef2, string, any>[]): Over<TableRef | TableRef2> {
         this._partitionBy = cols.map(e => e.expression)
         return this as any;
     }
