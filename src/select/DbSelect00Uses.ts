@@ -1,4 +1,4 @@
-import {AliasedTable, isAliasAlreadyUsed, NotUsingWithPart, Key} from "../Types";
+import {isAliasAlreadyUsed, NotUsingWithPart, Key, AliasedTable} from "../Types";
 import {DbSelect01From} from "./DbSelect01From";
 import {DbSelect} from "./DbSelect";
 

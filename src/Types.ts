@@ -1,21 +1,9 @@
 import {Expr} from "./SqlExpression";
+import {SQL_ALIAS, SQL_ALIAS_FOR_WITH_QUERY, SQL_ENTITY, SQL_EXPRESSION} from "./Symbols";
 
 export type Key<Alias extends string> = Record<Alias, true>;
 
-
-// ----------------------------------------------
-
-const SQL_EXPRESSION = Symbol("Table expression")
-const SQL_ALIAS = Symbol("Alias")
-const SQL_ALIAS_FOR_WITH_QUERY = Symbol("RefAlias")
-const SQL_ENTITY = Symbol("Entity")
-
-export {SQL_ENTITY};
-export {SQL_ALIAS_FOR_WITH_QUERY};
-export {SQL_ALIAS};
-export {SQL_EXPRESSION};
-
-// ----------------------------------------------
+// -----------------------------------------------------
 
 export type AliasedTable<Alias extends string, TableRef, Entity, AliasForWithQuery extends string | NotUsingWithPart> = {
     [SQL_ALIAS]: Alias
@@ -27,6 +15,8 @@ export type AliasedTable<Alias extends string, TableRef, Entity, AliasForWithQue
 }
 
 export type AnyAliasedTableDef = AliasedTable<string, string, {}, string | NotUsingWithPart>
+
+// ----------------------------------------------
 
 export type NotUsingWithPart = { __not_referenced: true }
 
@@ -70,4 +60,3 @@ export type isTableReferenced<Tables, CheckTables, OUT> = keyof CheckTables exte
     ? OUT
     : `Table '${_extractMissingAlias<Tables, CheckTables> extends `${infer TableRef}` ? `${TableRef}` : "???"}' is not used in this query!`
 
-// -----------------------------------------------------

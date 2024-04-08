@@ -1,9 +1,16 @@
 import {User} from "./User";
 import {Company} from "./Company";
 import {Db} from "../../src/Db";
+import {Sql} from "../../src/Sql";
+
+Sql.escape = (value) => {
+    return String(value);
+};
+Sql.escapeId = (value) => {
+    return value;
+}
 
 export class MyDb extends Db<undefined> {
-
 
     constructor() {
         super(async (sql: string) => {
