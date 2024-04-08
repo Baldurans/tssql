@@ -23,6 +23,11 @@ export type AliasedTable<Alias extends string, TableRef, Entity, AliasForWithQue
 
 export type AnyAliasedTableDef = AliasedTable<string, string, {}, string | NotUsingWithPart>
 
+export type DbTableDefinition<T> = {
+    [P in keyof T]: true
+};
+
+
 // ----------------------------------------------
 
 export type NotUsingWithPart = { __not_referenced: true }

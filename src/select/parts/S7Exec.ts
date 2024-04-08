@@ -1,8 +1,8 @@
-import {AliasedTable, NotUsingWithPart, SqlQuery} from "../../Types";
+import {AliasedTable, DbTableDefinition, NotUsingWithPart, SqlQuery} from "../../Types";
 import {Expr, SqlExpression} from "../../SqlExpression";
 import {SelectQueryPart} from "../SelectQueryPart";
-import {Db, DbTableDefinition} from "../../Db";
 import {SQL_ENTITY} from "../../Symbols";
+import {SQL} from "../../SQL";
 
 const TAB = "  ";
 
@@ -17,7 +17,7 @@ export class S7Exec<Result> extends SelectQueryPart implements SqlQuery<Result> 
     }
 
     public as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result, NotUsingWithPart> {
-        return Db.defineDbTable<"(SUBQUERY)", Alias, Result>("(\n" + this.builder.toString(2) + ")" as "(SUBQUERY)", alias, this.builder.getColumnStruct())
+        return SQL.defineDbTable<"(SUBQUERY)", Alias, Result>("(\n" + this.builder.toString(2) + ")" as "(SUBQUERY)", alias, this.builder.getColumnStruct())
     }
 
     public toString(lvl: number = 0): string {

@@ -2,21 +2,19 @@ import {tUserId} from "./tables/User";
 import {DANGEROUS_SQL_EXPRESSION, DATE, EQ, IF} from "../src/SqlFunctions";
 import {MyDb} from "./tables/MyDb";
 import {vDate} from "../src";
-import {SQL} from "../src/select/SQL";
+import {SQL} from "../src/SQL";
 import {execOne} from "./tables/exec";
 
 test("complex", async () => {
 
-    const db = new MyDb();
+    const c = MyDb.user("c")
+    const cFake = MyDb.company("c")
+    const c2 = MyDb.user("c2")
+    const c3 = MyDb.user("c3")
+    const c4 = MyDb.user("c4")
+    const c5 = MyDb.user("c5")
 
-    const c = db.tables.user("c")
-    const cFake = db.tables.company("c")
-    const c2 = db.tables.user("c2")
-    const c3 = db.tables.user("c3")
-    const c4 = db.tables.user("c4")
-    const c5 = db.tables.user("c5")
-
-    const s = db.tables.user("s")
+    const s = MyDb.user("s")
 
 
     // NOTICE: It is very hard to mess up field names, as it most certainly means some hacking as you always reference fields from table objects.
@@ -28,8 +26,8 @@ test("complex", async () => {
         .where(s.id.eq(10 as tUserId))
         .noLimit()
         .as("withSub")
-    const withSubSub1 = MyDb.createRef(withSub, "withSubSub1");
-    const withSubSub2 = MyDb.createRef(withSub, "withSubSub2");
+    const withSubSub1 = SQL.createRef(withSub, "withSubSub1");
+    const withSubSub2 = SQL.createRef(withSub, "withSubSub2");
 
     const withSub2 = SQL
         .select()
@@ -38,7 +36,7 @@ test("complex", async () => {
         .where(s.id.eq(10 as tUserId))
         .limit([0, 50])
         .as("withSub2")
-    const withSub2Sub1 = MyDb.createRef(withSub2, "withSub2Sub1")
+    const withSub2Sub1 = SQL.createRef(withSub2, "withSub2Sub1")
     String(withSub2Sub1)
 
     const subQueryTable = SQL

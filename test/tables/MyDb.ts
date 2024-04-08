@@ -1,25 +1,24 @@
 import {User} from "./User";
 import {Company} from "./Company";
-import {Db} from "../../src/Db";
+import {SQL} from "../../src";
 
-export class MyDb extends Db {
+export class MyDb {
 
-    public readonly tables = {
-        user: this.getDbTableAliasFunction<"user", User>("user", {
-            id: true,
-            username: true,
-            age: true,
-            isMan: true,
-            created: true,
-            updated_at: true,
-            tin: true,
-            created_at: true,
-            uuid: true
-        }),
-        company: this.getDbTableAliasFunction<"company", Company>("company", {
-            id: true,
-            name: true,
-        }),
-    }
+    public static user = SQL.getDbTableAliasFunction<"user", User>("user", {
+        id: true,
+        username: true,
+        age: true,
+        isMan: true,
+        created: true,
+        updated_at: true,
+        tin: true,
+        created_at: true,
+        uuid: true
+    })
+
+    public static company = SQL.getDbTableAliasFunction<"company", Company>("company", {
+        id: true,
+        name: true,
+    })
 
 }

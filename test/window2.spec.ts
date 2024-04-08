@@ -1,15 +1,14 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {BIN_TO_UUID, RANK, UNIX_TIMESTAMP} from "../src";
-import {SQL} from "../src/select/SQL";
+import {SQL} from "../src/SQL";
 import {execOne} from "./tables/exec";
 
 test("window2", async () => {
 
-    const db = new MyDb();
-    const c = db.tables.user("c")
-    const c2 = db.tables.user("c2")
-    const s = db.tables.user("s")
+    const c = MyDb.user("c")
+    const c2 = MyDb.user("c2")
+    const s = MyDb.user("s")
     String(c2);
     String(s)
     /*
@@ -64,7 +63,7 @@ test("window2", async () => {
         )
         .noLimit()
         .as("sorted_by_latest")
-    const ref = MyDb.createRef(sub, "tbl")
+    const ref = SQL.createRef(sub, "tbl")
 
     const query = SQL
         .with(sub)

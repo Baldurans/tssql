@@ -1,14 +1,13 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {SQL} from "../src/select/SQL";
+import {SQL} from "../src/SQL";
 import {execOne} from "./tables/exec";
 
 test("with", async () => {
 
-    const db = new MyDb();
     const input: { userId: tUserId } = {userId: 10 as tUserId}
 
-    const c = db.tables.user("c")
+    const c = MyDb.user("c")
 
     const q1 = SQL.select().from(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
     const q2 = SQL.select().from(c).columns(c.username, c.id,).where(c.id.eq(input.userId)).noLimit()

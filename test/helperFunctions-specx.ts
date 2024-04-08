@@ -2,13 +2,13 @@ import {tUserId, User} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {AliasedTable} from "../src";
 import {tCompanyId} from "./tables/Company";
-import {SQL} from "../src/select/SQL";
+import {SQL} from "../src/SQL";
 import {exec} from "./tables/exec";
 
 test("short", async () => {
     const db = new MyDb();
     const input: { userId: tUserId } = {userId: 10 as tUserId}
-    const c = db.tables.user("c")
+    const c = MyDb.user("c")
 
     const func = <Alias extends string>(table: AliasedTable<Alias, `user as ${Alias}`, User, any>) => {
         const o = db.tables.company("o");

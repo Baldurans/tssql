@@ -1,14 +1,13 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {VALUE} from "../src";
-import {SQL} from "../src/select/SQL";
+import {SQL} from "../src/SQL";
 import {execOne} from "./tables/exec";
 
 test("short", async () => {
-    const db = new MyDb();
     const input: { userId: tUserId } = {userId: 10 as tUserId}
-    const c = db.tables.user("c")
-    const c2 = db.tables.user("c2")
+    const c = MyDb.user("c")
+    const c2 = MyDb.user("c2")
     String(c2);
 
     const query = SQL

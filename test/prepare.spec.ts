@@ -2,7 +2,7 @@ import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {tCompanyId} from "./tables/Company";
 import {IF, OR} from "../src";
-import {SQL} from "../src/select/SQL";
+import {SQL} from "../src";
 import {execOne} from "./tables/exec";
 
 
@@ -14,12 +14,10 @@ interface Arguments {
 }
 
 test("prepare", async () => {
-    const db = new MyDb();
-
 
     // lazy prepare, prepares actually after first call.
     const preparedQuery = SQL.prepare((args: Arguments) => {
-        const c = db.tables.user("c")
+        const c = MyDb.user("c")
 
         const cond = c.age.eq(args.age)
 

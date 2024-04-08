@@ -1,16 +1,15 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {SQL} from "../src/select/SQL";
+import {SQL} from "../src/SQL";
 import {execOne} from "./tables/exec";
 
 test("simple", async () => {
 
-    const db = new MyDb();
     const input: { userId: tUserId } = {userId: 10 as tUserId}
 
-    const c = db.tables.user("c")
-    const c2 = db.tables.user("c2")
-    const s = db.tables.user("s")
+    const c = MyDb.user("c")
+    const c2 = MyDb.user("c2")
+    const s = MyDb.user("s")
 
     const scalarSub = SQL
         .uses(c)

@@ -1,6 +1,5 @@
-import {DbTableDefinition} from "../Db";
 import {AnyExpr, SqlExpression} from "../SqlExpression";
-import {AnyAliasedTableDef, OrderByStructure} from "../Types";
+import {AnyAliasedTableDef, DbTableDefinition, OrderByStructure} from "../Types";
 import {orderByStructureToSqlString} from "../SqlFunctions";
 import {SQL_ALIAS, SQL_EXPRESSION} from "../Symbols";
 import {escapeId} from "../escape";

@@ -1,16 +1,15 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {SQL} from "../src/select/SQL";
+import {SQL} from "../src/SQL";
 import {execOne} from "./tables/exec";
 
 test("with", async () => {
 
-    const db = new MyDb();
     const input: { userId: tUserId } = {userId: 10 as tUserId}
 
-    const c = db.tables.user("c")
-    const c2 = db.tables.user("c2")
-    const s = db.tables.user("s")
+    const c = MyDb.user("c")
+    const c2 = MyDb.user("c2")
+    const s = MyDb.user("s")
 
     const part1 = SQL
         .select()
@@ -19,8 +18,8 @@ test("with", async () => {
         .where(s.id.eq(10 as tUserId))
         .noLimit()
         .as("part1")
-    const pA1 = MyDb.createRef(part1, "part1Sub1");
-    const pA2 = MyDb.createRef(part1, "part1Sub2");
+    const pA1 = SQL.createRef(part1, "part1Sub1");
+    const pA2 = SQL.createRef(part1, "part1Sub2");
 
     const part2 = SQL
         .select()
@@ -29,7 +28,7 @@ test("with", async () => {
         .noWhere()
         .noLimit()
         .as("part2")
-    const pB1 = MyDb.createRef(part2, "part2Sub1")
+    const pB1 = SQL.createRef(part2, "part2Sub1")
 
     const query = SQL
         .with(part1)
