@@ -34,7 +34,7 @@ export class MysqlTable<TableName extends string, Entity> {
         for (const key in args) {
             where.push(escapeId(key) + "=" + escape(args[key] as any))
         }
-        return "SELECT 1 as exists FROM " + escapeId(this.tableName) + " WHERE " + where.join(" AND ");
+        return "SELECT 1 as r FROM " + escapeId(this.tableName) + " WHERE " + where.join(" AND ");
     }
 
     public toString(): string {
