@@ -1,7 +1,5 @@
-import {COMPARISON_SIGNS, ComparisonOperandsLookup, isPrepareArgument, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
-import {AnyBoolExpr, AnyExpr, Expr, SqlExpression} from "./SqlExpression";
-import {OrderByStructure, orderByStructureToSqlString} from "./select/DbSelect07OrderBy";
-import {ExprWithOver, SqlExpressionWithOver} from "./SqlExpressionWithOver";
+import {COMPARISON_SIGNS, ComparisonOperandsLookup, isPrepareArgument, OrderByStructure, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
+import {AnyBoolExpr, AnyExpr, Expr, ExprWithOver, SqlExpression, SqlExpressionWithOver} from "./SqlExpression";
 import {Sql} from "./Sql";
 
 /**
@@ -351,6 +349,21 @@ export function BIN_TO_UUID<TableRef, Name>(col: Expr<TableRef, Name, any>): Exp
 // -------------------------------------------------------------------
 // UTILITY
 // -------------------------------------------------------------------
+
+export function orderByStructureToSqlString(items: [] | OrderByStructure<any>): string[] {
+    const parts: string[] = [];
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item === "asc" || item === "ASC" || item === "desc" || item === "DESC") {
+            parts[parts.length - 1] += " " + item;
+        } else if (typeof item === "string") {
+            parts.push(item)
+        } else if (item !== undefined && item !== null) {
+            parts.push(item.expression)
+        }
+    }
+    return parts;
+}
 
 function toSql(e: unknown | number | string | boolean | PrepareQueryArgument | AnyExpr): string | number {
     if (typeof e === "string") {

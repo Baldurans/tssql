@@ -1,6 +1,6 @@
-import {Key} from "../Types";
+import {Key, OrderByStructure} from "../Types";
 import {Expr, SqlExpression} from "../SqlExpression";
-import {OrderByStructure, orderByStructureToSqlString} from "./DbSelect07OrderBy";
+import {orderByStructureToSqlString} from "../SqlFunctions";
 
 export class DbWindow<TableRef, Type> {
 

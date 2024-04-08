@@ -11,11 +11,6 @@ import {SQL_ALIAS, SQL_EXPRESSION} from "./Symbols";
 
 export type DbExecFunc<CTX> = (ctx: CTX, sql: string, args?: { [key: string]: string | number }) => Promise<any[]>;
 
-export type DbTableDefinition<T> = {
-    [P in keyof T]: true
-};
-
-
 export abstract class Db<CTX> {
 
     constructor(private readonly exec: DbExecFunc<CTX>) {
@@ -84,22 +79,6 @@ export abstract class Db<CTX> {
 
     // -------------------------------------------------------
 
-    public static defineDbTable<TableName extends string, Alias extends string, Entity>(
-        escapedExpression: TableName,
-        alias: string,
-        columns: DbTableDefinition<Entity>
-    ): AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> {
-        const tbl: AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> = {
-            [SQL_EXPRESSION]: escapedExpression,
-            [SQL_ALIAS]: alias
-        } as any;
-        for (const columnName in columns) {
-            (tbl as any)[columnName] = new SqlExpression(Sql.escapeId(alias) + "." + Sql.escapeId(columnName), columnName)
-        }
-        Object.freeze(tbl)
-        return tbl
-    }
-
     public static createRef<
         Alias extends string,
         TableRef extends `${string} as ${Alias}`,
@@ -120,4 +99,25 @@ export abstract class Db<CTX> {
         return <Alias extends string>(alias: Alias) => Db.defineDbTable<TableName, Alias, Entity>(Sql.escapeId(tableName) as TableName, alias, columns);
     }
 
+    public static defineDbTable<TableName extends string, Alias extends string, Entity>(
+        escapedExpression: TableName,
+        alias: string,
+        columns: DbTableDefinition<Entity>
+    ): AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> {
+        const tbl: AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> = {
+            [SQL_EXPRESSION]: escapedExpression,
+            [SQL_ALIAS]: alias
+        } as any;
+        for (const columnName in columns) {
+            (tbl as any)[columnName] = new SqlExpression(Sql.escapeId(alias) + "." + Sql.escapeId(columnName), columnName)
+        }
+        Object.freeze(tbl)
+        return tbl
+    }
+
+
 }
+
+export type DbTableDefinition<T> = {
+    [P in keyof T]: true
+};

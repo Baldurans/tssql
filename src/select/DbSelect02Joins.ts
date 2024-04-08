@@ -1,7 +1,6 @@
 import {AliasedTable, AnyAliasedTableDef, isAliasAlreadyUsed, isTableReferenced, Key, NotUsingWithPart, SQL_BOOL} from "../Types";
 import {DbSelect03Columns} from "./DbSelect03Columns";
-import {Expr} from "../SqlExpression";
-import {SqlOverClauseBuilder} from "../SqlExpressionWithOver";
+import {Expr, SqlOverClauseBuilder} from "../SqlExpression";
 
 export class DbSelectJoin<Aliases, AliasesFromWith, Tables, CTX> extends DbSelect03Columns<{}, Tables, CTX> {
 

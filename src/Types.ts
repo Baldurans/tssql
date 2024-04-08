@@ -60,3 +60,80 @@ export type isTableReferenced<Tables, CheckTables, OUT> = keyof CheckTables exte
     ? OUT
     : `Table '${_extractMissingAlias<Tables, CheckTables> extends `${infer TableRef}` ? `${TableRef}` : "???"}' is not used in this query!`
 
+
+// ----------------------------------------------
+
+/**
+ * Anyone finds a better way, please write it. Rules are as follows:
+ * 1) A is always first
+ * 2) B can only appear after A
+ *
+ To generate this stuff :)
+ function gen(len) {
+ if (len <= 0) return [];
+ const results = new Set(["A"]);
+ function generateCombinations(currentLen, currentStr) {
+ if (currentLen >= len) return;
+ const nextA = currentStr + ',A';
+ generateCombinations(currentLen + 1, nextA);
+ results.add(nextA);
+ if (currentStr[currentStr.length - 1] !== 'B') {
+ const nextB = currentStr + ',B';
+ generateCombinations(currentLen, nextB);
+ results.add(nextB);
+ }
+ }
+ generateCombinations(1, 'A');
+ return "[" + Array.from(results.values()).sort().join("]\n | [") + "]";
+ }
+ console.log(gen(5)); // Example usage
+ */
+export type ORDER_BY = "asc" | "desc" | "ASC" | "DESC"
+
+export type OrderByStructure<A, B = ORDER_BY> =
+    [A]
+    | [A, A]
+    | [A, A, A]
+    | [A, A, A, A]
+    | [A, A, A, A, A]
+    | [A, A, A, A, B]
+    | [A, A, A, A, B, A]
+    | [A, A, A, B]
+    | [A, A, A, B, A]
+    | [A, A, A, B, A, A]
+    | [A, A, A, B, A, B]
+    | [A, A, A, B, A, B, A]
+    | [A, A, B]
+    | [A, A, B, A]
+    | [A, A, B, A, A]
+    | [A, A, B, A, A, A]
+    | [A, A, B, A, A, B]
+    | [A, A, B, A, A, B, A]
+    | [A, A, B, A, B]
+    | [A, A, B, A, B, A]
+    | [A, A, B, A, B, A, A]
+    | [A, A, B, A, B, A, B]
+    | [A, A, B, A, B, A, B, A]
+    | [A, B]
+    | [A, B, A]
+    | [A, B, A, A]
+    | [A, B, A, A, A]
+    | [A, B, A, A, A, A]
+    | [A, B, A, A, A, B]
+    | [A, B, A, A, A, B, A]
+    | [A, B, A, A, B]
+    | [A, B, A, A, B, A]
+    | [A, B, A, A, B, A, A]
+    | [A, B, A, A, B, A, B]
+    | [A, B, A, A, B, A, B, A]
+    | [A, B, A, B]
+    | [A, B, A, B, A]
+    | [A, B, A, B, A, A]
+    | [A, B, A, B, A, A, A]
+    | [A, B, A, B, A, A, B]
+    | [A, B, A, B, A, A, B, A]
+    | [A, B, A, B, A, B]
+    | [A, B, A, B, A, B, A]
+    | [A, B, A, B, A, B, A, A]
+    | [A, B, A, B, A, B, A, B]
+    | [A, B, A, B, A, B, A, B, A]
