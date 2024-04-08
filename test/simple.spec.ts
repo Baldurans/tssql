@@ -29,6 +29,7 @@ test("simple", async () => {
             db.uses(c).select().from(s).columns(s.id).where(s.id.eq(c.id)).limit(10).asScalar("subColumn"),
             c.username,
             c.id,
+            c.id.as("from"),
             c.id.as("renamedId"),
             VALUE(null as string).as("emptyValue"),
             DATE(c.created).as("myDate"),
