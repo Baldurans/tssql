@@ -1,5 +1,7 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
+import {SQL} from "../src/select/SQL";
+import {execOne} from "./tables/exec";
 
 test("with", async () => {
 
@@ -8,11 +10,11 @@ test("with", async () => {
 
     const c = db.tables.user("c")
 
-    const q1 = db.select().from(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
-    const q2 = db.select().from(c).columns(c.username, c.id,).where(c.id.eq(input.userId)).noLimit()
-    const q3 = db.select().from(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
+    const q1 = SQL.select().from(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
+    const q2 = SQL.select().from(c).columns(c.username, c.id,).where(c.id.eq(input.userId)).noLimit()
+    const q3 = SQL.select().from(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
 
-    const union = db
+    const union = SQL
         .union(q1)
         .all(q2)
         .all(q3)
@@ -21,7 +23,7 @@ test("with", async () => {
         .limit(10)
         .as("x")
 
-    const b = db.select()
+    const b = SQL.select()
         .from(union)
         .columns(union.id, union.username)
         .where(union.id.eq(10 as tUserId))
@@ -29,7 +31,7 @@ test("with", async () => {
 
     console.log(b.toString())
 
-    const res = await b.execOne(undefined);
+    const res = await execOne(b);
     console.log(
         res.id,  // type tUserId
     )

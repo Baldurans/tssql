@@ -1,5 +1,7 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
+import {SQL} from "../src/select/SQL";
+import {execOne} from "./tables/exec";
 
 test("with", async () => {
 
@@ -10,7 +12,7 @@ test("with", async () => {
     const c2 = db.tables.user("c2")
     const s = db.tables.user("s")
 
-    const part1 = db
+    const part1 = SQL
         .select()
         .from(s)
         .columns(s.id, s.id.as("subIdRenamed"))
@@ -20,7 +22,7 @@ test("with", async () => {
     const pA1 = MyDb.createRef(part1, "part1Sub1");
     const pA2 = MyDb.createRef(part1, "part1Sub2");
 
-    const part2 = db
+    const part2 = SQL
         .select()
         .from(s)
         .columns(s.id)
@@ -29,7 +31,7 @@ test("with", async () => {
         .as("part2")
     const pB1 = MyDb.createRef(part2, "part2Sub1")
 
-    const query = db
+    const query = SQL
         .with(part1)
         .with(part2)
         .select()
@@ -54,7 +56,7 @@ test("with", async () => {
 
     console.log(query.toString())
 
-    const res = await query.execOne(undefined);
+    const res = await execOne(query);
     console.log(
         res.id,  // type tUserId
         res.aa1X,

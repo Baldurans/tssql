@@ -1,6 +1,8 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {VALUE} from "../src";
+import {SQL} from "../src/select/SQL";
+import {execOne} from "./tables/exec";
 
 test("short", async () => {
     const db = new MyDb();
@@ -9,7 +11,7 @@ test("short", async () => {
     const c2 = db.tables.user("c2")
     String(c2);
 
-    const query = db
+    const query = SQL
         .select()
         .forUpdate()
         .from(c)
@@ -37,7 +39,7 @@ test("short", async () => {
         .noLimit()
 
     console.log(query.toString())
-    const res = await query.execOne(undefined)
+    const res = await execOne(query)
 
     console.log(
         res.username2

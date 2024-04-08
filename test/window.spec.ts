@@ -1,6 +1,8 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {FIRST_VALUE, LAG, LAST_VALUE, LEAD, NTH_VALUE, RANK, ROW_NUMBER} from "../src";
+import {SQL} from "../src/select/SQL";
+import {execOne} from "./tables/exec";
 
 test("window", async () => {
 
@@ -13,7 +15,7 @@ test("window", async () => {
     String(c2);
     String(s)
 
-    const query = db
+    const query = SQL
         .select()
         .from(c)
         .window("w1", r => r.partitionBy(c.id).orderBy(c.id, "asc"))
@@ -37,7 +39,7 @@ test("window", async () => {
 
     console.log(query.toString())
 
-    const res = await query.execOne(undefined);
+    const res = await execOne(query);
     console.log(
         res.id,  // type tUserId
     )

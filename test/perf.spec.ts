@@ -1,6 +1,7 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {AND, DATE, IF, OR, VALUE} from "../src";
+import {SQL} from "../src/select/SQL";
 
 test("simple", async () => {
 
@@ -12,14 +13,14 @@ test("simple", async () => {
         const c2 = db.tables.user("c2")
         const s = db.tables.user("s")
 
-        const query = db
+        const query = SQL
             .select()
             .forUpdate()
             .from(c)
             .join(c2, c2.id.eq(c.id))
             .distinct()
             .columns(
-                db.uses(c).select().from(s).columns(s.id).where(s.id.eq(c.id)).limit(10).asScalar("subColumn"),
+                SQL.uses(c).select().from(s).columns(s.id).where(s.id.eq(c.id)).limit(10).asScalar("subColumn"),
                 c.username,
                 c.id,
                 c.id.as("renamedId"),

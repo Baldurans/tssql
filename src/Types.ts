@@ -3,6 +3,13 @@ import {SQL_ALIAS, SQL_ALIAS_FOR_WITH_QUERY, SQL_ENTITY, SQL_EXPRESSION} from ".
 
 export type Key<Alias extends string> = Record<Alias, true>;
 
+export type SqlQuery<Result> = {
+
+    [SQL_ENTITY]: Result; // This is needed for typescript typing. It is never populated
+
+    toString(): string
+}
+
 // -----------------------------------------------------
 
 export type AliasedTable<Alias extends string, TableRef, Entity, AliasForWithQuery extends string | NotUsingWithPart> = {

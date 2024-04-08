@@ -1,9 +1,9 @@
-import {S7Exec} from "../../src/select/parts/S7Exec";
+import {SqlQuery} from "../../src";
 
-export async function exec<Result>(query: S7Exec<Result>): Promise<Result[]> {
+export async function exec<Result>(query: SqlQuery<Result>): Promise<Result[]> {
     return [{} as any];
 }
 
-export async function execOne<Result>(query: S7Exec<Result>): Promise<Result> {
+export async function execOne<Result>(query: SqlQuery<Result>): Promise<Result> {
     return {} as any;
 }

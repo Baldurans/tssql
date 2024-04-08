@@ -2,6 +2,8 @@ import {tUserId, User} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {AliasedTable} from "../src";
 import {tCompanyId} from "./tables/Company";
+import {SQL} from "../src/select/SQL";
+import {exec} from "./tables/exec";
 
 test("short", async () => {
     const db = new MyDb();
@@ -10,7 +12,7 @@ test("short", async () => {
 
     const func = <Alias extends string>(table: AliasedTable<Alias, `user as ${Alias}`, User, any>) => {
         const o = db.tables.company("o");
-        return db
+        return SQL
             .uses(table)
             .select()
             .from(o)
@@ -25,7 +27,7 @@ test("short", async () => {
 
     const func2 = <Alias extends string>(table: Table<Alias, "user", User>) => {
         const o = db.tables.company("o");
-        return db
+        return SQL
             .uses(table)
             .select()
             .from(o)
@@ -40,7 +42,7 @@ test("short", async () => {
 
     const sub = func(c);
     const sub2 = func2(c);
-    const res = await db
+    const res = await exec(SQL
         .select()
         .forUpdate()
         .from(c)
@@ -53,7 +55,7 @@ test("short", async () => {
             sub2.id.as("sub2Id")
         )
         .where(c.id.eq(input.userId))
-        .execOne(undefined);
+        .noLimit());
 
     console.log(
         res.username,

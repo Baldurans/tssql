@@ -1,23 +1,19 @@
 import {S0From} from "./parts/S0From";
 import {SelectBuilder} from "./SelectBuilder";
-import {AliasedTable, Key, NotUsingWithPart, PrepareQueryArgument} from "../Types";
+import {AliasedTable, Key, NotUsingWithPart, PrepareQueryArgument, SqlQuery} from "../Types";
 import {S0Uses} from "./parts/S0Uses";
 import {S0With} from "./parts/S0With";
 import {S7Exec} from "./parts/S7Exec";
 import {S0Union} from "./parts/S0Union";
+import {SQL_ENTITY} from "../Symbols";
 
-export function Sql() {
-    return new SqlQuery();
-}
+export class SQL {
 
-export class SqlQuery {
-
-
-    public select(): S0From<{}, {}, {}> {
+    public static select(): S0From<{}, {}, {}> {
         return new S0From(new SelectBuilder()) as any
     }
 
-    public uses<
+    public static uses<
         Alias extends string,
         TableName extends string,
         TableRef extends `${TableName} as ${Alias}`
@@ -27,7 +23,7 @@ export class SqlQuery {
         return new S0Uses(new SelectBuilder());
     }
 
-    public with<
+    public static with<
         Alias extends string,
         TableName extends string,
         TableRef extends `${TableName} as ${Alias}`
@@ -37,13 +33,11 @@ export class SqlQuery {
         return new S0With(new SelectBuilder()).with(table as any);
     }
 
-    public union<Result>(table: S7Exec<Result>): S0Union<Result> {
+    public static union<Result>(table: S7Exec<Result>): S0Union<Result> {
         return new S0Union<Result>(new SelectBuilder()).all(table as any);
     }
 
-    public prepare<PrepareQueryArguments extends { [key: string]: any }, Result>(func: (args: PrepareQueryArguments) => S7Exec<Result>): {
-        toString: (args: PrepareQueryArguments) => string,
-    } {
+    public static prepare<PrepareQueryArguments extends { [key: string]: any }, Result>(func: (args: PrepareQueryArguments) => S7Exec<Result>): (args: PrepareQueryArguments) => SqlQuery<Result> {
         let sqlQuery: string = undefined;
         const getSqlString = () => {
             if (sqlQuery === undefined) {
@@ -60,13 +54,14 @@ export class SqlQuery {
             console.log(sqlQuery)
             return sqlQuery;
         }
-        return {
-            toString: (args: PrepareQueryArguments): string => {
-                // @TODO Replace arguments!
-                return getSqlString()
-            },
+        return (args: PrepareQueryArguments) => {
+            return {
+                [SQL_ENTITY]: undefined,
+                toString: (): string => {
+                    // @TODO Replace arguments!
+                    return getSqlString()
+                },
+            }
         }
     }
-
-
 }

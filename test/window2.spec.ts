@@ -1,6 +1,8 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {BIN_TO_UUID, RANK, UNIX_TIMESTAMP} from "../src";
+import {SQL} from "../src/select/SQL";
+import {execOne} from "./tables/exec";
 
 test("window2", async () => {
 
@@ -48,7 +50,7 @@ test("window2", async () => {
 
      */
 
-    const sub = db.select()
+    const sub = SQL.select()
         .from(c)
         .columns(
             c.id,
@@ -64,7 +66,7 @@ test("window2", async () => {
         .as("sorted_by_latest")
     const ref = MyDb.createRef(sub, "tbl")
 
-    const query = db
+    const query = SQL
         .with(sub)
         .select()
         .from(ref)
@@ -81,7 +83,7 @@ test("window2", async () => {
 
     console.log(query.toString())
 
-    const res = await query.execOne(undefined);
+    const res = await execOne(query);
     console.log(
         res.id,  // type tUserId
     )

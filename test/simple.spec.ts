@@ -1,7 +1,7 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {AND, CONCAT, DATE, GROUP_CONCAT, IF, MATH, OR, VALUE} from "../src";
-import {Sql} from "../src/select/SqlQuery";
+import {SQL} from "../src/select/SQL";
 import {execOne} from "./tables/exec";
 
 enum MyEnum {
@@ -21,14 +21,14 @@ test("simple", async () => {
     const s = db.tables.user("s")
 
     const val: any = undefined;
-    const query = Sql()
+    const query = SQL
         .select()
         .forUpdate()
         .from(c)
         .join(c2, c2.id.eq(c.id))
         .distinct()
         .columns(
-            Sql().uses(c).select().from(s).columns(s.id).where(s.id.eq(c.id)).limit(10).asScalar("subColumn"),
+            SQL.uses(c).select().from(s).columns(s.id).where(s.id.eq(c.id)).limit(10).asScalar("subColumn"),
             c.username,
             c.id,
             c.id.as("from"),

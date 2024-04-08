@@ -1,5 +1,7 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
+import {SQL} from "../src/select/SQL";
+import {execOne} from "./tables/exec";
 
 test("simple", async () => {
 
@@ -10,7 +12,7 @@ test("simple", async () => {
     const c2 = db.tables.user("c2")
     const s = db.tables.user("s")
 
-    const scalarSub = db
+    const scalarSub = SQL
         .uses(c)
         .select()
         .from(s)
@@ -23,7 +25,7 @@ test("simple", async () => {
         .noLimit()
         .asScalar("subColumn");
 
-    const joinSub = db
+    const joinSub = SQL
         .uses(c)
         .uses(c2)
         .select()
@@ -36,7 +38,7 @@ test("simple", async () => {
         .noLimit()
         .as("joinSub")
 
-    const query = db
+    const query = SQL
         .select()
         .from(c)
         .join(c2, c2.id.eq(c.id))
@@ -56,7 +58,7 @@ test("simple", async () => {
 
     console.log(query.toString())
 
-    const res = await query.execOne(undefined);
+    const res = await execOne(query);
     console.log(
         res.subColumn, // type tUserId
         res.id,  // type tUserId

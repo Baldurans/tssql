@@ -1,11 +1,14 @@
-import {AliasedTable, NotUsingWithPart} from "../../Types";
+import {AliasedTable, NotUsingWithPart, SqlQuery} from "../../Types";
 import {Expr, SqlExpression} from "../../SqlExpression";
 import {SelectQueryPart} from "../SelectQueryPart";
 import {Db, DbTableDefinition} from "../../Db";
+import {SQL_ENTITY} from "../../Symbols";
 
 const TAB = "  ";
 
-export class S7Exec<Result> extends SelectQueryPart {
+export class S7Exec<Result> extends SelectQueryPart implements SqlQuery<Result> {
+
+    public readonly [SQL_ENTITY]: Result = undefined;
 
     public asScalar<Alias extends string>(
         alias: Alias & ScalarSubQueryAllowsOnlyOneColumn<Alias, Result> extends never ? "Scalar subquery allows only 1 column!" : Alias
