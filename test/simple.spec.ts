@@ -1,6 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {AND, CONCAT, DATE, GROUP_CONCAT_2, IF, MATH, OR, VALUE} from "../src";
+import {AND, CONCAT, DATE, GROUP_CONCAT, IF, MATH, OR, VALUE} from "../src";
 
 enum MyEnum {
     aa = "aa",
@@ -37,7 +37,7 @@ test("simple", async () => {
             VALUE(MyEnum.aa).as("enumValue"),
             VALUE(10).as("literal"),
             CONCAT(c.username, "X").as("concated1"),
-            GROUP_CONCAT_2([CONCAT(c.username, "X")], [c.username]).as("concated2"),
+            GROUP_CONCAT([CONCAT(c.username, "X")], f => f.orderBy(c.username)).as("concated2"),
             MATH("(? * 100 / (? - ?))", [c.id, c.id, c.id]).as("math"),
             IF(
                 c.id.eq(10 as tUserId),

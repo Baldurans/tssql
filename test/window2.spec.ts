@@ -54,7 +54,7 @@ test("window2", async () => {
             c.id,
             c.created_at,
             c.updated_at,
-            RANK().over(f => f.partitionBy(c.age).orderBy(c.created, "desc")).as("latest")
+            RANK().over(f => f.partitionBy(c.age).orderBy(c.created, "desc")).as("latest"),
         )
         .where(
             c.username.eq("asd"), // type = ${this.db.escape(type)}

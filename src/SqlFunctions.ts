@@ -185,30 +185,56 @@ export function CONCAT_WS<TableRef = never>(separator: string, ...expr: (string 
     return SqlExpression.create("CONCAT_WS(" + escape(separator) + "," + expr.map(toSql) + ")")
 }
 
-export function GROUP_CONCAT<TableRef>(
-    expr: (string | PrepareQueryArgument | Expr<TableRef, any, any>)[],
-    separator?: string,
-    distinct?: "DISTINCT"
-): Expr<TableRef, unknown, string> {
-    return SqlExpression.create("GROUP_CONCAT(" +
-        (distinct ? "DISTINCT " : "") +
-        "" + expr.map(toSql) +
-        (separator ? " SEPARATOR " + escape(separator) : "") +
-        ")");
+export function GROUP_CONCAT<TableRef, TableRef2 = never>(
+    fields: (string | PrepareQueryArgument | Expr<TableRef, any, any>)[],
+    call?: (arg: SqlGroupConcatArgumentBuilder<TableRef2>) => SqlGroupConcatArgumentBuilder<TableRef2>
+): Expr<TableRef | TableRef2, unknown, string> {
+
+    const fieldsStr = fields.map(toSql).join(", ");
+    if (call) {
+        const builder = new SqlGroupConcatArgumentBuilder(fieldsStr);
+        call(builder);
+        return SqlExpression.create("GROUP_CONCAT(" + builder.toString() + ")");
+    } else {
+        return SqlExpression.create("GROUP_CONCAT(" + fieldsStr + ")")
+    }
 }
 
-export function GROUP_CONCAT_2<TableRef, OrderByTableRef>(
-    expr: (string | PrepareQueryArgument | Expr<TableRef, any, any>)[],
-    orderBy: OrderByStructure<Expr<OrderByTableRef, any, any>>,
-    separator?: string,
-    distinct?: "DISTINCT"
-): Expr<TableRef | OrderByTableRef, unknown, string> {
-    return SqlExpression.create("GROUP_CONCAT(" +
-        (distinct ? "DISTINCT " : "") +
-        "" + expr.map(toSql) +
-        (orderBy && orderBy.length > 0 ? " ORDER BY " + orderByStructureToSqlString(orderBy).join(", ") : "") +
-        (separator ? " SEPARATOR " + escape(separator) : "") +
-        ")");
+
+export class SqlGroupConcatArgumentBuilder<TableRef> {
+
+    private readonly _columns: string;
+    private _distinct: boolean = false;
+    private _orderBy: string[] = [];
+    private _separator: string = undefined;
+
+    constructor(columns: string) {
+        this._columns = columns;
+    }
+
+    public distinct(): this {
+        this._distinct = true;
+        return this;
+    }
+
+    public orderBy<TableRef2>(...cols: OrderByStructure<Expr<TableRef2, string, any>>): SqlGroupConcatArgumentBuilder<TableRef | TableRef2> {
+        this._orderBy = orderByStructureToSqlString(cols)
+        return this as any;
+    }
+
+    public separator(separator: string): this {
+        this._separator = separator;
+        return this;
+    }
+
+    public toString() {
+        return (this._distinct ? "DISTINCT " : "") +
+            "" + this._columns +
+            (this._orderBy && this._orderBy.length > 0 ? " ORDER BY " + this._orderBy.join(", ") : "") +
+            (this._separator ? " SEPARATOR " + escape(this._separator) : "") +
+            ")"
+    }
+
 }
 
 // -------------------------------------------------------------------
@@ -365,7 +391,7 @@ export function orderByStructureToSqlString(items: [] | OrderByStructure<any>): 
     return parts;
 }
 
-function toSql(e: unknown | number | string | boolean | PrepareQueryArgument | AnyExpr): string | number {
+export function toSql(e: unknown | number | string | boolean | PrepareQueryArgument | AnyExpr): string | number {
     if (typeof e === "string") {
         return escape(e);
     } else if (typeof e === "number") {
