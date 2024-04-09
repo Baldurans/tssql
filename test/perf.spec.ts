@@ -49,12 +49,17 @@ test("simple", async () => {
             .groupByF(r => [r.renamedId, c.id])
             .orderByF(r => [r.renamedId, c.id])
             .noLimit()
-            .toString()
         String(query);
     }
 
-    for (let i = 0; i < 50000; i++) {
+    const amount = 100000;
+    const time = performance.now();
+    for (let i = 0; i < amount; i++) {
         await createQuery();
     }
+    const total = performance.now() - time;
+    console.log("Took: " + total.toFixed(2) + " ms (" + amount + " runs) \n" +
+        "Per query: " + (total / amount).toFixed(6) + " ms"
+    )
 
 });
