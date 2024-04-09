@@ -1,5 +1,5 @@
 import {isTableReferenced, Key, SQL_BOOL} from "../../Types";
-import {AnyExpr, Expr} from "../../SqlExpression";
+import {Expr} from "../../SqlExpression";
 import {DeleteOrderByMethods, getDeleteOrderByMethods} from "./D2OrderBy";
 import {DeleteLimitMethods} from "./D3Limit";
 import {DeleteBuilder} from "../DeleteBuilder";
@@ -8,7 +8,9 @@ export function getDeleteWhereMethods<Tables>(builder: DeleteBuilder): DeleteWhe
     return {
         where: (...cols: any) => {
             for (let i = 0; i < cols.length; i++) {
-                builder.where(cols[i] as unknown as AnyExpr)
+                if (cols[i]) {
+                    builder.where(cols[i].expression)
+                }
             }
             return getDeleteOrderByMethods(builder)
         }
@@ -16,9 +18,9 @@ export function getDeleteWhereMethods<Tables>(builder: DeleteBuilder): DeleteWhe
 }
 
 export interface DeleteWhereMethods<Tables> {
-    
+
     where<
-        T1 extends string = never,
+        T1 extends string,
         T2 extends string = never,
         T3 extends string = never,
         T4 extends string = never,

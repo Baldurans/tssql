@@ -2,6 +2,8 @@ import {AliasedTable, DbTableDefinition, NotUsingWithPart} from "./Types";
 import {escape, escapeId} from "./escape";
 import {SQL_ALIAS, SQL_EXPRESSION} from "./Symbols";
 import {SqlExpression} from "./SqlExpression";
+import {DeleteBuilder} from "./delete/DeleteBuilder";
+import {GatewayDeleteWhereMethods, getGatewayDeleteWhereMethods} from "./delete/b/D1Where";
 
 export type WhereArgs<Entity> = {
     [K in keyof Entity]?: Entity[K]
@@ -24,6 +26,10 @@ export class MysqlTable<TableName extends string, Entity> {
             this.cache.set(alias, MysqlTable.defineDbTable<TableName, Alias, Entity>(escapeId(this.tableName) as TableName, alias, this.columns))
         }
         return this.cache.get(alias) as AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart>
+    }
+
+    public delete(): GatewayDeleteWhereMethods<Entity> {
+        return getGatewayDeleteWhereMethods(new DeleteBuilder().from(this.tableName, undefined));
     }
 
     /**

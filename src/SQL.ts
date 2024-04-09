@@ -1,6 +1,6 @@
 import {SelectBuilder} from "./select/SelectBuilder";
 import {AliasedTable, DbTableDefinition, Key, NotUsingWithPart, PrepareQueryArgument, SqlQuery} from "./Types";
-import {SQL_ALIAS, SQL_ENTITY} from "./Symbols";
+import {SQL_ALIAS, SQL_ENTITY, SQL_EXPRESSION} from "./Symbols";
 import {escape, escapeId} from "./escape";
 import {MysqlTable} from "./MysqlTable";
 import {getJoinMethods, JoinMethods} from "./select/parts/S1Join";
@@ -22,13 +22,12 @@ export class SQL {
     }
 
     public static deleteFrom<
-        Alias extends string,
-        TableRef extends `${string} as ${Alias}`
+        Alias extends string = never,
+        TableRef extends `${string} as ${Alias}` = never,
     >(
         table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
     ): DeleteWhereMethods<Key<TableRef>> {
-        const builder = new DeleteBuilder().from(table);
-        return getDeleteWhereMethods(builder)
+        return getDeleteWhereMethods(new DeleteBuilder().from(table[SQL_EXPRESSION], table[SQL_ALIAS]));
     }
 
     public static selectFrom<

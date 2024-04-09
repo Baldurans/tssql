@@ -1,5 +1,4 @@
-import {AnyAliasedTableDef, OrderByStructure, TAB} from "../Types";
-import {SQL_ALIAS, SQL_EXPRESSION} from "../Symbols";
+import {OrderByStructure, TAB} from "../Types";
 import {escapeId} from "../escape";
 import {AnyExpr} from "../SqlExpression";
 import {orderByStructureToSqlString} from "../SqlFunctions";
@@ -11,15 +10,13 @@ export class DeleteBuilder {
     private _orderBy: string[] = [];
     private _limit: string;
 
-    public from(table: AnyAliasedTableDef): this {
-        this._from = table[SQL_EXPRESSION] + " as " + escapeId(table[SQL_ALIAS]);
+    public from(table: string, alias: string): this {
+        this._from = table + (alias ? " as " + escapeId(alias) : "");
         return this;
     }
 
-    public where(col: AnyExpr): void {
-        if (col && col.expression) {
-            this._where.push(col.expression)
-        }
+    public where(col: string): void {
+        this._where.push(col)
     }
 
     public orderBy(items: OrderByStructure<string | AnyExpr>): void {
@@ -41,6 +38,4 @@ export class DeleteBuilder {
             (this._orderBy.length > 0 ? tabs + "ORDER BY " + this._orderBy.join(", ") + "\n" : "") +
             (this._limit ? tabs + "LIMIT " + this._limit + "\n" : "")
     }
-
-
 }

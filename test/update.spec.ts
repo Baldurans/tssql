@@ -47,7 +47,7 @@ test("update", async () => {
 
     // -----------
 
-    SQL.deleteFrom(MyDb.user).where({id: input.userId}) // Order by is not possible with this case.
+    MyDb.user.delete().where({id: input.userId}).orderBy("id").limit(10)
 
     SQL.deleteFrom(c).where(c.id.eq(input.userId)).orderBy(c.id).limit(10)
 
