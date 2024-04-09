@@ -50,51 +50,31 @@ export class SQL {
      * In the uses part you add parent table refererence.
      */
     public static uses<
-        Alias1 extends string,
-        TableName1 extends string,
-        TableRef1 extends `${TableName1} as ${Alias1}`,
+        Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
     >(
         table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>
     ): UsesMethods<Key<Alias1>, Key<TableRef1>>
     public static uses<
-        Alias1 extends string,
-        TableName1 extends string,
-        TableRef1 extends `${TableName1} as ${Alias1}`,
-        Alias2 extends string,
-        TableName2 extends string,
-        TableRef2 extends `${TableName2} as ${Alias2}`,
+        Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
+        Alias2 extends string, TableRef2 extends `${string} as ${Alias2}`,
     >(
         table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>,
         table2: AliasedTable<Alias2, TableRef2, object, NotUsingWithPart>,
     ): UsesMethods<Key<Alias1> & Key<Alias2>, Key<TableRef1> & Key<TableRef2>>
     public static uses<
-        Alias1 extends string,
-        TableName1 extends string,
-        TableRef1 extends `${TableName1} as ${Alias1}`,
-        Alias2 extends string,
-        TableName2 extends string,
-        TableRef2 extends `${TableName2} as ${Alias2}`,
-        Alias3 extends string,
-        TableName3 extends string,
-        TableRef3 extends `${TableName3} as ${Alias3}`
+        Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
+        Alias2 extends string, TableRef2 extends `${string} as ${Alias2}`,
+        Alias3 extends string, TableRef3 extends `${string} as ${Alias3}`
     >(
         table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>,
         table2: AliasedTable<Alias2, TableRef2, object, NotUsingWithPart>,
         table3: AliasedTable<Alias3, TableRef3, object, NotUsingWithPart>,
     ): UsesMethods<Key<Alias1> & Key<Alias2> & Key<Alias3>, Key<TableRef1> & Key<TableRef2> & Key<TableRef3>>
     public static uses<
-        Alias1 extends string,
-        TableName1 extends string,
-        TableRef1 extends `${TableName1} as ${Alias1}`,
-        Alias2 extends string,
-        TableName2 extends string,
-        TableRef2 extends `${TableName2} as ${Alias2}`,
-        Alias3 extends string,
-        TableName3 extends string,
-        TableRef3 extends `${TableName3} as ${Alias3}`,
-        Alias4 extends string,
-        TableName4 extends string,
-        TableRef4 extends `${TableName4} as ${Alias4}`,
+        Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
+        Alias2 extends string, TableRef2 extends `${string} as ${Alias2}`,
+        Alias3 extends string, TableRef3 extends `${string} as ${Alias3}`,
+        Alias4 extends string, TableRef4 extends `${string} as ${Alias4}`,
     >(
         table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>,
         table2: AliasedTable<Alias2, TableRef2, object, NotUsingWithPart>,
@@ -118,51 +98,31 @@ export class SQL {
      * With a
      */
     public static with<
-        Alias1 extends string,
-        TableName1 extends string,
-        TableRef1 extends `${TableName1} as ${Alias1}`,
+        Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
     >(
         table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>
     ): WithMethods<Key<Alias1>>
     public static with<
-        Alias1 extends string,
-        TableName1 extends string,
-        TableRef1 extends `${TableName1} as ${Alias1}`,
-        Alias2 extends string,
-        TableName2 extends string,
-        TableRef2 extends `${TableName2} as ${Alias2}`,
+        Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
+        Alias2 extends string, TableRef2 extends `${string} as ${Alias2}`,
     >(
         table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>,
         table2: AliasedTable<Alias2, TableRef2, object, NotUsingWithPart>,
     ): WithMethods<Key<Alias1> & Key<Alias2>>
     public static with<
-        Alias1 extends string,
-        TableName1 extends string,
-        TableRef1 extends `${TableName1} as ${Alias1}`,
-        Alias2 extends string,
-        TableName2 extends string,
-        TableRef2 extends `${TableName2} as ${Alias2}`,
-        Alias3 extends string,
-        TableName3 extends string,
-        TableRef3 extends `${TableName3} as ${Alias3}`
+        Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
+        Alias2 extends string, TableRef2 extends `${string} as ${Alias2}`,
+        Alias3 extends string, TableRef3 extends `${string} as ${Alias3}`
     >(
         table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>,
         table2: AliasedTable<Alias2, TableRef2, object, NotUsingWithPart>,
         table3: AliasedTable<Alias3, TableRef3, object, NotUsingWithPart>,
     ): WithMethods<Key<Alias1> & Key<Alias2> & Key<Alias3>>
     public static with<
-        Alias1 extends string,
-        TableName1 extends string,
-        TableRef1 extends `${TableName1} as ${Alias1}`,
-        Alias2 extends string,
-        TableName2 extends string,
-        TableRef2 extends `${TableName2} as ${Alias2}`,
-        Alias3 extends string,
-        TableName3 extends string,
-        TableRef3 extends `${TableName3} as ${Alias3}`,
-        Alias4 extends string,
-        TableName4 extends string,
-        TableRef4 extends `${TableName4} as ${Alias4}`,
+        Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
+        Alias2 extends string, TableRef2 extends `${string} as ${Alias2}`,
+        Alias3 extends string, TableRef3 extends `${string} as ${Alias3}`,
+        Alias4 extends string, TableRef4 extends `${string} as ${Alias4}`,
     >(
         table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>,
         table2: AliasedTable<Alias2, TableRef2, object, NotUsingWithPart>,
