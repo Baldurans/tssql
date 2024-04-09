@@ -33,23 +33,22 @@ export interface WhereMethods<Result, Tables> {
         T7 extends string = never,
         T8 extends string = never,
         T9 extends string = never,
-        T10 extends string = never,
-        T = Tables
+        T10 extends string = never
     >(
-        c1: C<T, T1>,
-        c2?: C<T, T2>,
-        c3?: C<T, T3>,
-        c4?: C<T, T4>,
-        c5?: C<T, T5>,
-        c6?: C<T, T6>,
-        c7?: C<T, T7>,
-        c8?: C<T, T8>,
-        c9?: C<T, T9>,
-        c10?: C<T, T10>
+        c1: C<Tables, T1>,
+        c2?: C<Tables, T2>,
+        c3?: C<Tables, T3>,
+        c4?: C<Tables, T4>,
+        c5?: C<Tables, T5>,
+        c6?: C<Tables, T6>,
+        c7?: C<Tables, T7>,
+        c8?: C<Tables, T8>,
+        c9?: C<Tables, T9>,
+        c10?: C<Tables, T10>
     ): GroupByMethods<Result, Tables> & OrderByMethods<Result, Tables> & LimitMethods<Result>
 
 }
 
-type C<Tables, T extends string> = isTableReferenced<Tables, Key<T>, Expr<T, unknown, SQL_BOOL>>
+type C<Tables, TableRef extends string> = isTableReferenced<Tables, Key<TableRef>, Expr<TableRef, unknown, SQL_BOOL>>
 
 

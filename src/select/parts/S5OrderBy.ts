@@ -1,6 +1,5 @@
-import {AliasedTable, Key, NotUsingWithPart, OrderByStructure} from "../../Types";
+import {AliasedTable, isColumnOkToUse, Key, NotUsingWithPart, OrderByStructure} from "../../Types";
 import {getLimitMethods, LimitMethods} from "./S6Limit";
-import {isColumnOkToUse} from "./S3GroupBy";
 import {Expr, SqlExpression} from "../../SqlExpression";
 import {SelectBuilder} from "../SelectBuilder";
 

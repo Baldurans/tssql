@@ -1,5 +1,4 @@
-import {AliasedTable, Key, NotUsingWithPart, SQL_BOOL} from "../../Types";
-import {isColumnOkToUse} from "./S3GroupBy";
+import {AliasedTable, isColumnOkToUse, Key, NotUsingWithPart, SQL_BOOL} from "../../Types";
 import {AnyExpr, Expr, SqlExpression} from "../../SqlExpression";
 import {SelectBuilder} from "../SelectBuilder";
 import {getOrderByMethods, OrderByMethods} from "./S5OrderBy";
