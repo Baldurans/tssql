@@ -3,7 +3,7 @@ import {escape, escapeId} from "./escape";
 import {SQL_ALIAS, SQL_EXPRESSION} from "./Symbols";
 import {SqlExpression} from "./SqlExpression";
 import {DeleteBuilder} from "./delete/DeleteBuilder";
-import {GatewayDeleteWhereMethods, getGatewayDeleteWhereMethods} from "./delete/b/D1Where";
+import {GatewayDeleteWhereMethods, getGatewayDeleteWhereMethods} from "./delete/gateway/GatewayDelete1Where";
 
 export type WhereArgs<Entity> = {
     [K in keyof Entity]?: Entity[K]

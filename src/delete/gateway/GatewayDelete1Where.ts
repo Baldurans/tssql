@@ -1,6 +1,6 @@
 import {DeleteBuilder} from "../DeleteBuilder";
 import {escape, escapeId} from "../../escape";
-import {GatewayDeleteOrderByMethods, getGatewayDeleteOrderByMethods} from "./D2OrderBy";
+import {GatewayDeleteOrderByMethods, getGatewayDeleteOrderByMethods} from "./GatewayDelete2OrderBy";
 
 export function getGatewayDeleteWhereMethods<Entity, Tables>(builder: DeleteBuilder): GatewayDeleteWhereMethods<Entity> {
     return {
