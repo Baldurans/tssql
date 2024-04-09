@@ -31,6 +31,13 @@ export type DbTableDefinition<T> = {
     [P in keyof T]: true
 };
 
+export type InsertRow<InsertRow, FullRow> = {
+    [P in keyof InsertRow]: P extends keyof FullRow ? FullRow[P] : never;
+};
+
+export type UpdateRow<InsertRow, FullRow> = {
+    [P in keyof InsertRow]?: P extends keyof FullRow ? FullRow[P] : never;
+};
 
 // ----------------------------------------------
 

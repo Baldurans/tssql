@@ -1,10 +1,11 @@
-import {User} from "./User";
-import {Company} from "./Company";
+import {User, UserRowForEdit} from "./User";
+import {Company, CompanyForEdit} from "./Company";
 import {MysqlTable} from "../../src/MysqlTable";
+import {InsertRow} from "../../src";
 
 export class MyDb {
 
-    public static user = new MysqlTable<"user", User>("user", {
+    public static user = new MysqlTable<"user", User, InsertRow<UserRowForEdit, User>>("user", {
         id: true,
         username: true,
         age: true,
@@ -16,7 +17,7 @@ export class MyDb {
         uuid: true
     })
 
-    public static company = new MysqlTable<"company", Company>("company", {
+    public static company = new MysqlTable<"company", Company, InsertRow<CompanyForEdit, Company>>("company", {
         id: true,
         name: true,
     })

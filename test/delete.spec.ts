@@ -10,7 +10,7 @@ test("delete", async () => {
     const c2 = MyDb.user.as("c2")
     String(c2);
 
-    const q1 = MyDb.user.delete().where({id: input.userId}).noLimit();
+    const q1 = MyDb.user.deleteWhere({id: input.userId}).noLimit();
     console.log(q1.toString())
 
     const q2 = SQL.deleteFrom(c).where(c.id.eq(input.userId)).orderBy(c.id).limit(10)

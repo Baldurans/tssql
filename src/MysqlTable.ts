@@ -3,13 +3,15 @@ import {escape, escapeId} from "./escape";
 import {SQL_ALIAS, SQL_EXPRESSION} from "./Symbols";
 import {SqlExpression} from "./SqlExpression";
 import {DeleteBuilder} from "./delete/DeleteBuilder";
-import {GatewayDeleteWhereMethods, getGatewayDeleteWhereMethods} from "./delete/gateway/GatewayDelete1Where";
+import {GatewayDeleteOrderByMethods, getGatewayDeleteOrderByMethods} from "./delete/gateway/GatewayDelete2OrderBy";
+import {ExecInsertMethods, getExecInsertMethods} from "./insert/parts/I4Exec";
+import {InsertBuilder} from "./insert/InsertBuilder";
 
 export type WhereArgs<Entity> = {
     [K in keyof Entity]?: Entity[K]
 }
 
-export class MysqlTable<TableName extends string, Entity> {
+export class MysqlTable<TableName extends string, Entity, InsertEntity> {
 
     public readonly tableName: TableName;
     private readonly columns: DbTableDefinition<Entity>;
@@ -28,8 +30,16 @@ export class MysqlTable<TableName extends string, Entity> {
         return this.cache.get(alias) as AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart>
     }
 
-    public delete(): GatewayDeleteWhereMethods<Entity> {
-        return getGatewayDeleteWhereMethods(new DeleteBuilder().from(this.tableName, undefined));
+    public deleteWhere(where: Partial<Entity>): GatewayDeleteOrderByMethods<Entity> {
+        const builder = new DeleteBuilder().from(this.tableName, undefined)
+        for (const prop in where) {
+            builder.where(escapeId(prop) + " = " + escape((where as any)[prop]));
+        }
+        return getGatewayDeleteOrderByMethods(builder)
+    }
+
+    public insert(row: InsertEntity): ExecInsertMethods {
+        return getExecInsertMethods(new InsertBuilder().to(this.tableName).set(row))
     }
 
     /**

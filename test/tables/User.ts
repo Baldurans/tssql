@@ -5,12 +5,21 @@ export type tUserId = number & { tUserId: true };
 
 export interface User {
     id: tUserId;
-    username: string;
-    age: number;
-    isMan: number;
-    created: vDateTime
-    tin: number,
     created_at: vDateTime,
     updated_at: vDateTime,
-    uuid: string
+    username: string;
+    age: number;
+    isMan: number | null;
+    created: vDateTime | null
+    tin: number | null,
+    uuid: string | null
+}
+
+export interface UserRowForEdit {
+    username: unknown;
+    age: unknown;
+    isMan?: unknown;
+    created?: unknown
+    tin?: unknown
+    uuid?: unknown
 }

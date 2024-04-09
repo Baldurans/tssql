@@ -35,14 +35,5 @@ test("update", async () => {
 
     SQL.update(IGNORE, c).set({id: 10, isMan: 20}).where(c.id.eq(input.userId)).limit(5)
 
-    // -----------
-
-    SQL.insertInto(MyDb.user).set({id: 10, isMan: 20})
-
-    SQL.insertInto(MyDb.user).value({id: 10, isMan: 20})
-
-    SQL.insertInto(MyDb.user).values([{id: 10, isMan: 20}])
-
-    SQL.insertInto(IGNORE, MyDb.user).select().from(c).where(c.id.eq(input.userId))
 
 });
