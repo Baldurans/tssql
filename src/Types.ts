@@ -10,8 +10,9 @@ export type SqlQuery<Result> = {
     toString(): string
 }
 
+const TAB = "  ";
 const DISTINCT = "DISTINCT";
-export {DISTINCT}
+export {DISTINCT, TAB}
 
 // -----------------------------------------------------
 

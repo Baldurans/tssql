@@ -1,11 +1,8 @@
 import {AnyExpr, SqlExpression} from "../SqlExpression";
-import {AnyAliasedTableDef, DbTableDefinition, OrderByStructure} from "../Types";
+import {AnyAliasedTableDef, DbTableDefinition, OrderByStructure, TAB} from "../Types";
 import {orderByStructureToSqlString} from "../SqlFunctions";
 import {SQL_ALIAS, SQL_EXPRESSION} from "../Symbols";
 import {escapeId} from "../escape";
-
-const TAB = "  ";
-
 
 export type execFunction = (query: string, args?: object) => Promise<any[]>;
 
@@ -154,11 +151,4 @@ export class SelectBuilder {
             (this._forUpdate && this.unions.length === 0 ? tabs + "FOR UPDATE\n" : "");
     }
 
-    public async exec(exec: execFunction): Promise<any[]> {
-        return exec(this.toString());
-    }
-
-    public async execOne(exec: execFunction): Promise<any> {
-        return (await exec(this.toString()))?.[0];
-    }
 }

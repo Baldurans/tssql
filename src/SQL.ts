@@ -7,16 +7,28 @@ import {getJoinMethods, JoinMethods} from "./select/parts/S1Join";
 import {getUsesMethods, UsesMethods} from "./select/parts/S0Uses";
 import {getWithMethods, WithMethods} from "./select/parts/S0With";
 import {ExecMethods} from "./select/parts/S7Exec";
+import {DeleteBuilder} from "./delete/DeleteBuilder";
+import {DeleteWhereMethods, getDeleteWhereMethods} from "./delete/parts/D1Where";
 
 export class SQL {
 
 
-    public static insert() {
+    public static insertInfo() {
 
     }
 
     public static update() {
 
+    }
+
+    public static deleteFrom<
+        Alias extends string,
+        TableRef extends `${string} as ${Alias}`
+    >(
+        table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
+    ): DeleteWhereMethods<Key<TableRef>> {
+        const builder = new DeleteBuilder().from(table);
+        return getDeleteWhereMethods(builder)
     }
 
     public static selectFrom<
