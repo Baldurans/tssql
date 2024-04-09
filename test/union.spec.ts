@@ -13,14 +13,14 @@ test("with", async () => {
     const q2 = SQL.select().from(c).columns(c.username, c.id,).where(c.id.eq(input.userId)).noLimit()
     const q3 = SQL.select().from(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
 
-    const union = SQL
-        .union(q1)
-        .all(q2)
-        .all(q3)
+    const union = q1
+        .unionAll(q2)
+        .unionAll(q3)
         .groupByF(r => [r.username])
         .orderByF(r => [r.id])
         .limit(10)
         .as("x")
+
 
     const b = SQL.select()
         .from(union)

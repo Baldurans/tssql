@@ -35,7 +35,7 @@ export class SelectBuilder {
         return this._columnStruct;
     }
 
-    public union(type: "ALL" | "", sql: string, struct: DbTableDefinition<any>): void {
+    public union(type: "ALL" | "DISTINCT", sql: string, struct: DbTableDefinition<any>): void {
         if (this.unions.length === 0) {
             this.unions.push("(\n" + sql + ") ")
             this._columnStruct = struct;
@@ -57,7 +57,7 @@ export class SelectBuilder {
             if (i !== this._unionColumnOrder.length) {
                 throw new Error("Union columns count do not match! " + this._unionColumnOrder.length + " != " + i + " (Why didn't compiler warn you about this?)");
             }
-            this.unions.push("UNION " + (type === "" ? "" : "ALL ") + "(\n" + sql + ") ")
+            this.unions.push("UNION " + (type === "DISTINCT" ? "DISTINCT " : "ALL ") + "(\n" + sql + ") ")
         }
     }
 

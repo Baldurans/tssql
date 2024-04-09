@@ -3,12 +3,22 @@ import {Expr, SqlExpression} from "../../SqlExpression";
 import {SelectQueryPart} from "../SelectQueryPart";
 import {SQL_ENTITY} from "../../Symbols";
 import {MysqlTable} from "../../MysqlTable";
+import {CompareObjectsForUnion, S0Union} from "./S0Union";
+import {SelectBuilder} from "../SelectBuilder";
 
 const TAB = "  ";
 
 export class S7Exec<Result> extends SelectQueryPart implements SqlQuery<Result> {
 
     public readonly [SQL_ENTITY]: Result = undefined;
+
+    public union<Result2>(child: CompareObjectsForUnion<Result, Result2, S7Exec<Result2>>): S0Union<Result> {
+        return new S0Union<Result>(new SelectBuilder()).union(this as any).union(child);
+    }
+
+    public unionAll<Result2>(child: CompareObjectsForUnion<Result, Result2, S7Exec<Result2>>): S0Union<Result> {
+        return new S0Union<Result>(new SelectBuilder()).union(this as any).unionAll(child);
+    }
 
     public asScalar<Alias extends string>(
         alias: Alias & ScalarSubQueryAllowsOnlyOneColumn<Alias, Result> extends never ? "Scalar subquery allows only 1 column!" : Alias

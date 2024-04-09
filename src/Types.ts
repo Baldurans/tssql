@@ -10,6 +10,9 @@ export type SqlQuery<Result> = {
     toString(): string
 }
 
+const DISTINCT = "DISTINCT";
+export {DISTINCT}
+
 // -----------------------------------------------------
 
 export type AliasedTable<Alias extends string, TableRef, Entity, AliasForWithQuery extends string | NotUsingWithPart> = {

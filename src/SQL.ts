@@ -4,12 +4,20 @@ import {AliasedTable, DbTableDefinition, Key, NotUsingWithPart, PrepareQueryArgu
 import {S0Uses} from "./select/parts/S0Uses";
 import {S0With} from "./select/parts/S0With";
 import {S7Exec} from "./select/parts/S7Exec";
-import {S0Union} from "./select/parts/S0Union";
 import {SQL_ALIAS, SQL_ENTITY} from "./Symbols";
 import {escape, escapeId} from "./escape";
 import {MysqlTable} from "./MysqlTable";
 
 export class SQL {
+
+
+    public static insert() {
+
+    }
+
+    public static update() {
+
+    }
 
     /**
      * Start building a select query.
@@ -58,13 +66,6 @@ export class SQL {
         table: AliasedTable<Alias, TableRef, object, NotUsingWithPart>
     ): S0With<Key<Alias>> {
         return new S0With(new SelectBuilder()).with(table as any);
-    }
-
-    /**
-     * Creates a union query.
-     */
-    public static union<Result>(table: S7Exec<Result>): S0Union<Result> {
-        return new S0Union<Result>(new SelectBuilder()).all(table as any);
     }
 
     /**
