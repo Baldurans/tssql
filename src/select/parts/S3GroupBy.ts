@@ -1,4 +1,4 @@
-import {AliasedTable, Key, NotUsingWithPart} from "../../Types";
+import {AliasedTable, isColumnOkToUse, Key, NotUsingWithPart} from "../../Types";
 import {getHavingMethods, HavingMethods} from "./S4Having";
 import {Expr, SqlExpression} from "../../SqlExpression";
 import {getOrderByMethods, OrderByMethods} from "./S5OrderBy";
@@ -42,20 +42,4 @@ export interface GroupByMethods<Result, Tables> extends OrderByMethods<Result, T
     ): HavingMethods<Result, Tables>
 }
 
-
-type _getMissing<Tables, Check> = Check extends keyof Tables ? never : Check;
-
-type _checkThatTableOrColumnCanBeReferenced<Tables, Expr> =
-    Expr extends { tableRef: string } ?
-        Expr["tableRef"] extends keyof Tables ?
-            Expr
-            : `Table '${_getMissing<Tables, Expr["tableRef"]>}' is not used in this query!`
-        : Expr
-
-export type isColumnOkToUse<Tables, ColumnExpressions> =
-    ColumnExpressions extends []
-        ? ColumnExpressions
-        : ColumnExpressions extends [infer A, ...(infer Rest)]
-            ? [_checkThatTableOrColumnCanBeReferenced<Tables, A>, ...isColumnOkToUse<Tables, Rest>]
-            : ColumnExpressions;
 

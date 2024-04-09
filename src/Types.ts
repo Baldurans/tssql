@@ -153,3 +153,22 @@ export type OrderByStructure<A, B = ORDER_BY> =
     | [A, B, A, B, A, B, A, A]
     | [A, B, A, B, A, B, A, B]
     | [A, B, A, B, A, B, A, B, A]
+
+// ----------------------------------------------
+
+export type isColumnOkToUse<Tables, ColumnExpressions> =
+    ColumnExpressions extends []
+        ? ColumnExpressions
+        : ColumnExpressions extends [infer A, ...(infer Rest)]
+            ? [_checkThatTableOrColumnCanBeReferenced<Tables, A>, ...isColumnOkToUse<Tables, Rest>]
+            : ColumnExpressions;
+
+type _checkThatTableOrColumnCanBeReferenced<Tables, Expr> =
+    Expr extends { tableRef: string } ?
+        Expr["tableRef"] extends keyof Tables ?
+            Expr
+            : `Table '${_getMissing<Tables, Expr["tableRef"]>}' is not used in this query!`
+        : Expr
+
+type _getMissing<Tables, Check> = Check extends keyof Tables ? never : Check;
+

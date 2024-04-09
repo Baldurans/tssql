@@ -24,7 +24,7 @@ export interface WhereMethods<Result, Tables> {
     noWhere(): GroupByMethods<Result, Tables> & OrderByMethods<Result, Tables> & LimitMethods<Result>
 
     where<
-        T1 extends string = never,
+        T1 extends string,
         T2 extends string = never,
         T3 extends string = never,
         T4 extends string = never,

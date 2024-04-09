@@ -1,6 +1,5 @@
-import {OrderByStructure} from "../../Types";
+import {isColumnOkToUse, OrderByStructure} from "../../Types";
 import {Expr} from "../../SqlExpression";
-import {isColumnOkToUse} from "../../select/parts/S3GroupBy";
 import {DeleteLimitMethods, getDeleteLimitMethods} from "./D3Limit";
 import {DeleteBuilder} from "../DeleteBuilder";
 
