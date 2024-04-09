@@ -1,5 +1,5 @@
 import {AliasedTable, isAliasAlreadyUsed, Key, NotUsingWithPart} from "../../Types";
-import {getJoinMethods, JoinStep} from "./S1Join";
+import {getJoinMethods, JoinMethods} from "./S1Join";
 import {SelectBuilder} from "../SelectBuilder";
 import {getColumnMethods} from "./S2Columns";
 
@@ -33,6 +33,6 @@ export interface UsesMethods<Aliases, Tables> {
         TableRef extends `${string} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
-    ): JoinStep<Aliases & Key<Alias>, {}, Tables & Key<TableRef>>
+    ): JoinMethods<Aliases & Key<Alias>, {}, Tables & Key<TableRef>>
 
 }

@@ -18,11 +18,12 @@ export function getOrderByMethods<Result, Tables>(builder: SelectBuilder): Order
             })
             builder.orderBy(func(proxy) as any);
             return getLimitMethods(builder)
-        }
+        },
+        ...getLimitMethods(builder),
     }
 }
 
-export interface OrderByMethods<Result, Tables> {
+export interface OrderByMethods<Result, Tables> extends LimitMethods<Result> {
     orderBy<
         TableRef,
         Columns extends OrderByStructure<Expr<TableRef, string | unknown, any>>

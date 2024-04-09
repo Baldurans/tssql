@@ -1,37 +1,30 @@
 import {AliasedTable, isAliasAlreadyUsed, isTableReferenced, Key, NotUsingWithPart, SQL_BOOL} from "../../Types";
 import {Expr, Over} from "../../SqlExpression";
-import {Columns, getColumnMethods} from "./S2Columns";
+import {ColumnsMethods, getColumnMethods} from "./S2Columns";
 import {SelectBuilder} from "../SelectBuilder";
 
 export function getJoinMethods<Aliases, AliasesFromWith, Tables>(builder: SelectBuilder): JoinMethods<Aliases, AliasesFromWith, Tables> {
-    return {
+    const res = {
         join: (table: any, condition: any) => {
             builder.join("JOIN", table, condition)
-            return {
-                ...getJoinMethods(builder),
-                ...getColumnMethods(builder)
-            } as any
+            return res
         },
         leftJoin: (table: any, condition: any) => {
             builder.join("JOIN", table, condition)
-            return {
-                ...getJoinMethods(builder),
-                ...getColumnMethods(builder)
-            } as any
+            return res
         },
         window: (name: any, func: any) => {
             const builder2 = new Over()
             func(builder2)
             builder.window(name, builder2.toString())
-            return {
-                ...getJoinMethods(builder),
-                ...getColumnMethods(builder)
-            } as any
+            return res
         },
+        ...getColumnMethods(builder)
     }
+    return res;
 }
 
-export interface JoinMethods<Aliases, AliasesFromWith, Tables> {
+export interface JoinMethods<Aliases, AliasesFromWith, Tables> extends ColumnsMethods<{}, Tables> {
 
     join<
         Alias extends string,
@@ -41,7 +34,7 @@ export interface JoinMethods<Aliases, AliasesFromWith, Tables> {
     >(
         table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
         condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
-    ): JoinStep<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>>
+    ): JoinMethods<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>>
 
     leftJoin<
         Alias extends string,
@@ -51,7 +44,7 @@ export interface JoinMethods<Aliases, AliasesFromWith, Tables> {
     >(
         table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
         condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
-    ): JoinStep<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>>
+    ): JoinMethods<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>>
 
     window<
         WindowName extends string,
@@ -59,11 +52,9 @@ export interface JoinMethods<Aliases, AliasesFromWith, Tables> {
     >(
         name: isAliasAlreadyUsed<Aliases & AliasesFromWith, WindowName, WindowName>,
         func: (builder: Over<never>) => Over<UsedTablesRef>
-    ): JoinStep<Aliases & Key<WindowName>, AliasesFromWith, Tables & Key<`(window) as ${WindowName}`>>
+    ): JoinMethods<Aliases & Key<WindowName>, AliasesFromWith, Tables & Key<`(window) as ${WindowName}`>>
 
 }
-
-export type JoinStep<Aliases, AliasesFromWith, Tables> = JoinMethods<Aliases, AliasesFromWith, Tables> & Columns<{}, Tables>;
 
 type isConditionUsingJoinedTable<TableRef, ColTableRef, OUT> = TableRef extends ColTableRef ? OUT : "Join condition should use columns from the joined table!"
 

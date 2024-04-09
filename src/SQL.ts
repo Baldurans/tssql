@@ -3,7 +3,7 @@ import {AliasedTable, DbTableDefinition, Key, NotUsingWithPart, PrepareQueryArgu
 import {SQL_ALIAS, SQL_ENTITY} from "./Symbols";
 import {escape, escapeId} from "./escape";
 import {MysqlTable} from "./MysqlTable";
-import {getJoinMethods, JoinStep} from "./select/parts/S1Join";
+import {getJoinMethods, JoinMethods} from "./select/parts/S1Join";
 import {getUsesMethods, UsesMethods} from "./select/parts/S0Uses";
 import {getWithMethods, WithMethods} from "./select/parts/S0With";
 import {getColumnMethods} from "./select/parts/S2Columns";
@@ -25,7 +25,7 @@ export class SQL {
         TableRef extends `${string} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
-    ): JoinStep<Key<Alias>, {}, Key<TableRef>> {
+    ): JoinMethods<Key<Alias>, {}, Key<TableRef>> {
         const builder = new SelectBuilder().from(table);
         return {
             ...getColumnMethods(builder),

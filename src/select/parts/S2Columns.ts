@@ -2,23 +2,24 @@ import {getWhereMethods, WhereMethods} from "./S2Where";
 import {Expr} from "../../SqlExpression";
 import {SelectBuilder} from "../SelectBuilder";
 
-export function getColumnMethods<Result, Tables>(builder: SelectBuilder): Columns<Result, Tables> {
-    return {
+export function getColumnMethods<Result, Tables>(builder: SelectBuilder): ColumnsMethods<Result, Tables> {
+    const res: ColumnsMethods<Result, Tables> = {
         distinct: () => {
             builder.distinct()
-            return getColumnMethods(builder)
+            return res
         },
         columns: (...cols: any[]) => {
             builder.columns(cols);
             return getWhereMethods(builder)
         }
     }
+    return res;
 }
 
 
-export interface Columns<Result, Tables> {
+export interface ColumnsMethods<Result, Tables> {
 
-    distinct(): this
+    distinct(): ColumnsMethods<Result, Tables>
 
     columns<
         TableRef,

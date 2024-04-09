@@ -9,11 +9,7 @@ export function getGroupByMethods<Result, Tables>(builder: SelectBuilder): Group
     return {
         groupBy: (...items: any) => {
             builder.groupBy(items as any);
-            return {
-                ...getHavingMethods(builder),
-                ...getOrderByMethods(builder),
-                ...getLimitMethods(builder)
-            }
+            return getHavingMethods(builder)
         },
         groupByF: (func: any) => {
             const proxy: any = new Proxy({}, {
@@ -22,30 +18,29 @@ export function getGroupByMethods<Result, Tables>(builder: SelectBuilder): Group
                 }
             })
             builder.groupBy(func(proxy) as any);
-            return {
-                ...getHavingMethods(builder),
-                ...getOrderByMethods(builder),
-                ...getLimitMethods(builder)
-            }
-        }
+            return getHavingMethods(builder)
+        },
+
+        ...getOrderByMethods(builder),
+        ...getLimitMethods(builder)
     }
 }
 
 
-export interface GroupByMethods<Result, Tables> {
+export interface GroupByMethods<Result, Tables> extends OrderByMethods<Result, Tables>, LimitMethods<Result> {
     groupBy<
         TableRef,
         Columns extends Expr<TableRef, string | unknown, any>[]
     >(
         ...items: isColumnOkToUse<Tables, Columns>
-    ): HavingMethods<Result, Tables> & OrderByMethods<Result, Tables> & LimitMethods<Result>
+    ): HavingMethods<Result, Tables>
 
     groupByF<
         TableRef,
         Columns extends Expr<TableRef, string | unknown, any>[]
     >(
         func: (columnsTable: AliasedTable<"(columns)", "(columns)", Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<"(columns)">, Columns>
-    ): HavingMethods<Result, Tables> & OrderByMethods<Result, Tables> & LimitMethods<Result>
+    ): HavingMethods<Result, Tables>
 }
 
 

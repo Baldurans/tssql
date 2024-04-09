@@ -9,10 +9,7 @@ export function getHavingMethods<Result, Tables>(builder: SelectBuilder): Having
     return {
         having: (...col: any) => {
             builder.having(col as unknown as AnyExpr[])
-            return {
-                ...getOrderByMethods(builder),
-                ...getLimitMethods(builder)
-            }
+            return getOrderByMethods(builder)
         },
         havingF: (func: any) => {
             const proxy: any = new Proxy({}, {
@@ -21,21 +18,20 @@ export function getHavingMethods<Result, Tables>(builder: SelectBuilder): Having
                 }
             })
             builder.having(func(proxy) as any);
-            return {
-                ...getOrderByMethods(builder),
-                ...getLimitMethods(builder)
-            }
-        }
+            return getOrderByMethods(builder)
+        },
+        ...getOrderByMethods(builder),
+        ...getLimitMethods(builder)
     }
 }
 
-export interface HavingMethods<Result, Tables> {
+export interface HavingMethods<Result, Tables> extends OrderByMethods<Result, Tables>, LimitMethods<Result> {
     having<
         TableRef,
         Columns extends (Expr<TableRef, string | unknown, SQL_BOOL>)[]
     >(
         ...col: isColumnOkToUse<Tables, Columns>
-    ): OrderByMethods<Result, Tables> & LimitMethods<Result>
+    ): OrderByMethods<Result, Tables>
 
     havingF<
         TableRef,
@@ -44,4 +40,6 @@ export interface HavingMethods<Result, Tables> {
         func: (columnsTable: AliasedTable<"(columns)", "(columns)", Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<"(columns)">, Columns>
     ): OrderByMethods<Result, Tables> & LimitMethods<Result>
 }
+
+
 
