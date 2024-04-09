@@ -7,7 +7,7 @@ export function getGatewayDeleteWhereMethods<Entity, Tables>(builder: DeleteBuil
         where: (col: any) => {
             for (const prop in col) {
                 const value = col[prop];
-                builder.where(escapeId(prop) + "=" + escape(value));
+                builder.where(escapeId(prop) + " = " + escape(value));
             }
             return getGatewayDeleteOrderByMethods(builder)
         }

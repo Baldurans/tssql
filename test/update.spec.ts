@@ -45,10 +45,4 @@ test("update", async () => {
 
     SQL.insertInto(IGNORE, MyDb.user).select().from(c).where(c.id.eq(input.userId))
 
-    // -----------
-
-    MyDb.user.delete().where({id: input.userId}).orderBy("id").limit(10)
-
-    SQL.deleteFrom(c).where(c.id.eq(input.userId)).orderBy(c.id).limit(10)
-
 });
