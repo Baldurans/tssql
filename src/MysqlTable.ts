@@ -6,12 +6,14 @@ import {DeleteBuilder} from "./delete/DeleteBuilder";
 import {ExecInsertMethods} from "./insert/InsertInterfaces";
 import {InsertBuilder} from "./insert/InsertBuilder";
 import {GatewayDeleteOrderByMethods} from "./delete/DeleteInterfaces";
+import {UpdateBuilder} from "./update/UpdateBuilder";
+import {GatewayUpdateWhereMethods} from "./update/UpdateInterfaces";
 
 export type WhereArgs<Entity> = {
     [K in keyof Entity]?: Entity[K]
 }
 
-export class MysqlTable<TableName extends string, Entity, InsertEntity> {
+export class MysqlTable<TableName extends string, Entity, EditEntity> {
 
     public readonly tableName: TableName;
     private readonly columns: DbTableDefinition<Entity>;
@@ -38,8 +40,12 @@ export class MysqlTable<TableName extends string, Entity, InsertEntity> {
         return builder
     }
 
-    public insert(row: InsertEntity): ExecInsertMethods {
+    public insert(row: EditEntity): ExecInsertMethods {
         return new InsertBuilder().to(this.tableName).set(row)
+    }
+
+    public update(row: Partial<EditEntity>): GatewayUpdateWhereMethods<Entity> {
+        return new UpdateBuilder().in(this.tableName).set(row)
     }
 
     /**

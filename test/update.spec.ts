@@ -16,6 +16,17 @@ test("update", async () => {
 
     // --------------------
 
+    MyDb.user
+        .update({
+            username: "",
+            age: 2
+        })
+        .where({
+            id: input.userId
+        })
+        .orderBy("id")
+        .noLimit()
+
     const sub = SQL.selectFrom(c)
         .columns(c.id)
         .where(c.isMan.eq(1))
