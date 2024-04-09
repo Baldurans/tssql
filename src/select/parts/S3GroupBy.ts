@@ -1,35 +1,53 @@
 import {AliasedTable, Key, NotUsingWithPart} from "../../Types";
-import {S5OrderBy} from "./S5OrderBy";
-import {S4Having} from "./S4Having";
+import {constructHaving, Having} from "./S4Having";
 import {Expr, SqlExpression} from "../../SqlExpression";
+import {constructOrderBy, OrderBy} from "./S5OrderBy";
+import {constructLimit, Limit} from "./S6Limit";
+import {SelectBuilder} from "../SelectBuilder";
 
-export class S3GroupBy<Result, Tables> extends S5OrderBy<Result, Tables> {
+export function constructGroupBy<Result, Tables>(builder: SelectBuilder): GroupBy<Result, Tables> {
+    return {
+        groupBy: (...items: any) => {
+            builder.groupBy(items as any);
+            return {
+                ...constructHaving(builder),
+                ...constructOrderBy(builder),
+                ...constructLimit(builder)
+            }
+        },
+        groupByF: (func: any) => {
+            const proxy: any = new Proxy({}, {
+                get(target: {}, p: string, receiver: any): any {
+                    return new SqlExpression(p, p)
+                }
+            })
+            builder.groupBy(func(proxy) as any);
+            return {
+                ...constructHaving(builder),
+                ...constructOrderBy(builder),
+                ...constructLimit(builder)
+            }
+        }
+    }
+}
 
-    public groupBy<
+
+export interface GroupBy<Result, Tables> {
+    groupBy<
         TableRef,
         Columns extends Expr<TableRef, string | unknown, any>[]
     >(
         ...items: isColumnOkToUse<Tables, Columns>
-    ): S4Having<Result, Tables> {
-        this.builder.groupBy(items as any);
-        return new S4Having(this.builder);
-    }
+    ): Having<Result, Tables> & OrderBy<Result, Tables> & Limit<Result>
 
-    public groupByF<
+    groupByF<
         TableRef,
         Columns extends Expr<TableRef, string | unknown, any>[]
     >(
         func: (columnsTable: AliasedTable<"(columns)", "(columns)", Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<"(columns)">, Columns>
-    ): S4Having<Result, Tables> {
-        const proxy: any = new Proxy({}, {
-            get(target: {}, p: string, receiver: any): any {
-                return new SqlExpression(p, p)
-            }
-        })
-        this.builder.groupBy(func(proxy) as any);
-        return new S4Having(this.builder);
-    }
+    ): Having<Result, Tables> & OrderBy<Result, Tables> & Limit<Result>
 }
+
 
 type _getMissing<Tables, Check> = Check extends keyof Tables ? never : Check;
 

@@ -1,23 +1,32 @@
-import {S2Where} from "./S2Where";
-import {SelectQueryPart} from "../SelectQueryPart";
-import {AnyExpr, Expr} from "../../SqlExpression";
+import {constructWhere, Where} from "./S2Where";
+import {Expr} from "../../SqlExpression";
+import {SelectBuilder} from "../SelectBuilder";
 
-export class S2Columns<Result, Tables> extends SelectQueryPart {
-    public distinct(): this {
-        this.builder.distinct();
-        return this;
+export function getColumnMethods<Result, Tables>(builder: SelectBuilder): Columns<Result, Tables> {
+    return {
+        distinct: () => {
+            builder.distinct()
+            return getColumnMethods(builder)
+        },
+        columns: (...cols: any[]) => {
+            builder.distinct()
+            return constructWhere(builder)
+        }
     }
+}
 
-    public columns<
+
+export interface Columns<Result, Tables> {
+
+    distinct(): this
+
+    columns<
         TableRef,
         Columns extends Expr<TableRef, string, any>[]
     >(
         //...columns: Columns - this will enable seeing sources of Result object properties.
         ...columns: isColumnOkToAdd<Result, Tables, Columns>
-    ): S2Where<Result & ExtractObj<Columns>, Tables> {
-        this.builder.columns(columns as unknown as AnyExpr[]);
-        return new S2Where(this.builder);
-    }
+    ): Where<Result & ExtractObj<Columns>, Tables>
 
 }
 

@@ -1,5 +1,5 @@
 import {tUserId} from "./tables/User";
-import {DANGEROUS_SQL_EXPRESSION, DATE, EQ, IF, SET_TO_ARRAY} from "../src/SqlFunctions";
+import {CONCAT, DANGEROUS_SQL_EXPRESSION, DATE, DATE_DIFF, EQ, IF, NOW, SET_TO_ARRAY} from "../src/SqlFunctions";
 import {MyDb} from "./tables/MyDb";
 import {vDate} from "../src";
 import {SQL} from "../src/SQL";
@@ -79,7 +79,6 @@ test("complex", async () => {
         // .leftJoin(withSub, withSub.id.eq(c.id)) // ____ERROR, alias is already in use.
         // .leftJoin(withSub2Sub1, withSub2Sub1.id.eq(c.id)) // ____ERROR, not referenced in with part.
 
-
         .columns(
             c.id,
             subQueryTable.id.as("sId"),
@@ -105,11 +104,11 @@ test("complex", async () => {
                 .where(s.id.eq(c.id)).noLimit().asScalar("subColumn"),
 
             // c.id, // ____ERROR, can't add same field twice!
-            // Sql.datediff(Sql.now(), c.created) // ____ERROR, Is missing column name
+            // DATE_DIFF(NOW(), c.created), // ____ERROR, Is missing column name
             // subQueryTable.id.as("sId"), // ____ERROR, Can't add same field twice!
             // cFake.name, // ____ERROR, table X is not used in the query
-            // c3.username // ____ERROR, table X is not used in the query
-            // Sql.concat(cFake.name, c2.username).as("concated"), // ____ERROR, table company as c,c2 is not used in the query (twice!)
+            // c3.username, // ____ERROR, table X is not used in the query
+            // CONCAT(cFake.name, c2.username).as("concated"), // ____ERROR, table company as c,c2 is not used in the query (twice!)
             // withSub2Sub1.subIdRenamed.as("xxxx") // ____ERROR, not used in this query.
         )
 

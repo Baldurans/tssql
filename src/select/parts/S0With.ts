@@ -1,28 +1,36 @@
-import {AliasedTable, AnyAliasedTableDef, isAliasAlreadyUsed, Key, NotUsingWithPart} from "../../Types";
-import {SelectQueryPart} from "../SelectQueryPart";
-import {S1Join} from "./S1Join";
+import {AliasedTable, isAliasAlreadyUsed, Key, NotUsingWithPart} from "../../Types";
+import {getJoinMethods, JoinMethods} from "./S1Join";
 import {SelectBuilder} from "../SelectBuilder";
 
-export class S0With<AliasesFromWith> extends SelectQueryPart {
+export function constructWith<AliasesFromWith>(builder: SelectBuilder): With<AliasesFromWith> {
+    return {
+        with: (table: any) => {
+            builder.with(table);
+            return constructWith(builder)
+        },
+        selectFrom: (table: any) => {
+            builder.from(table)
+            return getJoinMethods(builder)
+        }
+    }
+}
 
-    public with<
+export interface With<AliasesFromWith> {
+
+    with<
         Alias extends string,
         TableRef extends `${string} as ${Alias}`,
         Columns
     >(
         table: isAliasAlreadyUsed<AliasesFromWith, Alias, AliasedTable<Alias, TableRef, Columns, NotUsingWithPart>>
-    ): S0With<AliasesFromWith & Key<Alias>> {
-        this.builder.with(table as AnyAliasedTableDef);
-        return this as any;
-    }
+    ): With<AliasesFromWith & Key<Alias>>
 
-    public selectFrom<
+    selectFrom<
         Alias extends string,
         TableRef extends `${string} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
-    ): S1Join<Key<Alias>, AliasesFromWith, Key<TableRef>> {
-        return new S1Join(new SelectBuilder().from(table));
-    }
+    ): JoinMethods<Key<Alias>, AliasesFromWith, Key<TableRef>>
 
 }
+

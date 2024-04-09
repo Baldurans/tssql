@@ -1,12 +1,13 @@
 import {SelectBuilder} from "./select/SelectBuilder";
 import {AliasedTable, DbTableDefinition, Key, NotUsingWithPart, PrepareQueryArgument, SqlQuery} from "./Types";
-import {S0Uses} from "./select/parts/S0Uses";
-import {S0With} from "./select/parts/S0With";
 import {S7Exec} from "./select/parts/S7Exec";
 import {SQL_ALIAS, SQL_ENTITY} from "./Symbols";
 import {escape, escapeId} from "./escape";
 import {MysqlTable} from "./MysqlTable";
-import {S1Join} from "./select/parts/S1Join";
+import {getJoinMethods, JoinStep} from "./select/parts/S1Join";
+import {constructUses, Uses} from "./select/parts/S0Uses";
+import {constructWith, With} from "./select/parts/S0With";
+import {getColumnMethods} from "./select/parts/S2Columns";
 
 export class SQL {
 
@@ -24,8 +25,12 @@ export class SQL {
         TableRef extends `${string} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
-    ): S1Join<Key<Alias>, {}, Key<TableRef>> {
-        return new S1Join(new SelectBuilder().from(table));
+    ): JoinStep<Key<Alias>, {}, Key<TableRef>> {
+        const builder = new SelectBuilder().from(table);
+        return {
+            ...getColumnMethods(builder),
+            ...getJoinMethods(builder)
+        } as any;
     }
 
     /**
@@ -44,8 +49,8 @@ export class SQL {
         TableRef extends `${TableName} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, object, NotUsingWithPart>
-    ): S0Uses<Key<Alias>, Key<TableRef>> {
-        return new S0Uses(new SelectBuilder());
+    ): Uses<Key<Alias>, Key<TableRef>> {
+        return constructUses(new SelectBuilder());
     }
 
     /**
@@ -66,8 +71,8 @@ export class SQL {
         TableRef extends `${TableName} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, object, NotUsingWithPart>
-    ): S0With<Key<Alias>> {
-        return new S0With(new SelectBuilder()).with(table as any);
+    ): With<Key<Alias>> {
+        return constructWith(new SelectBuilder());
     }
 
     /**

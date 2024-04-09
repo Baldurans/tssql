@@ -1,7 +1,7 @@
-import {S3GroupBy} from "./S3GroupBy";
 import {S7Exec} from "./S7Exec";
+import {SelectQueryPart} from "../SelectQueryPart";
 
-export class S0Union<Result> extends S3GroupBy<Result, {}> {
+export class S0Union<Result> extends SelectQueryPart {
 
     public union<Result2>(
         table: CompareObjectsForUnion<Result, Result2, S7Exec<Result2>>
@@ -18,6 +18,8 @@ export class S0Union<Result> extends S3GroupBy<Result, {}> {
     }
 
 }
+
+
 
 export type CompareObjectsForUnion<Result1, Result2, Res> = Result1 extends Result2
     ? Result2 extends Result1

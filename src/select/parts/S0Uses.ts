@@ -1,27 +1,38 @@
 import {AliasedTable, isAliasAlreadyUsed, Key, NotUsingWithPart} from "../../Types";
-import {SelectQueryPart} from "../SelectQueryPart";
-import {S1Join} from "./S1Join";
+import {getJoinMethods, JoinStep} from "./S1Join";
 import {SelectBuilder} from "../SelectBuilder";
+import {getColumnMethods} from "./S2Columns";
 
-export class S0Uses<Aliases, Tables> extends SelectQueryPart {
+export function constructUses<Aliases, Tables>(builder: SelectBuilder): Uses<Aliases, Tables> {
+    return {
+        uses: (...items: any) => {
+            return constructUses(builder)
+        },
+        selectFrom: (table: any) => {
+            const builder = new SelectBuilder().from(table);
+            return {
+                ...getColumnMethods(builder),
+                ...getJoinMethods(builder)
+            } as any
+        }
+    }
+}
 
-    public uses<
+export interface Uses<Aliases, Tables> {
+
+    uses<
         Alias extends string,
         TableRef extends `${string} as ${Alias}`
     >(
         table: isAliasAlreadyUsed<Aliases, Alias, AliasedTable<Alias, TableRef, any, NotUsingWithPart>>
-    ): S0Uses<Aliases & Key<Alias>, Tables & Key<TableRef>> {
-        // This does nothing, it used only for Typescript type referencing.
-        return this as any;
-    }
+    ): Uses<Aliases & Key<Alias>, Tables & Key<TableRef>>
 
-    public selectFrom<
+
+    selectFrom<
         Alias extends string,
         TableRef extends `${string} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
-    ): S1Join<Aliases & Key<Alias>, {}, Tables & Key<TableRef>> {
-        return new S1Join(new SelectBuilder().from(table));
-    }
+    ): JoinStep<Aliases & Key<Alias>, {}, Tables & Key<TableRef>>
 
 }
