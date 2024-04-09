@@ -3,12 +3,13 @@ import {AliasedTable, DbTableDefinition, Key, NotUsingWithPart, PrepareQueryArgu
 import {SQL_ALIAS, SQL_ENTITY, SQL_EXPRESSION} from "./Symbols";
 import {escape, escapeId} from "./escape";
 import {MysqlTable} from "./MysqlTable";
-import {getJoinMethods, JoinMethods} from "./select/parts/S1Join";
+import {JoinMethods} from "./select/parts/S1Join";
 import {getUsesMethods, UsesMethods} from "./select/parts/S0Uses";
 import {getWithMethods, WithMethods} from "./select/parts/S0With";
 import {ExecMethods} from "./select/parts/S7Exec";
 import {DeleteBuilder} from "./delete/DeleteBuilder";
 import {DeleteWhereMethods, getDeleteWhereMethods} from "./delete/parts/D1Where";
+import {SelectBuilder2} from "./select/SelectBuilder2";
 
 export class SQL {
 
@@ -36,8 +37,7 @@ export class SQL {
     >(
         table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
     ): JoinMethods<Key<Alias>, {}, Key<TableRef>> {
-        const builder = new SelectBuilder().from(table);
-        return getJoinMethods(builder)
+        return new SelectBuilder2(new SelectBuilder().from(table))
     }
 
     /**
