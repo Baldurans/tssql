@@ -26,7 +26,6 @@ export function getGroupByMethods<Result, Tables>(builder: SelectBuilder): Group
     }
 }
 
-
 export interface GroupByMethods<Result, Tables> extends OrderByMethods<Result, Tables>, LimitMethods<Result> {
     groupBy<
         TableRef,

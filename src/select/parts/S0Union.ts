@@ -1,16 +1,24 @@
 import {SelectBuilder} from "../SelectBuilder";
 import {ExecMethods} from "./S7Exec";
+import {getGroupByMethods, GroupByMethods} from "./S3GroupBy";
 
 export function getUnionMethods<Result>(builder: SelectBuilder): UnionMethods<Result> {
     return {
         union: (table: any) => {
             builder.union("DISTINCT", table.toString(1), table.getColumnStruct())
-            return getUnionMethods(builder)
+            return getUnionCallMethods(builder)
         },
         unionAll: (table: any) => {
             builder.union("ALL", table.toString(1), table.getColumnStruct())
-            return getUnionMethods(builder)
+            return getUnionCallMethods(builder)
         }
+    }
+}
+
+export function getUnionCallMethods<Result>(builder: SelectBuilder): UnionCallMethods<Result> {
+    return {
+        ...getUnionMethods(builder),
+        ...getGroupByMethods(builder)
     }
 }
 
@@ -18,12 +26,16 @@ export interface UnionMethods<Result> {
 
     union<Result2>(
         table: CompareObjectsForUnion<Result, Result2, ExecMethods<Result2>>
-    ): UnionMethods<Result>
+    ): UnionCallMethods<Result>
 
 
     unionAll<Result2>(
         table: CompareObjectsForUnion<Result, Result2, ExecMethods<Result2>>
-    ): UnionMethods<Result>
+    ): UnionCallMethods<Result>
+}
+
+export interface UnionCallMethods<Result> extends UnionMethods<Result>, GroupByMethods<Result, {}> {
+
 }
 
 export type CompareObjectsForUnion<Result1, Result2, Res> = Result1 extends Result2

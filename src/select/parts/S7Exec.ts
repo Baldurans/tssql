@@ -3,6 +3,7 @@ import {Expr, SqlExpression} from "../../SqlExpression";
 import {MysqlTable} from "../../MysqlTable";
 import {SelectBuilder} from "../SelectBuilder";
 import {SQL_ENTITY} from "../../Symbols";
+import {getUnionMethods, UnionMethods} from "./S0Union";
 
 const TAB = "  ";
 
@@ -24,11 +25,12 @@ export function getExecMethods<Result>(builder: SelectBuilder): ExecMethods<Resu
         },
         getColumnStruct: () => {
             return builder.getColumnStruct()
-        }
+        },
+        ...getUnionMethods(builder)
     }
 }
 
-export interface ExecMethods<Result> extends SqlQuery<Result> {
+export interface ExecMethods<Result> extends SqlQuery<Result>, UnionMethods<Result> {
 
     forUpdate(): ExecMethods<Result>
 
