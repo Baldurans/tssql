@@ -15,7 +15,7 @@ export function getUnionMethods<Result>(builder: SelectBuilder): UnionMethods<Re
     }
 }
 
-export function getUnionCallMethods<Result>(builder: SelectBuilder): UnionCallMethods<Result> {
+export function getUnionCallMethods<Result>(builder: SelectBuilder): UnionMethods<Result> & GroupByMethods<Result, {}> {
     return {
         ...getUnionMethods(builder),
         ...getGroupByMethods(builder)
@@ -26,16 +26,12 @@ export interface UnionMethods<Result> {
 
     union<Result2>(
         table: CompareObjectsForUnion<Result, Result2, ExecMethods<Result2>>
-    ): UnionCallMethods<Result>
+    ): UnionMethods<Result> & GroupByMethods<Result, {}>
 
 
     unionAll<Result2>(
         table: CompareObjectsForUnion<Result, Result2, ExecMethods<Result2>>
-    ): UnionCallMethods<Result>
-}
-
-export interface UnionCallMethods<Result> extends UnionMethods<Result>, GroupByMethods<Result, {}> {
-
+    ): UnionMethods<Result> & GroupByMethods<Result, {}>
 }
 
 export type CompareObjectsForUnion<Result1, Result2, Res> = Result1 extends Result2

@@ -6,7 +6,6 @@ import {MysqlTable} from "./MysqlTable";
 import {getJoinMethods, JoinMethods} from "./select/parts/S1Join";
 import {getUsesMethods, UsesMethods} from "./select/parts/S0Uses";
 import {getWithMethods, WithMethods} from "./select/parts/S0With";
-import {getColumnMethods} from "./select/parts/S2Columns";
 import {ExecMethods} from "./select/parts/S7Exec";
 
 export class SQL {
@@ -27,10 +26,7 @@ export class SQL {
         table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
     ): JoinMethods<Key<Alias>, {}, Key<TableRef>> {
         const builder = new SelectBuilder().from(table);
-        return {
-            ...getColumnMethods(builder),
-            ...getJoinMethods(builder)
-        } as any;
+        return getJoinMethods(builder)
     }
 
     /**
