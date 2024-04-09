@@ -8,7 +8,7 @@ import {UsesMethods} from "./select/parts/S0Uses";
 import {WithMethods} from "./select/parts/S0With";
 import {ExecMethods} from "./select/parts/S7Exec";
 import {DeleteBuilder} from "./delete/DeleteBuilder";
-import {DeleteWhereMethods, getDeleteWhereMethods} from "./delete/parts/D1Where";
+import {DeleteWhereMethods} from "./delete/DeleteInterfaces";
 
 export class SQL {
 
@@ -27,7 +27,7 @@ export class SQL {
     >(
         table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
     ): DeleteWhereMethods<Key<TableRef>> {
-        return getDeleteWhereMethods(new DeleteBuilder().from(table[SQL_EXPRESSION], table[SQL_ALIAS]));
+        return new DeleteBuilder().from(table[SQL_EXPRESSION], table[SQL_ALIAS]);
     }
 
     public static selectFrom<

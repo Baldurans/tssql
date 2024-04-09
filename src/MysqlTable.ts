@@ -3,9 +3,9 @@ import {escape, escapeId} from "./escape";
 import {SQL_ALIAS, SQL_EXPRESSION} from "./Symbols";
 import {SqlExpression} from "./SqlExpression";
 import {DeleteBuilder} from "./delete/DeleteBuilder";
-import {GatewayDeleteOrderByMethods, getGatewayDeleteOrderByMethods} from "./delete/gateway/GatewayDelete2OrderBy";
-import {ExecInsertMethods, getExecInsertMethods} from "./insert/parts/I4Exec";
+import {ExecInsertMethods} from "./insert/InsertInterfaces";
 import {InsertBuilder} from "./insert/InsertBuilder";
+import {GatewayDeleteOrderByMethods} from "./delete/DeleteInterfaces";
 
 export type WhereArgs<Entity> = {
     [K in keyof Entity]?: Entity[K]
@@ -35,22 +35,22 @@ export class MysqlTable<TableName extends string, Entity, InsertEntity> {
         for (const prop in where) {
             builder.where(escapeId(prop) + " = " + escape((where as any)[prop]));
         }
-        return getGatewayDeleteOrderByMethods(builder)
+        return builder
     }
 
     public insert(row: InsertEntity): ExecInsertMethods {
-        return getExecInsertMethods(new InsertBuilder().to(this.tableName).set(row))
+        return new InsertBuilder().to(this.tableName).set(row)
     }
 
     /**
-     * Returns query that checks existence of a row. Returns [{exists: 1}] if row exists and no rows if it doesn't.
+     * Returns query that checks existence of a row. Returns [{res: 1}] if at least one row exists and no rows if it doesn't.
      */
     public exists(args: WhereArgs<Entity>): string {
         const where: string[] = [];
         for (const key in args) {
             where.push(escapeId(key) + "=" + escape(args[key] as any))
         }
-        return "SELECT 1 as r FROM " + escapeId(this.tableName) + " WHERE " + where.join(" AND ");
+        return "SELECT 1 as res FROM " + escapeId(this.tableName) + " WHERE " + where.join(" AND ") + " LIMIT 1";
     }
 
     public toString(): string {

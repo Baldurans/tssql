@@ -1,6 +1,10 @@
 import {escape, escapeId} from "../escape";
+import {ExecInsertMethods} from "./InsertInterfaces";
+import {SQL_ENTITY} from "../Symbols";
 
-export class InsertBuilder {
+export class InsertBuilder implements ExecInsertMethods {
+
+    public readonly [SQL_ENTITY]: undefined; // never used
 
     private _tableName: string;
     private _set: string[] = []
