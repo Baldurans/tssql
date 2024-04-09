@@ -29,8 +29,7 @@ test("with", async () => {
     const pB1 = SQL.createRef(part2, "part2Sub1")
 
     const query = SQL
-        .with(part1)
-        .with(part2)
+        .with(part1, part2)
         .selectFrom(c)
         .join(c2, c2.id.eq(c.id))
         .join(pA1, pA1.id.eq(c.id))

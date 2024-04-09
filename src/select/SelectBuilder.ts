@@ -93,7 +93,7 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
         return this
     }
 
-    public uses(...tables: any | AnyAliasedTableDef) {
+    public uses(table: any | AnyAliasedTableDef) {
         return this
     }
 

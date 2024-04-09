@@ -41,7 +41,7 @@ test("complex", async () => {
         .columns(
             s.id,
             s.username,
-            s.id.as("subIdRenamed")
+            s.id.as("subIdRenamed"),
         )
         .where(EQ(s.id, c.id))
         .noLimit()

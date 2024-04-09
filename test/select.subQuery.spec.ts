@@ -24,8 +24,7 @@ test("simple", async () => {
         .asScalar("subColumn");
 
     const joinSub = SQL
-        .uses(c)
-        .uses(c2)
+        .uses(c, c2)
         .selectFrom(s)
         .columns(s.id, s.id.as("subIdRenamed"))
         .where(

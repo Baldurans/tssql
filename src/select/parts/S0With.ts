@@ -1,15 +1,14 @@
-import {AliasedTable, isAliasAlreadyUsed, Key, NotUsingWithPart} from "../../Types";
+import {AliasedTable, Key, NotUsingWithPart} from "../../Types";
 import {JoinMethods} from "./S1Join";
 
 export interface WithMethods<AliasesFromWith> {
 
-    with<
-        Alias extends string,
-        TableRef extends `${string} as ${Alias}`,
-        Columns
-    >(
-        table: isAliasAlreadyUsed<AliasesFromWith, Alias, AliasedTable<Alias, TableRef, Columns, NotUsingWithPart>>
-    ): WithMethods<AliasesFromWith & Key<Alias>>
+    // with<
+    //     Alias extends string,
+    //     TableRef extends `${string} as ${Alias}`
+    // >(
+    //     table: isAliasAlreadyUsed<AliasesFromWith, Alias, AliasedTable<Alias, TableRef, object, NotUsingWithPart>>
+    // ): WithMethods<AliasesFromWith & Key<Alias>>
 
     selectFrom<
         Alias extends string,
