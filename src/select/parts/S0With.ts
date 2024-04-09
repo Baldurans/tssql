@@ -1,6 +1,7 @@
 import {AliasedTable, AnyAliasedTableDef, isAliasAlreadyUsed, Key, NotUsingWithPart} from "../../Types";
-import {S0From} from "./S0From";
 import {SelectQueryPart} from "../SelectQueryPart";
+import {S1Join} from "./S1Join";
+import {SelectBuilder} from "../SelectBuilder";
 
 export class S0With<AliasesFromWith> extends SelectQueryPart {
 
@@ -15,8 +16,13 @@ export class S0With<AliasesFromWith> extends SelectQueryPart {
         return this as any;
     }
 
-    public select(): S0From<{}, AliasesFromWith, {}> {
-        return new S0From(this.builder)
+    public selectFrom<
+        Alias extends string,
+        TableRef extends `${string} as ${Alias}`
+    >(
+        table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
+    ): S1Join<Key<Alias>, AliasesFromWith, Key<TableRef>> {
+        return new S1Join(new SelectBuilder().from(table));
     }
 
 }

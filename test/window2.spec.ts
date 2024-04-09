@@ -49,8 +49,7 @@ test("window2", async () => {
 
      */
 
-    const sub = SQL.select()
-        .from(c)
+    const sub = SQL.selectFrom(c)
         .columns(
             c.id,
             c.created_at,
@@ -67,8 +66,7 @@ test("window2", async () => {
 
     const query = SQL
         .with(sub)
-        .select()
-        .from(ref)
+        .selectFrom(ref)
         .columns(
             ref.id,
             BIN_TO_UUID(ref.id).as("uuid"),

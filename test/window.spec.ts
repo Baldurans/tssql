@@ -15,8 +15,7 @@ test("window", async () => {
     String(s)
 
     const query = SQL
-        .select()
-        .from(c)
+        .selectFrom(c)
         .window("w1", r => r.partitionBy(c.id).orderBy(c.id, "asc"))
         .columns(
             c.id,

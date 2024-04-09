@@ -21,13 +21,11 @@ test("simple", async () => {
 
     const val: any = undefined;
     const query = SQL
-        .select()
-        .forUpdate()
-        .from(c)
+        .selectFrom(c)
         .join(c2, c2.id.eq(c.id))
         .distinct()
         .columns(
-            SQL.uses(c).select().from(s).columns(s.id).where(s.id.eq(c.id)).limit(10).asScalar("subColumn"),
+            SQL.uses(c).selectFrom(s).columns(s.id).where(s.id.eq(c.id)).limit(10).asScalar("subColumn"),
             c.username,
             c.id,
             c.id.as("from"),
@@ -66,6 +64,7 @@ test("simple", async () => {
         .groupBy(c.id)
         .orderBy(c.id)
         .noLimit()
+        .forUpdate()
 
     console.log(query.toString())
 

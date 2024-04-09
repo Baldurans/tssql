@@ -66,8 +66,9 @@ export class SelectBuilder {
         this._withQueries.set(alias, escapeId(alias) + " AS " + table[SQL_EXPRESSION])
     }
 
-    public from(table: AnyAliasedTableDef): void {
+    public from(table: AnyAliasedTableDef): this {
         this._from = table[SQL_EXPRESSION] + " as " + escapeId(table[SQL_ALIAS]);
+        return this;
     }
 
     public forUpdate() {

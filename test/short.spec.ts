@@ -11,9 +11,7 @@ test("short", async () => {
     String(c2);
 
     const query = SQL
-        .select()
-        .forUpdate()
-        .from(c)
+        .selectFrom(c)
         .distinct()
         .columns(
             c.username.as("username2"),

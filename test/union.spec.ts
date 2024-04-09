@@ -9,9 +9,9 @@ test("with", async () => {
 
     const c = MyDb.user.as("c")
 
-    const q1 = SQL.select().from(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
-    const q2 = SQL.select().from(c).columns(c.username, c.id,).where(c.id.eq(input.userId)).noLimit()
-    const q3 = SQL.select().from(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
+    const q1 = SQL.selectFrom(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
+    const q2 = SQL.selectFrom(c).columns(c.username, c.id,).where(c.id.eq(input.userId)).noLimit()
+    const q3 = SQL.selectFrom(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
 
     const union = q1
         .unionAll(q2)
@@ -22,8 +22,7 @@ test("with", async () => {
         .as("x")
 
 
-    const b = SQL.select()
-        .from(union)
+    const b = SQL.selectFrom(union)
         .columns(union.id, union.username)
         .where(union.id.eq(10 as tUserId))
         .noLimit()

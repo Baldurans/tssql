@@ -43,9 +43,7 @@ test("short", async () => {
     const sub = func(c);
     const sub2 = func2(c);
     const res = await exec(SQL
-        .select()
-        .forUpdate()
-        .from(c)
+        .selectFrom(c)
         .join(sub, sub.id.eq(10 as tCompanyId))
         .join(sub2, sub2.id.eq(c.id))
         .distinct()

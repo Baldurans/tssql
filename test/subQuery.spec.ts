@@ -13,8 +13,7 @@ test("simple", async () => {
 
     const scalarSub = SQL
         .uses(c)
-        .select()
-        .from(s)
+        .selectFrom(s)
         .columns(s.id)
         //.where(["a","b"])
         .where(
@@ -27,8 +26,7 @@ test("simple", async () => {
     const joinSub = SQL
         .uses(c)
         .uses(c2)
-        .select()
-        .from(s)
+        .selectFrom(s)
         .columns(s.id, s.id.as("subIdRenamed"))
         .where(
             s.id.eq(c.id),
@@ -38,8 +36,7 @@ test("simple", async () => {
         .as("joinSub")
 
     const query = SQL
-        .select()
-        .from(c)
+        .selectFrom(c)
         .join(c2, c2.id.eq(c.id))
         .leftJoin(joinSub, joinSub.id.eq(c.id))
         .columns(

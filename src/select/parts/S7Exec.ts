@@ -20,6 +20,11 @@ export class S7Exec<Result> extends SelectQueryPart implements SqlQuery<Result> 
         return new S0Union<Result>(new SelectBuilder()).union(this as any).unionAll(child);
     }
 
+    public forUpdate(): this {
+        this.builder.forUpdate()
+        return this;
+    }
+
     public asScalar<Alias extends string>(
         alias: Alias & ScalarSubQueryAllowsOnlyOneColumn<Alias, Result> extends never ? "Scalar subquery allows only 1 column!" : Alias
     ): Expr<never, Alias, Result[keyof Result]> {

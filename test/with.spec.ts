@@ -12,8 +12,7 @@ test("with", async () => {
     const s = MyDb.user.as("s")
 
     const part1 = SQL
-        .select()
-        .from(s)
+        .selectFrom(s)
         .columns(s.id, s.id.as("subIdRenamed"))
         .where(s.id.eq(10 as tUserId))
         .noLimit()
@@ -22,8 +21,7 @@ test("with", async () => {
     const pA2 = SQL.createRef(part1, "part1Sub2");
 
     const part2 = SQL
-        .select()
-        .from(s)
+        .selectFrom(s)
         .columns(s.id)
         .noWhere()
         .noLimit()
@@ -33,8 +31,7 @@ test("with", async () => {
     const query = SQL
         .with(part1)
         .with(part2)
-        .select()
-        .from(c)
+        .selectFrom(c)
         .join(c2, c2.id.eq(c.id))
         .join(pA1, pA1.id.eq(c.id))
         .join(pA2, pA2.id.eq(c.id))

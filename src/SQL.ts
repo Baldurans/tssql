@@ -1,4 +1,3 @@
-import {S0From} from "./select/parts/S0From";
 import {SelectBuilder} from "./select/SelectBuilder";
 import {AliasedTable, DbTableDefinition, Key, NotUsingWithPart, PrepareQueryArgument, SqlQuery} from "./Types";
 import {S0Uses} from "./select/parts/S0Uses";
@@ -7,6 +6,7 @@ import {S7Exec} from "./select/parts/S7Exec";
 import {SQL_ALIAS, SQL_ENTITY} from "./Symbols";
 import {escape, escapeId} from "./escape";
 import {MysqlTable} from "./MysqlTable";
+import {S1Join} from "./select/parts/S1Join";
 
 export class SQL {
 
@@ -19,11 +19,13 @@ export class SQL {
 
     }
 
-    /**
-     * Start building a select query.
-     */
-    public static select(): S0From<{}, {}, {}> {
-        return new S0From(new SelectBuilder()) as any
+    public static selectFrom<
+        Alias extends string,
+        TableRef extends `${string} as ${Alias}`
+    >(
+        table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
+    ): S1Join<Key<Alias>, {}, Key<TableRef>> {
+        return new S1Join(new SelectBuilder().from(table));
     }
 
     /**

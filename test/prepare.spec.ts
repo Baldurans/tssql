@@ -22,8 +22,7 @@ test("prepare", async () => {
         const cond = c.age.eq(args.age)
 
         const sub = SQL
-            .select()
-            .from(c)
+            .selectFrom(c)
             .columns(c.id, c.username, IF(c.id.eq(10 as tUserId), args.age, args.id).as("weird"))
             .where(OR(
                 c.username.like(args.search),
@@ -33,9 +32,7 @@ test("prepare", async () => {
             .as("sub")
 
         return SQL
-            .select()
-            .forUpdate()
-            .from(c)
+            .selectFrom(c)
             .join(sub, sub.id.eq(c.id))
             .columns(
                 c.id,

@@ -18,8 +18,7 @@ test("complex", async () => {
     // NOTICE: It is very hard to mess up field names, as it most certainly means some hacking as you always reference fields from table objects.
 
     const withSub = SQL
-        .select()
-        .from(s)
+        .selectFrom(s)
         .columns(s.id, s.created, s.username, s.age, s.id.as("subIdRenamed"))
         .where(s.id.eq(10 as tUserId))
         .noLimit()
@@ -28,8 +27,7 @@ test("complex", async () => {
     const withSubSub2 = SQL.createRef(withSub, "withSubSub2");
 
     const withSub2 = SQL
-        .select()
-        .from(s)
+        .selectFrom(s)
         .columns(s.id, s.created, s.username, s.age, s.id.as("subIdRenamed"))
         .where(s.id.eq(10 as tUserId))
         .limit([0, 50])
@@ -39,8 +37,7 @@ test("complex", async () => {
 
     const subQueryTable = SQL
         .uses(c)
-        .select()
-        .from(s)
+        .selectFrom(s)
         .columns(
             s.id,
             s.username,
@@ -69,9 +66,7 @@ test("complex", async () => {
 
     const query = SQL
         .with(withSub)
-        .select()
-        // //.from(withSub) // Alias is already used!
-        .from(c)
+        .selectFrom(c)
         .join(c2, c2.id.eq(c.id))
         .join(subQueryTable, subQueryTable.subIdRenamed.eq(c.id))
         .leftJoin(withSubSub1, withSubSub1.id.eq(c.id))
@@ -100,10 +95,9 @@ test("complex", async () => {
             SET_TO_ARRAY(c.username),
 
             IF(c.id.eq(10 as tUserId), c.id, 10 as tUserId).as("X0"),
-            SQL.uses(c).select().from(s).columns(s.id).where(EQ(c.id, s.id)).noLimit().asScalar("someItem"),
+            SQL.uses(c).selectFrom(s).columns(s.id).where(EQ(c.id, s.id)).noLimit().asScalar("someItem"),
             SQL.uses(c)
-                .select()
-                .from(s)
+                .selectFrom(s)
                 .columns(
                     s.id,
                     //s.username // ___ERROR - Scalar subquery allows only 1 column!
