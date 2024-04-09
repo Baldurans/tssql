@@ -9,7 +9,6 @@ import {WithMethods} from "./select/parts/S0With";
 import {ExecMethods} from "./select/parts/S7Exec";
 import {DeleteBuilder} from "./delete/DeleteBuilder";
 import {DeleteWhereMethods, getDeleteWhereMethods} from "./delete/parts/D1Where";
-import {SelectBuilder2} from "./select/SelectBuilder2";
 
 export class SQL {
 
@@ -37,7 +36,7 @@ export class SQL {
     >(
         table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
     ): JoinMethods<Key<Alias>, {}, Key<TableRef>> {
-        return new SelectBuilder2(new SelectBuilder().from(table))
+        return new SelectBuilder().selectFrom(table)
     }
 
     /**
@@ -57,7 +56,7 @@ export class SQL {
     >(
         table: AliasedTable<Alias, TableRef, object, NotUsingWithPart>
     ): UsesMethods<Key<Alias>, Key<TableRef>> {
-        return new SelectBuilder2(new SelectBuilder());
+        return new SelectBuilder();
     }
 
     /**
@@ -79,7 +78,7 @@ export class SQL {
     >(
         table: AliasedTable<Alias, TableRef, object, NotUsingWithPart>
     ): WithMethods<Key<Alias>> {
-        return new SelectBuilder2(new SelectBuilder().with(table));
+        return new SelectBuilder().with(table);
     }
 
     /**

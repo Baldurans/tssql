@@ -1,12 +1,36 @@
-import {AnyExpr, SqlExpression} from "../SqlExpression";
-import {AnyAliasedTableDef, DbTableDefinition, OrderByStructure, TAB} from "../Types";
-import {orderByStructureToSqlString} from "../SqlFunctions";
-import {SQL_ALIAS, SQL_EXPRESSION} from "../Symbols";
+import {AnyExpr, Over, SqlExpression} from "../SqlExpression";
+import {WhereMethods} from "./parts/S2Where";
+import {ColumnsMethods} from "./parts/S2Columns";
+import {JoinMethods} from "./parts/S1Join";
+import {WithMethods} from "./parts/S0With";
+import {UsesMethods} from "./parts/S0Uses";
+import {UnionMethods} from "./parts/S0Union";
+import {GroupByMethods} from "./parts/S3GroupBy";
+import {HavingMethods} from "./parts/S4Having";
+import {OrderByMethods} from "./parts/S5OrderBy";
+import {LimitMethods} from "./parts/S6Limit";
+import {ExecMethods} from "./parts/S7Exec";
+import {MysqlTable} from "../MysqlTable";
+import {SQL_ALIAS, SQL_ENTITY, SQL_EXPRESSION} from "../Symbols";
+import {AliasedTable, AnyAliasedTableDef, DbTableDefinition} from "../Types";
 import {escapeId} from "../escape";
+import {orderByStructureToSqlString} from "../SqlFunctions";
 
-export type execFunction = (query: string, args?: object) => Promise<any[]>;
+const TAB = "  ";
 
-export class SelectBuilder {
+export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements UnionMethods<Result>,
+    WithMethods<AliasesFromWith>,
+    UsesMethods<Aliases, Tables>,
+    JoinMethods<Aliases, AliasesFromWith, Tables>,
+    ColumnsMethods<Result, Tables>,
+    WhereMethods<Result, Tables>,
+    GroupByMethods<Result, Tables>,
+    HavingMethods<Result, Tables>,
+    OrderByMethods<Result, Tables>,
+    LimitMethods<Result>,
+    ExecMethods<Result> {
+
+    public readonly [SQL_ENTITY]: undefined; // never used
 
     private _withQueries: Map<string, string> = new Map()
     private _from: string;
@@ -14,27 +38,31 @@ export class SelectBuilder {
     private _columnStruct: DbTableDefinition<any> = {} as any;
 
     private readonly _joins: string[] = []
-    private readonly _windows: string[] = [];
+    private readonly _windows: string[] = []
     private readonly _where: string[] = []
-    private readonly _having: string[] = [];
-    private readonly _groupBy: string[] = [];
-    private readonly _orderBy: string[] = []
+    private readonly _having: string[] = []
+    private readonly _groupBy: string[] = []
+    private _orderBy: string[] = []
     private _limit: string = ""
 
-    private readonly unions: string[] = [];
-    private _unionColumnOrder: string[] = [];
+    private readonly unions: string[] = []
+    private _unionColumnOrder: string[] = []
 
     private _distinct: boolean = false;
     private _forUpdate: boolean = false;
 
-
-    public getColumnStruct(): DbTableDefinition<any> {
-        return this._columnStruct;
+    public union(table: any | SelectBuilder<any, any, any, any>) {
+        return this._union(table, "DISTINCT") as any
     }
 
-    public union(type: "ALL" | "DISTINCT", sql: string, struct: DbTableDefinition<any>): void {
+    public unionAll(table: any | SelectBuilder<any, any, any, any>): this {
+        return this._union(table, "ALL")
+    }
+
+    private _union(table: SelectBuilder<any, any, any, any>, type: "ALL" | "DISTINCT" = "DISTINCT"): this {
+        const struct = table._columnStruct;
         if (this.unions.length === 0) {
-            this.unions.push("(\n" + sql + ") ")
+            this.unions.push("(\n" + table.toString(1) + ") ")
             this._columnStruct = struct;
             for (const k in struct) {
                 this._unionColumnOrder.push(k);
@@ -54,82 +82,157 @@ export class SelectBuilder {
             if (i !== this._unionColumnOrder.length) {
                 throw new Error("Union columns count do not match! " + this._unionColumnOrder.length + " != " + i + " (Why didn't compiler warn you about this?)");
             }
-            this.unions.push("UNION " + (type === "DISTINCT" ? "DISTINCT " : "ALL ") + "(\n" + sql + ") ")
+            this.unions.push("UNION " + (type === "DISTINCT" ? "DISTINCT " : "ALL ") + "(\n" + table.toString(1) + ") ")
         }
+        return this;
     }
 
-    public with(table: AnyAliasedTableDef) {
+    public with(table: any | AnyAliasedTableDef) {
         const alias = table[SQL_ALIAS]
         this._withQueries.set(alias, escapeId(alias) + " AS " + table[SQL_EXPRESSION])
-        return this;
+        return this
     }
 
-    public from(table: AnyAliasedTableDef): this {
+    public uses(...tables: any | AnyAliasedTableDef) {
+        return this
+    }
+
+    public selectFrom(table: any | AnyAliasedTableDef) {
         this._from = table[SQL_EXPRESSION] + " as " + escapeId(table[SQL_ALIAS]);
+        return this
+    }
+
+    public join(table: any | AnyAliasedTableDef, condition: any) {
+        return this._join(table, condition, "JOIN")
+    }
+
+    public leftJoin(table: any | AnyAliasedTableDef, condition: any) {
+        return this._join(table, condition, "LEFT JOIN")
+    }
+
+    private _join(table: AnyAliasedTableDef, condition: any, type: "JOIN" | "LEFT JOIN" = "JOIN") {
+        const sql = this._withQueries.has(table[SQL_ALIAS]) ? escapeId(table[SQL_ALIAS]) : table[SQL_EXPRESSION] + " as " + escapeId(table[SQL_ALIAS])
+        this._joins.push(type + " " + sql + " ON (" + condition.expression + ")")
         return this;
     }
 
-    public forUpdate() {
-        this._forUpdate = true;
-    }
-
-    public join(joinType: "JOIN" | "LEFT JOIN", table: AnyAliasedTableDef, condition: AnyExpr): void {
-        const sql = this._withQueries.has(table[SQL_ALIAS]) ? escapeId(table[SQL_ALIAS]) : table[SQL_EXPRESSION] + " as " + escapeId(table[SQL_ALIAS])
-        this._joins.push(joinType + " " + sql + " ON (" + condition.expression + ")")
-        return this as any;
-    }
-
-    public window(name: string, over: string): void {
-        this._windows.push(name + " AS (" + over + ")")
-        return this as any;
+    public window(name: string, func: (builder: Over<any>) => Over<any>) {
+        const builder2 = new Over()
+        func(builder2)
+        this._windows.push(name + " AS (" + builder2.toString() + ")")
+        return this
     }
 
     public distinct() {
         this._distinct = true;
+        return this
     }
 
-    public columns(cols: AnyExpr[]): void {
-        const columns = cols as unknown as SqlExpression<string, string, any>[]
-        for (let i = 0; i < columns.length; i++) {
-            const col = columns[i];
+    public columns(...cols: (any | SqlExpression<string, string, any>)[]) {
+        for (let i = 0; i < cols.length; i++) {
+            const col = cols[i];
             this._columns.push(col.expression + (col.nameAs ? " as " + escapeId(col.nameAs) : ""));
             (this._columnStruct as any)[col.nameAs] = true;
         }
+        return this
     }
 
-    public where(col: AnyExpr): void {
-        if (col && col.expression) {
-            this._where.push(col.expression)
+    public noWhere() {
+        return this as any
+    }
+
+    public where(...cols: (any | SqlExpression<string, string, any>)[]) {
+        for (let i = 0; i < cols.length; i++) {
+            const col = cols[i] as unknown as AnyExpr;
+            if (col && col.expression) {
+                this._where.push(col.expression)
+            }
         }
+        return this as any
     }
 
-    public groupBy(items: (string | AnyExpr)[]): void {
+    public groupBy(...items: (any | SqlExpression<string, string, any>)[]) {
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
             this._groupBy.push(typeof item === "string" ? item : item.expression)
         }
+        return this as any
     }
 
-    public having(items: AnyExpr[]): void {
+    public groupByF(func: (res: any | AliasedTable<string, string, Result, any>) => (any | SqlExpression<string, string, any>)[]) {
+        const proxy: any = new Proxy({}, {
+            get(target: {}, p: string, receiver: any): any {
+                return new SqlExpression(p, p)
+            }
+        })
+        this.groupBy(...(func(proxy) as any));
+        return this as any
+    }
+
+    public having(...items: (any | SqlExpression<string, string, any>)[]) {
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
             this._having.push(typeof item === "string" ? item : item.expression)
         }
+        return this as any
     }
 
-    public orderBy(items: OrderByStructure<string | AnyExpr>): void {
-        this._orderBy.push(...orderByStructureToSqlString(items))
+    public havingF(func: (res: any | AliasedTable<string, string, Result, any>) => (any | SqlExpression<string, string, any>)[]) {
+        const proxy: any = new Proxy({}, {
+            get(target: {}, p: string, receiver: any): any {
+                return new SqlExpression(p, p)
+            }
+        })
+        this.having(...(func(proxy) as any));
+        return this
     }
 
-    public limit(limit: number | [number, number]): void {
+    public orderBy(...items: (any | SqlExpression<string, string, any>)[]) {
+        this._orderBy = orderByStructureToSqlString(items as any)
+        return this as any
+    }
+
+    public orderByF(func: (res: any | AliasedTable<string, string, Result, any>) => (any | SqlExpression<string, string, any>)[]) {
+        const proxy: any = new Proxy({}, {
+            get(target: {}, p: string, receiver: any): any {
+                return new SqlExpression(p, p)
+            }
+        })
+        this.orderBy(...(func(proxy) as any));
+        return this
+    }
+
+    public noLimit() {
+        return this as any
+    }
+
+    public limit(limit: number | [number, number]) {
         if (Array.isArray(limit)) {
             this._limit = Number(limit[0]) + "," + Number(limit[1]);
         } else {
             this._limit = String(Number(limit));
         }
+        return this as any
     }
 
-    public toString(lvl: number = 0): string {
+    public limit1() {
+        return this.limit(1) as any
+    }
+
+    public forUpdate() {
+        this._forUpdate = true;
+        return this as any
+    }
+
+    public asScalar(alias: any): any {
+        return SqlExpression.create("(\n" + this.toString(2) + TAB + ")", alias);
+    }
+
+    public as(alias: any): any {
+        return MysqlTable.defineDbTable("(\n" + this.toString(2) + ")" as "(SUBQUERY)", alias, this._columnStruct)
+    }
+
+    public toString(lvl: number = 0) {
         const tabs = TAB.repeat(lvl);
         let base: string;
         if (this.unions.length > 0) {

@@ -1,4 +1,4 @@
-import {AliasedTable, DbTableDefinition, NotUsingWithPart, SqlQuery} from "../../Types";
+import {AliasedTable, NotUsingWithPart, SqlQuery} from "../../Types";
 import {Expr} from "../../SqlExpression";
 import {UnionMethods} from "./S0Union";
 
@@ -13,8 +13,6 @@ export interface ExecMethods<Result> extends SqlQuery<Result>, UnionMethods<Resu
     as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result, NotUsingWithPart>
 
     toString(lvl?: number): string
-
-    getColumnStruct(): DbTableDefinition<any>
 
 }
 
