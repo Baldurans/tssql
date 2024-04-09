@@ -43,7 +43,7 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
     private readonly _having: string[] = []
     private readonly _groupBy: string[] = []
     private _orderBy: string[] = []
-    private _limit: string = ""
+    private _limit: string = undefined
 
     private readonly unions: string[] = []
     private _unionColumnOrder: string[] = []
