@@ -1,18 +1,18 @@
 import {AliasedTable, Key, NotUsingWithPart} from "../../Types";
-import {constructHaving, Having} from "./S4Having";
+import {getHavingMethods, HavingMethods} from "./S4Having";
 import {Expr, SqlExpression} from "../../SqlExpression";
-import {constructOrderBy, OrderBy} from "./S5OrderBy";
-import {constructLimit, Limit} from "./S6Limit";
+import {getOrderByMethods, OrderByMethods} from "./S5OrderBy";
+import {getLimitMethods, LimitMethods} from "./S6Limit";
 import {SelectBuilder} from "../SelectBuilder";
 
-export function constructGroupBy<Result, Tables>(builder: SelectBuilder): GroupBy<Result, Tables> {
+export function getGroupByMethods<Result, Tables>(builder: SelectBuilder): GroupByMethods<Result, Tables> {
     return {
         groupBy: (...items: any) => {
             builder.groupBy(items as any);
             return {
-                ...constructHaving(builder),
-                ...constructOrderBy(builder),
-                ...constructLimit(builder)
+                ...getHavingMethods(builder),
+                ...getOrderByMethods(builder),
+                ...getLimitMethods(builder)
             }
         },
         groupByF: (func: any) => {
@@ -23,29 +23,29 @@ export function constructGroupBy<Result, Tables>(builder: SelectBuilder): GroupB
             })
             builder.groupBy(func(proxy) as any);
             return {
-                ...constructHaving(builder),
-                ...constructOrderBy(builder),
-                ...constructLimit(builder)
+                ...getHavingMethods(builder),
+                ...getOrderByMethods(builder),
+                ...getLimitMethods(builder)
             }
         }
     }
 }
 
 
-export interface GroupBy<Result, Tables> {
+export interface GroupByMethods<Result, Tables> {
     groupBy<
         TableRef,
         Columns extends Expr<TableRef, string | unknown, any>[]
     >(
         ...items: isColumnOkToUse<Tables, Columns>
-    ): Having<Result, Tables> & OrderBy<Result, Tables> & Limit<Result>
+    ): HavingMethods<Result, Tables> & OrderByMethods<Result, Tables> & LimitMethods<Result>
 
     groupByF<
         TableRef,
         Columns extends Expr<TableRef, string | unknown, any>[]
     >(
         func: (columnsTable: AliasedTable<"(columns)", "(columns)", Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<"(columns)">, Columns>
-    ): Having<Result, Tables> & OrderBy<Result, Tables> & Limit<Result>
+    ): HavingMethods<Result, Tables> & OrderByMethods<Result, Tables> & LimitMethods<Result>
 }
 
 

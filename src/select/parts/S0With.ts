@@ -2,11 +2,11 @@ import {AliasedTable, isAliasAlreadyUsed, Key, NotUsingWithPart} from "../../Typ
 import {getJoinMethods, JoinMethods} from "./S1Join";
 import {SelectBuilder} from "../SelectBuilder";
 
-export function constructWith<AliasesFromWith>(builder: SelectBuilder): With<AliasesFromWith> {
+export function getWithMethods<AliasesFromWith>(builder: SelectBuilder): WithMethods<AliasesFromWith> {
     return {
         with: (table: any) => {
             builder.with(table);
-            return constructWith(builder)
+            return getWithMethods(builder)
         },
         selectFrom: (table: any) => {
             builder.from(table)
@@ -15,7 +15,7 @@ export function constructWith<AliasesFromWith>(builder: SelectBuilder): With<Ali
     }
 }
 
-export interface With<AliasesFromWith> {
+export interface WithMethods<AliasesFromWith> {
 
     with<
         Alias extends string,
@@ -23,7 +23,7 @@ export interface With<AliasesFromWith> {
         Columns
     >(
         table: isAliasAlreadyUsed<AliasesFromWith, Alias, AliasedTable<Alias, TableRef, Columns, NotUsingWithPart>>
-    ): With<AliasesFromWith & Key<Alias>>
+    ): WithMethods<AliasesFromWith & Key<Alias>>
 
     selectFrom<
         Alias extends string,

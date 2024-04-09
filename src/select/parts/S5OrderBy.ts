@@ -1,14 +1,14 @@
 import {AliasedTable, Key, NotUsingWithPart, OrderByStructure} from "../../Types";
-import {constructLimit, Limit} from "./S6Limit";
+import {getLimitMethods, LimitMethods} from "./S6Limit";
 import {isColumnOkToUse} from "./S3GroupBy";
 import {Expr, SqlExpression} from "../../SqlExpression";
 import {SelectBuilder} from "../SelectBuilder";
 
-export function constructOrderBy<Result, Tables>(builder: SelectBuilder): OrderBy<Result, Tables> {
+export function getOrderByMethods<Result, Tables>(builder: SelectBuilder): OrderByMethods<Result, Tables> {
     return {
         orderBy: (...items: any) => {
             builder.orderBy(items as any);
-            return constructLimit(builder)
+            return getLimitMethods(builder)
         },
         orderByF: (func: any) => {
             const proxy: any = new Proxy({}, {
@@ -17,24 +17,24 @@ export function constructOrderBy<Result, Tables>(builder: SelectBuilder): OrderB
                 }
             })
             builder.orderBy(func(proxy) as any);
-            return constructLimit(builder)
+            return getLimitMethods(builder)
         }
     }
 }
 
-export interface OrderBy<Result, Tables> {
+export interface OrderByMethods<Result, Tables> {
     orderBy<
         TableRef,
         Columns extends OrderByStructure<Expr<TableRef, string | unknown, any>>
     >(
         ...items: isColumnOkToUse<Tables, Columns>
-    ): Limit<Result>
+    ): LimitMethods<Result>
 
     orderByF<
         TableRef,
         Columns extends OrderByStructure<Expr<TableRef, string | unknown, string | number>>
     >(
         func: (columnsTable: AliasedTable<"(columns)", "(columns)", Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<"(columns)">, Columns>
-    ): Limit<Result>
+    ): LimitMethods<Result>
 
 }

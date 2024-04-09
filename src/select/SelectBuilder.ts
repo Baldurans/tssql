@@ -138,7 +138,7 @@ export class SelectBuilder {
             base = this.unions.join("") + "\n";
         } else {
             base = (this._withQueries.size > 0 ? tabs + "WITH\n" + TAB + Array.from(this._withQueries.values()).join(",\n\n" + TAB) + "\n\n" : "") +
-                tabs + "SELECT " + (this._distinct ? " DISTINCT " : "") + "\n" +
+                tabs + "SELECT " + (this._distinct ? "DISTINCT " : "") + "\n" +
                 tabs + TAB + this._columns.join(",\n" + tabs + TAB) + "\n" +
                 tabs + "FROM " + this._from + "\n" +
                 (this._joins.length > 0 ? tabs + this._joins.join("\n") + "\n" : "") +
@@ -151,7 +151,7 @@ export class SelectBuilder {
             (this._windows.length > 0 ? tabs + "WINDOW " + this._windows.join(",\n" + TAB) + "\n" : "") +
             (this._orderBy.length > 0 ? tabs + "ORDER BY " + this._orderBy.join(", ") + "\n" : "") +
             (this._limit ? tabs + "LIMIT " + this._limit + "\n" : "") +
-            (this._forUpdate && this.unions.length === 0 ? tabs + " FOR UPDATE\n" : "");
+            (this._forUpdate && this.unions.length === 0 ? tabs + "FOR UPDATE\n" : "");
     }
 
     public async exec(exec: execFunction): Promise<any[]> {

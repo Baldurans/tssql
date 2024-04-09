@@ -1,4 +1,4 @@
-import {constructWhere, Where} from "./S2Where";
+import {getWhereMethods, WhereMethods} from "./S2Where";
 import {Expr} from "../../SqlExpression";
 import {SelectBuilder} from "../SelectBuilder";
 
@@ -9,8 +9,8 @@ export function getColumnMethods<Result, Tables>(builder: SelectBuilder): Column
             return getColumnMethods(builder)
         },
         columns: (...cols: any[]) => {
-            builder.distinct()
-            return constructWhere(builder)
+            builder.columns(cols);
+            return getWhereMethods(builder)
         }
     }
 }
@@ -26,7 +26,7 @@ export interface Columns<Result, Tables> {
     >(
         //...columns: Columns - this will enable seeing sources of Result object properties.
         ...columns: isColumnOkToAdd<Result, Tables, Columns>
-    ): Where<Result & ExtractObj<Columns>, Tables>
+    ): WhereMethods<Result & ExtractObj<Columns>, Tables>
 
 }
 

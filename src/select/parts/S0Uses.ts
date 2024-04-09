@@ -3,10 +3,10 @@ import {getJoinMethods, JoinStep} from "./S1Join";
 import {SelectBuilder} from "../SelectBuilder";
 import {getColumnMethods} from "./S2Columns";
 
-export function constructUses<Aliases, Tables>(builder: SelectBuilder): Uses<Aliases, Tables> {
+export function getUsesMethods<Aliases, Tables>(builder: SelectBuilder): UsesMethods<Aliases, Tables> {
     return {
         uses: (...items: any) => {
-            return constructUses(builder)
+            return getUsesMethods(builder)
         },
         selectFrom: (table: any) => {
             const builder = new SelectBuilder().from(table);
@@ -18,14 +18,14 @@ export function constructUses<Aliases, Tables>(builder: SelectBuilder): Uses<Ali
     }
 }
 
-export interface Uses<Aliases, Tables> {
+export interface UsesMethods<Aliases, Tables> {
 
     uses<
         Alias extends string,
         TableRef extends `${string} as ${Alias}`
     >(
         table: isAliasAlreadyUsed<Aliases, Alias, AliasedTable<Alias, TableRef, any, NotUsingWithPart>>
-    ): Uses<Aliases & Key<Alias>, Tables & Key<TableRef>>
+    ): UsesMethods<Aliases & Key<Alias>, Tables & Key<TableRef>>
 
 
     selectFrom<

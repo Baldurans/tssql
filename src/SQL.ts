@@ -1,13 +1,13 @@
 import {SelectBuilder} from "./select/SelectBuilder";
 import {AliasedTable, DbTableDefinition, Key, NotUsingWithPart, PrepareQueryArgument, SqlQuery} from "./Types";
-import {S7Exec} from "./select/parts/S7Exec";
 import {SQL_ALIAS, SQL_ENTITY} from "./Symbols";
 import {escape, escapeId} from "./escape";
 import {MysqlTable} from "./MysqlTable";
 import {getJoinMethods, JoinStep} from "./select/parts/S1Join";
-import {constructUses, Uses} from "./select/parts/S0Uses";
-import {constructWith, With} from "./select/parts/S0With";
+import {getUsesMethods, UsesMethods} from "./select/parts/S0Uses";
+import {getWithMethods, WithMethods} from "./select/parts/S0With";
 import {getColumnMethods} from "./select/parts/S2Columns";
+import {ExecMethods} from "./select/parts/S7Exec";
 
 export class SQL {
 
@@ -49,8 +49,8 @@ export class SQL {
         TableRef extends `${TableName} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, object, NotUsingWithPart>
-    ): Uses<Key<Alias>, Key<TableRef>> {
-        return constructUses(new SelectBuilder());
+    ): UsesMethods<Key<Alias>, Key<TableRef>> {
+        return getUsesMethods(new SelectBuilder());
     }
 
     /**
@@ -71,8 +71,8 @@ export class SQL {
         TableRef extends `${TableName} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, object, NotUsingWithPart>
-    ): With<Key<Alias>> {
-        return constructWith(new SelectBuilder());
+    ): WithMethods<Key<Alias>> {
+        return getWithMethods(new SelectBuilder());
     }
 
     /**
@@ -93,7 +93,7 @@ export class SQL {
      * exec(prepared({id: 10}))
      *
      */
-    public static prepare<PrepareQueryArguments extends { [key: string]: any }, Result>(func: (args: PrepareQueryArguments) => S7Exec<Result>): (args: PrepareQueryArguments) => SqlQuery<Result> {
+    public static prepare<PrepareQueryArguments extends { [key: string]: any }, Result>(func: (args: PrepareQueryArguments) => ExecMethods<Result>): (args: PrepareQueryArguments) => SqlQuery<Result> {
         let sqlQuery: string = undefined;
         const seenArguments: Map<string, string> = new Map();
         const getSqlString = () => {
