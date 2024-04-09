@@ -1,19 +1,5 @@
 import {AliasedTable, isAliasAlreadyUsed, Key, NotUsingWithPart} from "../../Types";
-import {getJoinMethods, JoinMethods} from "./S1Join";
-import {SelectBuilder} from "../SelectBuilder";
-
-export function getWithMethods<AliasesFromWith>(builder: SelectBuilder): WithMethods<AliasesFromWith> {
-    return {
-        with: (table: any) => {
-            builder.with(table);
-            return getWithMethods(builder)
-        },
-        selectFrom: (table: any) => {
-            builder.from(table)
-            return getJoinMethods(builder)
-        }
-    }
-}
+import {JoinMethods} from "./S1Join";
 
 export interface WithMethods<AliasesFromWith> {
 

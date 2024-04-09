@@ -58,9 +58,10 @@ export class SelectBuilder {
         }
     }
 
-    public with(table: AnyAliasedTableDef): void {
+    public with(table: AnyAliasedTableDef) {
         const alias = table[SQL_ALIAS]
         this._withQueries.set(alias, escapeId(alias) + " AS " + table[SQL_EXPRESSION])
+        return this;
     }
 
     public from(table: AnyAliasedTableDef): this {

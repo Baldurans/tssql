@@ -1,26 +1,5 @@
-import {SelectBuilder} from "../SelectBuilder";
 import {ExecMethods} from "./S7Exec";
-import {getGroupByMethods, GroupByMethods} from "./S3GroupBy";
-
-export function getUnionMethods<Result>(builder: SelectBuilder): UnionMethods<Result> {
-    return {
-        union: (table: any) => {
-            builder.union("DISTINCT", table.toString(1), table.getColumnStruct())
-            return getUnionCallMethods(builder)
-        },
-        unionAll: (table: any) => {
-            builder.union("ALL", table.toString(1), table.getColumnStruct())
-            return getUnionCallMethods(builder)
-        }
-    }
-}
-
-export function getUnionCallMethods<Result>(builder: SelectBuilder): UnionMethods<Result> & GroupByMethods<Result, {}> {
-    return {
-        ...getUnionMethods(builder),
-        ...getGroupByMethods(builder)
-    }
-}
+import {GroupByMethods} from "./S3GroupBy";
 
 export interface UnionMethods<Result> {
 

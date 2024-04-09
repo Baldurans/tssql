@@ -1,28 +1,7 @@
 import {AliasedTable, isColumnOkToUse, Key, NotUsingWithPart, SQL_BOOL} from "../../Types";
-import {AnyExpr, Expr, SqlExpression} from "../../SqlExpression";
-import {SelectBuilder} from "../SelectBuilder";
-import {getOrderByMethods, OrderByMethods} from "./S5OrderBy";
-import {getLimitMethods, LimitMethods} from "./S6Limit";
-
-export function getHavingMethods<Result, Tables>(builder: SelectBuilder): HavingMethods<Result, Tables> {
-    return {
-        having: (...col: any) => {
-            builder.having(col as unknown as AnyExpr[])
-            return getOrderByMethods(builder)
-        },
-        havingF: (func: any) => {
-            const proxy: any = new Proxy({}, {
-                get(target: {}, p: string, receiver: any): any {
-                    return new SqlExpression(p, p)
-                }
-            })
-            builder.having(func(proxy) as any);
-            return getOrderByMethods(builder)
-        },
-        ...getOrderByMethods(builder),
-        ...getLimitMethods(builder)
-    }
-}
+import {Expr} from "../../SqlExpression";
+import {OrderByMethods} from "./S5OrderBy";
+import {LimitMethods} from "./S6Limit";
 
 export interface HavingMethods<Result, Tables> extends OrderByMethods<Result, Tables>, LimitMethods<Result> {
     having<

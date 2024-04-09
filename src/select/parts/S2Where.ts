@@ -1,23 +1,8 @@
 import {isTableReferenced, Key, SQL_BOOL} from "../../Types";
-import {getGroupByMethods, GroupByMethods} from "./S3GroupBy";
-import {AnyExpr, Expr} from "../../SqlExpression";
+import {GroupByMethods} from "./S3GroupBy";
+import {Expr} from "../../SqlExpression";
 import {OrderByMethods} from "./S5OrderBy";
 import {LimitMethods} from "./S6Limit";
-import {SelectBuilder} from "../SelectBuilder";
-
-export function getWhereMethods<Result, Tables>(builder: SelectBuilder): WhereMethods<Result, Tables> {
-    return {
-        noWhere: () => {
-            return getGroupByMethods(builder)
-        },
-        where: (...cols: any) => {
-            for (let i = 0; i < cols.length; i++) {
-                builder.where(cols[i] as unknown as AnyExpr)
-            }
-            return getGroupByMethods(builder)
-        }
-    }
-}
 
 export interface WhereMethods<Result, Tables> {
 

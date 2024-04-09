@@ -1,28 +1,6 @@
 import {AliasedTable, isAliasAlreadyUsed, isTableReferenced, Key, NotUsingWithPart, SQL_BOOL} from "../../Types";
 import {Expr, Over} from "../../SqlExpression";
-import {ColumnsMethods, getColumnMethods} from "./S2Columns";
-import {SelectBuilder} from "../SelectBuilder";
-
-export function getJoinMethods<Aliases, AliasesFromWith, Tables>(builder: SelectBuilder): JoinMethods<Aliases, AliasesFromWith, Tables> {
-    const res = {
-        join: (table: any, condition: any) => {
-            builder.join("JOIN", table, condition)
-            return res
-        },
-        leftJoin: (table: any, condition: any) => {
-            builder.join("JOIN", table, condition)
-            return res
-        },
-        window: (name: any, func: any) => {
-            const builder2 = new Over()
-            func(builder2)
-            builder.window(name, builder2.toString())
-            return res
-        },
-        ...getColumnMethods(builder)
-    }
-    return res;
-}
+import {ColumnsMethods} from "./S2Columns";
 
 export interface JoinMethods<Aliases, AliasesFromWith, Tables> extends ColumnsMethods<{}, Tables> {
 

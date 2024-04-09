@@ -1,34 +1,6 @@
 import {AliasedTable, DbTableDefinition, NotUsingWithPart, SqlQuery} from "../../Types";
-import {Expr, SqlExpression} from "../../SqlExpression";
-import {MysqlTable} from "../../MysqlTable";
-import {SelectBuilder} from "../SelectBuilder";
-import {SQL_ENTITY} from "../../Symbols";
-import {getUnionMethods, UnionMethods} from "./S0Union";
-
-const TAB = "  ";
-
-export function getExecMethods<Result>(builder: SelectBuilder): ExecMethods<Result> {
-    return {
-        [SQL_ENTITY]: undefined,
-        forUpdate: () => {
-            builder.forUpdate()
-            return getExecMethods(builder)
-        },
-        asScalar: (alias: any): any => {
-            return SqlExpression.create("(\n" + builder.toString(2) + TAB + ")", alias);
-        },
-        as: (alias: any): any => {
-            return MysqlTable.defineDbTable("(\n" + builder.toString(2) + ")" as "(SUBQUERY)", alias, builder.getColumnStruct())
-        },
-        toString: (lvl: number = 0) => {
-            return builder.toString(lvl)
-        },
-        getColumnStruct: () => {
-            return builder.getColumnStruct()
-        },
-        ...getUnionMethods(builder)
-    }
-}
+import {Expr} from "../../SqlExpression";
+import {UnionMethods} from "./S0Union";
 
 export interface ExecMethods<Result> extends SqlQuery<Result>, UnionMethods<Result> {
 

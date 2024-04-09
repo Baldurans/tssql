@@ -4,8 +4,8 @@ import {SQL_ALIAS, SQL_ENTITY, SQL_EXPRESSION} from "./Symbols";
 import {escape, escapeId} from "./escape";
 import {MysqlTable} from "./MysqlTable";
 import {JoinMethods} from "./select/parts/S1Join";
-import {getUsesMethods, UsesMethods} from "./select/parts/S0Uses";
-import {getWithMethods, WithMethods} from "./select/parts/S0With";
+import {UsesMethods} from "./select/parts/S0Uses";
+import {WithMethods} from "./select/parts/S0With";
 import {ExecMethods} from "./select/parts/S7Exec";
 import {DeleteBuilder} from "./delete/DeleteBuilder";
 import {DeleteWhereMethods, getDeleteWhereMethods} from "./delete/parts/D1Where";
@@ -57,7 +57,7 @@ export class SQL {
     >(
         table: AliasedTable<Alias, TableRef, object, NotUsingWithPart>
     ): UsesMethods<Key<Alias>, Key<TableRef>> {
-        return getUsesMethods(new SelectBuilder());
+        return new SelectBuilder2(new SelectBuilder());
     }
 
     /**
@@ -79,7 +79,7 @@ export class SQL {
     >(
         table: AliasedTable<Alias, TableRef, object, NotUsingWithPart>
     ): WithMethods<Key<Alias>> {
-        return getWithMethods(new SelectBuilder());
+        return new SelectBuilder2(new SelectBuilder().with(table));
     }
 
     /**
