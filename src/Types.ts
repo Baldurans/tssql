@@ -17,6 +17,8 @@ export type SqlSelectQuery<Result> = SqlQuery<Result> & {
     transform<T>(row: T): Promise<T>;
 }
 
+export type SelectExecutor<Result, Args extends any[]> = (sql: string, ...args: Args) => Promise<Result[]>
+
 const TAB = "  ";
 const DISTINCT = "DISTINCT";
 export {DISTINCT, TAB}

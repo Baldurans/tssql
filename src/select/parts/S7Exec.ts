@@ -1,4 +1,4 @@
-import {AliasedTable, NotUsingWithPart, SqlSelectQuery} from "../../Types";
+import {AliasedTable, NotUsingWithPart, SelectExecutor, SqlSelectQuery} from "../../Types";
 import {Expr} from "../../SqlExpression";
 import {UnionMethods} from "./S0Union";
 
@@ -13,6 +13,10 @@ export interface ExecMethods<Result> extends SqlSelectQuery<Result>, UnionMethod
     as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result, NotUsingWithPart>
 
     toString(lvl?: number): string
+
+    exec<Args extends any[]>(executor: SelectExecutor<Result, Args>, ...args: Args): Promise<Result[]>
+
+    execOne<Args extends any[]>(executor: SelectExecutor<Result, Args>, ...args: Args): Promise<Result>
 
 }
 

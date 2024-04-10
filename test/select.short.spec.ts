@@ -4,11 +4,19 @@ import {VALUE} from "../src";
 import {SQL} from "../src/SQL";
 import {execOne} from "./tables/exec";
 
+interface Ctx {
+    name: string;
+}
+
 test("short", async () => {
     const input: { userId: tUserId } = {userId: 10 as tUserId}
     const c = MyDb.user.as("c")
     const c2 = MyDb.user.as("c2")
     String(c2);
+
+    const executor = <Result>(sql: string, ctx: Ctx): Promise<Result> => {
+        return [] as any;
+    }
 
     const query = SQL
         .selectFrom(c)
@@ -34,6 +42,11 @@ test("short", async () => {
             // c2.username  // ERROR
         ])
         .noLimit()
+
+    const res2 = await query.execOne(executor, {name: "ha"})
+    console.log(
+        res2.username2
+    )
 
     console.log(query.toString())
     const res = await execOne(query)

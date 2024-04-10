@@ -12,7 +12,7 @@ import {LimitMethods} from "./parts/S6Limit";
 import {ExecMethods} from "./parts/S7Exec";
 import {MysqlTable} from "../MysqlTable";
 import {SQL_ALIAS, SQL_ENTITY, SQL_EXPRESSION} from "../Symbols";
-import {AliasedTable, AnyAliasedTableDef, DbTableDefinition} from "../Types";
+import {AliasedTable, AnyAliasedTableDef, DbTableDefinition, SelectExecutor} from "../Types";
 import {escapeId} from "../escape";
 import {orderByStructureToSqlString} from "../SqlFunctions";
 
@@ -272,6 +272,14 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
             (this._orderBy.length > 0 ? tabs + "ORDER BY " + this._orderBy.join(", ") + "\n" : "") +
             (this._limit ? tabs + "LIMIT " + this._limit + "\n" : "") +
             (this._forUpdate && this.unions.length === 0 ? tabs + "FOR UPDATE\n" : "");
+    }
+
+    public async exec<Args extends any[]>(executor: SelectExecutor<Result, Args>, ...args: Args): Promise<Result[]> {
+        return executor(this.toString(), ...args);
+    }
+
+    public async execOne<Args extends any[]>(executor: SelectExecutor<Result, Args>, ...args: Args): Promise<Result> {
+        return (await this.exec(executor, ...args))?.[0]
     }
 
 }
