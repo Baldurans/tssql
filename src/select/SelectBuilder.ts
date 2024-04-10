@@ -53,23 +53,26 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
 
     public readonly transformers: { property: string, transformer: Transformer<any, any> }[] = []
 
-    public union(table: any | SelectBuilder<any, any, any, any>) {
+    public union(table: any | SelectBuilder<any, any, any, any>): SelectBuilder<any, any, any, any> {
         return this._union(table, "DISTINCT") as any
     }
 
-    public unionAll(table: any | SelectBuilder<any, any, any, any>): this {
+    public unionAll(table: any | SelectBuilder<any, any, any, any>): SelectBuilder<any, any, any, any> {
         return this._union(table, "ALL")
     }
 
-    private _union(table: SelectBuilder<any, any, any, any>, type: "ALL" | "DISTINCT" = "DISTINCT"): this {
-        const struct = table._columnStruct;
+    private _union(table: SelectBuilder<any, any, any, any>, type: "ALL" | "DISTINCT" = "DISTINCT"): SelectBuilder<any, any, any, any> {
         if (this.unions.length === 0) {
-            this.unions.push("(\n" + table.toString(1) + ") ")
-            this._columnStruct = struct;
-            for (const k in struct) {
-                this._unionColumnOrder.push(k);
+            const builder = new SelectBuilder()
+            builder.unions.push("(\n" + this.toString(1) + ") ")
+            builder._columnStruct = this._columnStruct;
+            for (const k in this._columnStruct) {
+                builder._unionColumnOrder.push(k);
             }
+            builder._union(table, type);
+            return builder;
         } else {
+            const struct = table._columnStruct;
             let i = 0;
             for (const k in struct) {
                 if (this._unionColumnOrder[i] !== k) {
@@ -85,8 +88,8 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
                 throw new Error("Union columns count do not match! " + this._unionColumnOrder.length + " != " + i + " (Why didn't compiler warn you about this?)");
             }
             this.unions.push("UNION " + (type === "DISTINCT" ? "DISTINCT " : "ALL ") + "(\n" + table.toString(1) + ") ")
+            return this;
         }
-        return this;
     }
 
     public with(table: any | AnyAliasedTableDef) {
@@ -237,9 +240,9 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
         return MysqlTable.defineDbTable("(\n" + this.toString(2) + ")" as "(SUBQUERY)", alias, this._columnStruct)
     }
 
-    public async transformResult(rows: any[]): Promise<void> {
+    public async transformResult<T>(rows: T[]): Promise<T[]> {
         for (let r = 0; r < rows.length; r++) {
-            const row = rows[r];
+            const row: any = rows[r];
             for (let i = 0; i < this.transformers.length; i++) {
                 const parser = this.transformers[i]
                 const res = parser.transformer(row[parser.property]);
@@ -250,12 +253,14 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
                 }
             }
         }
+        return rows;
     }
 
     public toString(lvl: number = 0) {
         if (this.transformers.length > 0) {
-            throw new Error("Transforms are used, but you are not executing this query in a context that is able to handle them! " +
-                "This is safety measure to avoid executing queries that have critical transforms that do not get executed! You can call toSqlQuery() method to still get sql string!")
+            throw new Error("Select.toString() call might be accidental! This query uses transforms and it may cause errors in the application! " +
+                "This is safety measure to avoid executing queries that have transforms that would not get executed! " +
+                "You can call toSqlQuery() method to still get a sql string!")
         }
         return this._toString(lvl);
     }

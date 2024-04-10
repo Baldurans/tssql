@@ -14,10 +14,10 @@ export type SqlQuery<Result> = {
 
 export type SqlSelectQuery<Result> = SqlQuery<Result> & {
 
-    transformResult<T>(row: T[]): Promise<void>;
+    transformResult<T>(row: T[]): Promise<T[]>;
 }
 
-export type SelectExecutor<Result, Args extends any[]> = (sql: string, ...args: Args) => Promise<Result[]>
+export type SelectExecutor<Result, Args extends any[] = never, Arg1 extends any = never> = (sql: string, ...args: Args) => Promise<Result[]>
 
 const TAB = "  ";
 const DISTINCT = "DISTINCT";
