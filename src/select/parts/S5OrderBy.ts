@@ -1,8 +1,9 @@
 import {AliasedTable, isColumnOkToUse, Key, NotUsingWithPart, OrderByStructure} from "../../Types";
 import {LimitMethods} from "./S6Limit";
 import {Expr} from "../../SqlExpression";
+import {ExecMethods} from "./S7Exec";
 
-export interface OrderByMethods<Result, Tables> extends LimitMethods<Result> {
+export interface OrderByMethods<Result, Tables> extends LimitMethods<Result>, ExecMethods<Result> {
     orderBy<
         TableRef,
         Columns extends OrderByStructure<Expr<TableRef, string | unknown, any>>

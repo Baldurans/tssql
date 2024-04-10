@@ -54,17 +54,14 @@ test("simple", async () => {
                 c2.username.isNull()
             ).as("and")
         )
-        .where(AND(
+        .where(
             c.id.eq(input.userId),
             c.username.isNull(),
             val && c.username.isNull(),
             c.username.notNull()
-        ))
-
+        )
         .groupBy(c.id)
         .orderBy(c.id)
-        .noLimit()
-        .forUpdate()
 
     console.log(query.toString())
 
