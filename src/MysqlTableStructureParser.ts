@@ -72,9 +72,11 @@ export class MysqlTableStructureParser {
 
         } else if (type === ColumnDataType.TINYINT || type === ColumnDataType.SMALLINT || type === ColumnDataType.INT || type === ColumnDataType.MEDIUMINT
             || type === ColumnDataType.BIGINT || type === ColumnDataType.DECIMAL || type === ColumnDataType.FLOAT || type === ColumnDataType.BIT) {
+            const typeNum = Number(row.columnType.split("(").pop().split(")").shift());
             const res: ColumnNumber = {
                 ...column,
                 type: type,
+                typeNum: isNaN(typeNum) ? undefined : typeNum,
                 scale: row.numericScale,
                 precision: row.numericPos,
                 isUnsigned: row.columnType.toUpperCase().indexOf("UNSIGNED") >= 0,
@@ -230,6 +232,7 @@ export interface ColumnNumber extends Column {
         ColumnDataType.DECIMAL |
         ColumnDataType.FLOAT |
         ColumnDataType.BIT
+    typeNum?: number | undefined
     isUnsigned: boolean;
     isAutoIncrement: boolean;
     precision: number;
