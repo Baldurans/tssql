@@ -1,4 +1,4 @@
-import {AliasedTable, DbTableDefinition, InsertRow, NotUsingWithPart} from "./Types";
+import {AliasedTable, DbTableDefinition, ExecuteSqlQuery, InsertRow, NotUsingWithPart} from "./Types";
 import {escape, escapeId} from "./escape";
 import {SQL_ALIAS, SQL_EXPRESSION} from "./Symbols";
 import {SqlExpression} from "./SqlExpression";
@@ -13,15 +13,17 @@ export type WhereArgs<Entity> = {
     [K in keyof Entity]?: Entity[K]
 }
 
-export class MysqlTable<TableName extends string, Entity, EditEntity> {
+export class MysqlTable<TableName extends string, Entity, EditEntity, CTX> {
 
     public readonly tableName: TableName;
     private readonly columns: DbTableDefinition<Entity>;
     private readonly cache: Map<string, AliasedTable<string, `${TableName} as ${string}`, Entity, NotUsingWithPart>> = new Map();
+    private readonly executor: ExecuteSqlQuery<CTX> = undefined
 
-    constructor(tableName: TableName, columns: DbTableDefinition<Entity>) {
+    constructor(tableName: TableName, columns: DbTableDefinition<Entity>, executor?: ExecuteSqlQuery<CTX>) {
         this.tableName = tableName;
         this.columns = columns;
+        this.executor = executor;
         Object.freeze(this.columns);
     }
 
@@ -44,8 +46,8 @@ export class MysqlTable<TableName extends string, Entity, EditEntity> {
         return new InsertBuilder().to(this.tableName).set(row)
     }
 
-    public update(row: Partial<InsertRow<EditEntity, Entity>>): GatewayUpdateWhereMethods<Entity> {
-        return new UpdateBuilder().in(this.tableName).set(row)
+    public update(row: Partial<InsertRow<EditEntity, Entity>>): GatewayUpdateWhereMethods<Entity, CTX> {
+        return new UpdateBuilder(this.executor).in(this.tableName).set(row)
     }
 
     /**

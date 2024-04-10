@@ -1,6 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {SQL} from "../src/SQL";
+import {SQL} from "../src";
 
 test("delete", async () => {
 

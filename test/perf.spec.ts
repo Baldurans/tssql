@@ -1,7 +1,7 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {AND, DATE, IF, OR, VALUE} from "../src";
-import {SQL} from "../src/SQL";
+import {SQL} from "../src";
 
 test("simple", async () => {
 

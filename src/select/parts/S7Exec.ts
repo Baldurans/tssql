@@ -1,10 +1,10 @@
-import {AliasedTable, NotUsingWithPart, SqlSelectQuery} from "../../Types";
+import {AliasedTable, NotUsingWithPart, SqlQuery} from "../../Types";
 import {Expr} from "../../SqlExpression";
 import {UnionMethods} from "./S0Union";
 
-export interface ExecMethods<Result> extends SqlSelectQuery<Result>, UnionMethods<Result> {
+export interface ExecMethods<Result, CTX> extends SqlQuery<Result>, UnionMethods<Result, CTX> {
 
-    forUpdate(): ExecMethods<Result>
+    forUpdate(): ExecMethods<Result, CTX>
 
     asScalar<Alias extends string>(
         alias: Alias & ScalarSubQueryAllowsOnlyOneColumn<Alias, Result> extends never ? "Scalar subquery allows only 1 column!" : Alias
@@ -14,6 +14,9 @@ export interface ExecMethods<Result> extends SqlSelectQuery<Result>, UnionMethod
 
     toString(lvl?: number): string
 
+    exec(ctx: CTX): Promise<Result[]>;
+
+    execOne(ctx: CTX): Promise<Result>
 }
 
 /**

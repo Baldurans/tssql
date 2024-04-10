@@ -5,9 +5,9 @@ import {OrderByMethods} from "./S5OrderBy";
 import {LimitMethods} from "./S6Limit";
 import {ExecMethods} from "./S7Exec";
 
-export interface WhereMethods<Result, Tables> {
+export interface WhereMethods<Result, Tables, CTX> {
 
-    noWhere(): GroupByMethods<Result, Tables> & OrderByMethods<Result, Tables> & LimitMethods<Result> & ExecMethods<Result>
+    noWhere(): GroupByMethods<Result, Tables, CTX> & OrderByMethods<Result, Tables, CTX> & LimitMethods<Result, CTX> & ExecMethods<Result, CTX>
 
     where<
         T1 extends string,
@@ -32,7 +32,7 @@ export interface WhereMethods<Result, Tables> {
         c8?: C<T, T8>,
         c9?: C<T, T9>,
         c10?: C<T, T10>
-    ): GroupByMethods<Result, Tables> & OrderByMethods<Result, Tables> & LimitMethods<Result> & ExecMethods<Result>
+    ): GroupByMethods<Result, Tables, CTX> & OrderByMethods<Result, Tables, CTX> & LimitMethods<Result, CTX> & ExecMethods<Result, CTX>
 
 }
 

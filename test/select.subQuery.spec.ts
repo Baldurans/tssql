@@ -1,7 +1,7 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {SQL} from "../src/SQL";
 import {execOne} from "./tables/exec";
+import {SQL} from "../src";
 
 test("simple", async () => {
 

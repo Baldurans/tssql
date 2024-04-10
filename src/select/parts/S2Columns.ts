@@ -1,9 +1,9 @@
 import {WhereMethods} from "./S2Where";
 import {Expr} from "../../SqlExpression";
 
-export interface ColumnsMethods<Result, Tables> {
+export interface ColumnsMethods<Result, Tables, CTX> {
 
-    distinct(): ColumnsMethods<Result, Tables>
+    distinct(): ColumnsMethods<Result, Tables, CTX>
 
     columns<
         TableRef,
@@ -11,7 +11,7 @@ export interface ColumnsMethods<Result, Tables> {
     >(
         //...columns: Columns - this will enable seeing sources of Result object properties.
         ...columns: isColumnOkToAdd<Result, Tables, Columns>
-    ): WhereMethods<Result & ExtractObj<Columns>, Tables>
+    ): WhereMethods<Result & ExtractObj<Columns>, Tables, CTX>
 
 }
 

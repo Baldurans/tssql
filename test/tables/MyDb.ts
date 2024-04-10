@@ -5,7 +5,7 @@ import {ColumnDataType} from "../../src";
 
 export class MyDb {
 
-    public static user = new MysqlTable<"user", User, UserRowForEdit>("user", {
+    public static user = new MysqlTable<"user", User, UserRowForEdit, undefined>("user", {
         id: {type: ColumnDataType.INT},
         username: {type: ColumnDataType.VARCHAR},
         age: {type: ColumnDataType.INT},
@@ -17,7 +17,7 @@ export class MyDb {
         uuid: {type: ColumnDataType.INT},
     })
 
-    public static company = new MysqlTable<"company", Company, CompanyForEdit>("company", {
+    public static company = new MysqlTable<"company", Company, CompanyForEdit, undefined>("company", {
         id: {type: ColumnDataType.INT},
         name: {type: ColumnDataType.VARCHAR},
     })

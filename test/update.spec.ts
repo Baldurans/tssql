@@ -1,7 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {SQL} from "../src/SQL";
-import {MAX} from "../src";
+import {MAX, SQL} from "../src";
 
 test("update", async () => {
 
@@ -25,12 +24,10 @@ test("update", async () => {
             id: input.userId
         })
         .orderBy("id")
-        .noLimit()
 
     const sub = SQL.selectFrom(c)
         .columns(c.id)
         .where(c.isMan.eq(1))
-        .noLimit()
         .as("sub")
 
     SQL.update(c, sub)

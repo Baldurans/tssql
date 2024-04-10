@@ -1,7 +1,7 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {FIRST_VALUE, LAG, LAST_VALUE, LEAD, NTH_VALUE, RANK, ROW_NUMBER} from "../src";
-import {SQL} from "../src/SQL";
+import {SQL} from "../src";
 import {execOne} from "./tables/exec";
 
 test("window", async () => {

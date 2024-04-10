@@ -1,7 +1,7 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {BIN_TO_UUID, RANK, UNIX_TIMESTAMP} from "../src";
-import {SQL} from "../src/SQL";
+import {SQL} from "../src";
 import {execOne} from "./tables/exec";
 
 test("window2", async () => {

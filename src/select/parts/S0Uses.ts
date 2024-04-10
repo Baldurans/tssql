@@ -1,7 +1,7 @@
 import {AliasedTable, Key, NotUsingWithPart} from "../../Types";
 import {JoinMethods} from "./S1Join";
 
-export interface UsesMethods<Aliases, Tables> {
+export interface UsesMethods<Aliases, Tables, CTX> {
 
     // uses<
     //     Alias extends string,
@@ -16,6 +16,6 @@ export interface UsesMethods<Aliases, Tables> {
         TableRef extends `${string} as ${Alias}`
     >(
         table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
-    ): JoinMethods<Aliases & Key<Alias>, {}, Tables & Key<TableRef>>
+    ): JoinMethods<Aliases & Key<Alias>, {}, Tables & Key<TableRef>, CTX>
 
 }

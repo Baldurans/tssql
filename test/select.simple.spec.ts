@@ -1,7 +1,6 @@
 import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
-import {AND, CONCAT, DATE, GROUP_CONCAT, IF, MATH, OR, VALUE} from "../src";
-import {SQL} from "../src/SQL";
+import {AND, CONCAT, DATE, GROUP_CONCAT, IF, MATH, OR, SQL, VALUE} from "../src";
 import {execOne} from "./tables/exec";
 
 enum MyEnum {
@@ -64,10 +63,6 @@ test("simple", async () => {
         .orderBy(c.id)
 
     console.log(query.toString())
-
-    console.log(await query.transform({
-        emptyValue: "haha"
-    }))
 
     const res = await execOne(query);
     console.log(

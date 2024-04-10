@@ -12,23 +12,23 @@ import {LimitMethods} from "./parts/S6Limit";
 import {ExecMethods} from "./parts/S7Exec";
 import {MysqlTable} from "../MysqlTable";
 import {SQL_ALIAS, SQL_ENTITY, SQL_EXPRESSION} from "../Symbols";
-import {AliasedTable, AnyAliasedTableDef, DbTableDefinition} from "../Types";
+import {AliasedTable, AnyAliasedTableDef, DbTableDefinition, ExecuteSqlQuery} from "../Types";
 import {escapeId} from "../escape";
 import {orderByStructureToSqlString} from "../SqlFunctions";
 
 const TAB = "  ";
 
-export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements UnionMethods<Result>,
-    WithMethods<AliasesFromWith>,
-    UsesMethods<Aliases, Tables>,
-    JoinMethods<Aliases, AliasesFromWith, Tables>,
-    ColumnsMethods<Result, Tables>,
-    WhereMethods<Result, Tables>,
-    GroupByMethods<Result, Tables>,
-    HavingMethods<Result, Tables>,
-    OrderByMethods<Result, Tables>,
-    LimitMethods<Result>,
-    ExecMethods<Result> {
+export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables, CTX> implements UnionMethods<Result, CTX>,
+    WithMethods<AliasesFromWith, CTX>,
+    UsesMethods<Aliases, Tables, CTX>,
+    JoinMethods<Aliases, AliasesFromWith, Tables, CTX>,
+    ColumnsMethods<Result, Tables, CTX>,
+    WhereMethods<Result, Tables, CTX>,
+    GroupByMethods<Result, Tables, CTX>,
+    HavingMethods<Result, Tables, CTX>,
+    OrderByMethods<Result, Tables, CTX>,
+    LimitMethods<Result, CTX>,
+    ExecMethods<Result, CTX> {
 
     public readonly [SQL_ENTITY]: undefined; // never used
 
@@ -51,17 +51,23 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
     private _distinct: boolean = false;
     private _forUpdate: boolean = false;
 
-    public readonly transformers: { property: string, transformer: Transformer<any, any> }[] = []
+    private readonly transformers: { property: string, transformer: Transformer<any, any> }[] = []
 
-    public union(table: any | SelectBuilder<any, any, any, any>) {
+    private readonly _exec: ExecuteSqlQuery<CTX>;
+
+    constructor(exec: ExecuteSqlQuery<CTX>) {
+        this._exec = exec;
+    }
+
+    public union(table: any | SelectBuilder<any, any, any, any, any>) {
         return this._union(table, "DISTINCT") as any
     }
 
-    public unionAll(table: any | SelectBuilder<any, any, any, any>): this {
+    public unionAll(table: any | SelectBuilder<any, any, any, any, any>): this {
         return this._union(table, "ALL")
     }
 
-    private _union(table: SelectBuilder<any, any, any, any>, type: "ALL" | "DISTINCT" = "DISTINCT"): this {
+    private _union(table: SelectBuilder<any, any, any, any, any>, type: "ALL" | "DISTINCT" = "DISTINCT"): this {
         const struct = table._columnStruct;
         if (this.unions.length === 0) {
             this.unions.push("(\n" + table.toString(1) + ") ")
@@ -238,19 +244,6 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
         return MysqlTable.defineDbTable("(\n" + this.toString(2) + ")" as "(SUBQUERY)", alias, this._columnStruct)
     }
 
-    public async transform(row: any): Promise<any> {
-        for (let i = 0; i < this.transformers.length; i++) {
-            const parser = this.transformers[i]
-            const res = parser.transformer(row[parser.property]);
-            if (res instanceof Promise) {
-                row[parser.property] = await res;
-            } else {
-                row[parser.property] = res;
-            }
-        }
-        return row;
-    }
-
     public toString(lvl: number = 0) {
         const tabs = TAB.repeat(lvl);
         let base: string;
@@ -274,4 +267,29 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
             (this._forUpdate && this.unions.length === 0 ? tabs + "FOR UPDATE\n" : "");
     }
 
+    public async exec(ctx: CTX): Promise<Result[]> {
+        if (!this._exec) {
+            throw new Error("Exec is not configured!")
+        }
+        const res = await this._exec(ctx, this.toString()) as any[]
+        if (res) {
+            for (let r = 0; r < res.length; r++) {
+                const row: any = res[r];
+                for (let i = 0; i < this.transformers.length; i++) {
+                    const parser = this.transformers[i]
+                    const res = parser.transformer(row[parser.property]);
+                    if (res instanceof Promise) {
+                        row[parser.property] = await res;
+                    } else {
+                        row[parser.property] = res;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    public async execOne(ctx: CTX): Promise<Result> {
+        return (await this.exec(ctx))?.[0];
+    }
 }

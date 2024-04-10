@@ -2,7 +2,7 @@ import {tUserId, User} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {AliasedTable} from "../src";
 import {tCompanyId} from "./tables/Company";
-import {SQL} from "../src/SQL";
+import {SQL} from "../src";
 import {exec} from "./tables/exec";
 
 test("short", async () => {

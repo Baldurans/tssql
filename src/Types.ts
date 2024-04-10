@@ -1,6 +1,7 @@
 import {Expr} from "./SqlExpression";
 import {SQL_ALIAS, SQL_ALIAS_FOR_WITH_QUERY, SQL_ENTITY, SQL_EXPRESSION} from "./Symbols";
 import {ColumnDataType} from "./MysqlTableStructureParser";
+import {UpdateResult} from "./update/UpdateInterfaces";
 
 export type Key<Alias extends string> = Record<Alias, true>;
 
@@ -12,10 +13,7 @@ export type SqlQuery<Result> = {
 
 }
 
-export type SqlSelectQuery<Result> = SqlQuery<Result> & {
-
-    transform<T>(row: T): Promise<T>;
-}
+export type ExecuteSqlQuery<CTX> = (ctx: CTX, sql: string) => Promise<any[] | UpdateResult>;
 
 const TAB = "  ";
 const DISTINCT = "DISTINCT";

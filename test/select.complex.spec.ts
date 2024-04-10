@@ -2,7 +2,7 @@ import {tUserId} from "./tables/User";
 import {DANGEROUS_SQL_EXPRESSION, DATE, EQ, IF, SET_TO_ARRAY} from "../src/SqlFunctions";
 import {MyDb} from "./tables/MyDb";
 import {vDate} from "../src";
-import {SQL} from "../src/SQL";
+import {SQL} from "../src";
 import {execOne} from "./tables/exec";
 
 test("complex", async () => {

@@ -2,7 +2,7 @@ import {AliasedTable, isAliasAlreadyUsed, isTableReferenced, Key, NotUsingWithPa
 import {Expr, Over} from "../../SqlExpression";
 import {ColumnsMethods} from "./S2Columns";
 
-export interface JoinMethods<Aliases, AliasesFromWith, Tables> extends ColumnsMethods<{}, Tables> {
+export interface JoinMethods<Aliases, AliasesFromWith, Tables, CTX> extends ColumnsMethods<{}, Tables, CTX> {
 
     join<
         Alias extends string,
@@ -12,7 +12,7 @@ export interface JoinMethods<Aliases, AliasesFromWith, Tables> extends ColumnsMe
     >(
         table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
         condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
-    ): JoinMethods<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>>
+    ): JoinMethods<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX>
 
     leftJoin<
         Alias extends string,
@@ -22,7 +22,7 @@ export interface JoinMethods<Aliases, AliasesFromWith, Tables> extends ColumnsMe
     >(
         table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
         condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
-    ): JoinMethods<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>>
+    ): JoinMethods<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>, CTX>
 
     window<
         WindowName extends string,
@@ -30,7 +30,7 @@ export interface JoinMethods<Aliases, AliasesFromWith, Tables> extends ColumnsMe
     >(
         name: isAliasAlreadyUsed<Aliases & AliasesFromWith, WindowName, WindowName>,
         func: (builder: Over<never>) => Over<UsedTablesRef>
-    ): JoinMethods<Aliases & Key<WindowName>, AliasesFromWith, Tables & Key<`(window) as ${WindowName}`>>
+    ): JoinMethods<Aliases & Key<WindowName>, AliasesFromWith, Tables & Key<`(window) as ${WindowName}`>, CTX>
 
 }
 

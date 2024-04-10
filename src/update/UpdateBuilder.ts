@@ -1,14 +1,14 @@
 import {escape, escapeId} from "../escape";
 import {SQL_ENTITY} from "../Symbols";
-import {ExecUpdateMethods, GatewayUpdateOrderByMethods, GatewayUpdateWhereMethods, UpdateLimitMethods} from "./UpdateInterfaces";
+import {ExecUpdateMethods, GatewayUpdateOrderByMethods, GatewayUpdateWhereMethods, UpdateLimitMethods, UpdateResult} from "./UpdateInterfaces";
 import {AnyExpr, SqlExpression} from "../SqlExpression";
-import {OrderByStructure} from "../Types";
+import {ExecuteSqlQuery, OrderByStructure} from "../Types";
 import {orderByStructureToSqlString} from "../SqlFunctions";
 
-export class UpdateBuilder<Entity> implements ExecUpdateMethods,
-    GatewayUpdateWhereMethods<Entity>,
-    GatewayUpdateOrderByMethods<Entity>,
-    UpdateLimitMethods {
+export class UpdateBuilder<Entity, CTX> implements ExecUpdateMethods<CTX>,
+    GatewayUpdateWhereMethods<Entity, CTX>,
+    GatewayUpdateOrderByMethods<Entity, CTX>,
+    UpdateLimitMethods<CTX> {
 
     public readonly [SQL_ENTITY]: undefined; // never used
 
@@ -17,6 +17,12 @@ export class UpdateBuilder<Entity> implements ExecUpdateMethods,
     private readonly _where: string[] = [];
     private readonly _orderBy: string[] = [];
     private _limit: string;
+
+    private readonly _exec: ExecuteSqlQuery<CTX>;
+
+    constructor(exec: ExecuteSqlQuery<CTX>) {
+        this._exec = exec;
+    }
 
     public in(tableName: string) {
         this._tableName = tableName;
@@ -67,5 +73,12 @@ export class UpdateBuilder<Entity> implements ExecUpdateMethods,
             (this._where.length > 0 ? " WHERE " + this._where.join(" AND ") + "\n" : "") +
             (this._orderBy.length > 0 ? " ORDER BY " + this._orderBy.join(", ") + "\n" : "") +
             (this._limit ? "LIMIT " + this._limit : "")
+    }
+
+    public async exec(ctx: CTX): Promise<UpdateResult> {
+        if (!this._exec) {
+            throw new Error("Exec is not configured!")
+        }
+        return this._exec(ctx, this.toString()) as any;
     }
 }
