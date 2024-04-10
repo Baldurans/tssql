@@ -1,4 +1,4 @@
-import {AliasedTable, DbTableDefinition, NotUsingWithPart} from "./Types";
+import {AliasedTable, DbTableDefinition, InsertRow, NotUsingWithPart} from "./Types";
 import {escape, escapeId} from "./escape";
 import {SQL_ALIAS, SQL_EXPRESSION} from "./Symbols";
 import {SqlExpression} from "./SqlExpression";
@@ -40,11 +40,11 @@ export class MysqlTable<TableName extends string, Entity, EditEntity> {
         return builder
     }
 
-    public insert(row: EditEntity): ExecInsertMethods {
+    public insert(row: InsertRow<EditEntity, Entity>): ExecInsertMethods {
         return new InsertBuilder().to(this.tableName).set(row)
     }
 
-    public update(row: Partial<EditEntity>): GatewayUpdateWhereMethods<Entity> {
+    public update(row: Partial<InsertRow<EditEntity, Entity>>): GatewayUpdateWhereMethods<Entity> {
         return new UpdateBuilder().in(this.tableName).set(row)
     }
 

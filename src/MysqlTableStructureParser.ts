@@ -43,6 +43,8 @@ export class MysqlTableStructureParser {
         const column: Column = {
             type: type,
             name: row.columnName,
+            dataType: row.dataType.toUpperCase(),
+            columnType: row.columnType,
             tsType: MYSQL_TYPE_TO_TS_TYPE.get(type),
             isNullable: row.isNullable.toUpperCase().indexOf("YES") >= 0,
             default: this.parseDefault(row.columnDefault),
@@ -191,6 +193,9 @@ export interface Column {
     type: ColumnDataType;
     name: string;
     tsType: string;
+    dataType: string // Type like INT
+    columnType: string; // Type like INT(11)
+    typeNum?: number | undefined // for INT(11), this would be 11
     default: string | number;
     isNullable: boolean;
     columnKey: KeyType[];
@@ -232,7 +237,6 @@ export interface ColumnNumber extends Column {
         ColumnDataType.DECIMAL |
         ColumnDataType.FLOAT |
         ColumnDataType.BIT
-    typeNum?: number | undefined
     isUnsigned: boolean;
     isAutoIncrement: boolean;
     precision: number;

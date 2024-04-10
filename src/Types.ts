@@ -1,5 +1,6 @@
 import {Expr} from "./SqlExpression";
 import {SQL_ALIAS, SQL_ALIAS_FOR_WITH_QUERY, SQL_ENTITY, SQL_EXPRESSION} from "./Symbols";
+import {ColumnDataType} from "./MysqlTableStructureParser";
 
 export type Key<Alias extends string> = Record<Alias, true>;
 
@@ -28,7 +29,7 @@ export type AliasedTable<Alias extends string, TableRef, Entity, AliasForWithQue
 export type AnyAliasedTableDef = AliasedTable<string, string, {}, string | NotUsingWithPart>
 
 export type DbTableDefinition<T> = {
-    [P in keyof T]: true
+    [P in keyof T]: { type: ColumnDataType, len?: number, default?: any, isAutoIncrement?: true, isPrimary?: true }
 };
 
 export type InsertRow<InsertRow, FullRow> = {
