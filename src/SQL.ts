@@ -166,14 +166,14 @@ export class SQL {
                         return {__prepare_argument: true, expression: variable};
                     }
                 }) as any
-                sqlQuery = func(p).toString();
+                sqlQuery = func(p).toSqlString();
             }
             return sqlQuery;
         }
         return (args: PrepareQueryArguments) => {
             return {
                 [SQL_ENTITY]: undefined,
-                toString: (): string => {
+                toSqlString: (): string => {
                     let usedQuery = getSqlString();
                     seenArguments.forEach((variable, key) => {
                         usedQuery = usedQuery.replace(variable, escape(args[key]));

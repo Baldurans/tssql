@@ -61,7 +61,7 @@ export class UpdateBuilder<Entity> implements ExecUpdateMethods,
         return this;
     }
 
-    public toString() {
+    public toSqlString() {
         return "INSERT INTO " + this._tableName + " " +
             (this._set.length > 0 ? "SET \n " + this._set.join(",\n") + "\n" : "") +
             (this._where.length > 0 ? " WHERE " + this._where.join(" AND ") + "\n" : "") +

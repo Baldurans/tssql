@@ -8,13 +8,13 @@ export type SqlQuery<Result> = {
 
     [SQL_ENTITY]: Result; // This is needed for typescript typing. It is never populated
 
-    toString(): string
+    toSqlString(): string
 
 }
 
 export type SqlSelectQuery<Result> = SqlQuery<Result> & {
 
-    transform<T>(row: T): Promise<T>;
+    transformResult<T>(row: T[]): Promise<void>;
 }
 
 export type SelectExecutor<Result, Args extends any[]> = (sql: string, ...args: Args) => Promise<Result[]>

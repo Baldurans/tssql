@@ -21,7 +21,7 @@ export class InsertBuilder implements ExecInsertMethods {
         return this;
     }
 
-    public toString() {
+    public toSqlString() {
         return "INSERT INTO " + this._tableName + " " +
             (this._set.length > 0 ? "SET \n " + this._set.join(",\n") + "\n" : "");
     }

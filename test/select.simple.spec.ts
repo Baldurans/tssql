@@ -63,11 +63,11 @@ test("simple", async () => {
         .groupBy(c.id)
         .orderBy(c.id)
 
-    console.log(query.toString())
+    console.log(query.toSqlString())
 
-    console.log(await query.transform({
-        emptyValue: "haha"
-    }))
+    const rows = [{emptyValue: "haha"}];
+    await query.transformResult(rows)
+    console.log(rows)
 
     const res = await execOne(query);
     console.log(

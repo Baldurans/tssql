@@ -139,7 +139,6 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
                 this.transformers.push({property: col.nameAs, transformer: col.transformer});
             }
         }
-        console.log(cols);
         return this
     }
 
@@ -238,20 +237,34 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
         return MysqlTable.defineDbTable("(\n" + this.toString(2) + ")" as "(SUBQUERY)", alias, this._columnStruct)
     }
 
-    public async transform(row: any): Promise<any> {
-        for (let i = 0; i < this.transformers.length; i++) {
-            const parser = this.transformers[i]
-            const res = parser.transformer(row[parser.property]);
-            if (res instanceof Promise) {
-                row[parser.property] = await res;
-            } else {
-                row[parser.property] = res;
+    public async transformResult(rows: any[]): Promise<void> {
+        for (let r = 0; r < rows.length; r++) {
+            const row = rows[r];
+            for (let i = 0; i < this.transformers.length; i++) {
+                const parser = this.transformers[i]
+                const res = parser.transformer(row[parser.property]);
+                if (res instanceof Promise) {
+                    row[parser.property] = await res;
+                } else {
+                    row[parser.property] = res;
+                }
             }
         }
-        return row;
     }
 
     public toString(lvl: number = 0) {
+        if (this.transformers.length > 0) {
+            throw new Error("Transforms are used, but you are not executing this query in a context that is able to handle them! " +
+                "This is safety measure to avoid executing queries that have critical transforms that do not get executed! You can call toSqlQuery() method to still get sql string!")
+        }
+        return this._toString(lvl);
+    }
+
+    public toSqlString() {
+        return this._toString();
+    }
+
+    private _toString(lvl: number = 0) {
         const tabs = TAB.repeat(lvl);
         let base: string;
         if (this.unions.length > 0) {
@@ -275,7 +288,11 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
     }
 
     public async exec<Args extends any[]>(executor: SelectExecutor<Result, Args>, ...args: Args): Promise<Result[]> {
-        return executor(this.toString(), ...args);
+        const res = await executor(this.toSqlString(), ...args);
+        if (res && res.length > 0 && this.transformers.length > 0) {
+            await this.transformResult(res)
+        }
+        return res;
     }
 
     public async execOne<Args extends any[]>(executor: SelectExecutor<Result, Args>, ...args: Args): Promise<Result> {
