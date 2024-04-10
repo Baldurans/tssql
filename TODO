@@ -8,4 +8,7 @@
 * maybe handle booleans correctly? If field has comment "BOOL" or "BOOLEAN", it will consider it boolean and transform?
 
 
+* uses / with to check if duplicate alias is added.
+
+
 
