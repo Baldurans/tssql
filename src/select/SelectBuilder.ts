@@ -1,4 +1,4 @@
-import {AnyExpr, Over, SqlExpression} from "../SqlExpression";
+import {AnyExpr, Over, SqlExpression, Transformer} from "../SqlExpression";
 import {WhereMethods} from "./parts/S2Where";
 import {ColumnsMethods} from "./parts/S2Columns";
 import {JoinMethods} from "./parts/S1Join";
@@ -50,6 +50,8 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
 
     private _distinct: boolean = false;
     private _forUpdate: boolean = false;
+
+    public readonly transformers: { property: string, transformer: Transformer<any, any> }[] = []
 
     public union(table: any | SelectBuilder<any, any, any, any>) {
         return this._union(table, "DISTINCT") as any
@@ -133,7 +135,11 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
             const col = cols[i];
             this._columns.push(col.expression + (col.nameAs ? " as " + escapeId(col.nameAs) : ""));
             (this._columnStruct as any)[col.nameAs] = true;
+            if (col.transformer) {
+                this.transformers.push({property: col.nameAs, transformer: col.transformer});
+            }
         }
+        console.log(cols);
         return this
     }
 
@@ -230,6 +236,19 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
 
     public as(alias: any): any {
         return MysqlTable.defineDbTable("(\n" + this.toString(2) + ")" as "(SUBQUERY)", alias, this._columnStruct)
+    }
+
+    public async transform(row: any): Promise<any> {
+        for (let i = 0; i < this.transformers.length; i++) {
+            const parser = this.transformers[i]
+            const res = parser.transformer(row[parser.property]);
+            if (res instanceof Promise) {
+                row[parser.property] = await res;
+            } else {
+                row[parser.property] = res;
+            }
+        }
+        return row;
     }
 
     public toString(lvl: number = 0) {

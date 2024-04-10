@@ -30,7 +30,7 @@ test("simple", async () => {
             c.id,
             c.id.as("from"),
             c.id.as("renamedId"),
-            VALUE(null as string).as("emptyValue"),
+            VALUE(null as string).as("emptyValue").transform((val) => null),
             DATE(c.created).as("myDate"),
             DATE(c.created),
             VALUE(MyEnum.aa).as("enumValue"),
@@ -64,6 +64,10 @@ test("simple", async () => {
         .orderBy(c.id)
 
     console.log(query.toString())
+
+    console.log(await query.transform({
+        emptyValue: "haha"
+    }))
 
     const res = await execOne(query);
     console.log(

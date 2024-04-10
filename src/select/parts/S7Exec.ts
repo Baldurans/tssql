@@ -1,8 +1,8 @@
-import {AliasedTable, NotUsingWithPart, SqlQuery} from "../../Types";
+import {AliasedTable, NotUsingWithPart, SqlSelectQuery} from "../../Types";
 import {Expr} from "../../SqlExpression";
 import {UnionMethods} from "./S0Union";
 
-export interface ExecMethods<Result> extends SqlQuery<Result>, UnionMethods<Result> {
+export interface ExecMethods<Result> extends SqlSelectQuery<Result>, UnionMethods<Result> {
 
     forUpdate(): ExecMethods<Result>
 

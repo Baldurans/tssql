@@ -11,72 +11,83 @@ export type AnyBoolExpr<TableRef> = Expr<TableRef, string | unknown, SQL_BOOL>;
 
 export type AnyExpr = Expr<string, string | unknown, string | number | unknown>
 
+export type Transformer<Input, Output> = ((value: Input) => Output) | ((value: Input) => Promise<Output>)
+
 export class SqlExpression<TableRef, Name extends string | unknown | undefined, Type extends string | number | unknown> {
 
     public readonly expression: string;
     public readonly nameAs: Name | undefined;
+    public readonly transformer: Transformer<unknown, Type>
 
-    constructor(expression: string, nameAs?: Name) {
+    constructor(expression: string, nameAs?: Name, parser?: Transformer<unknown, Type>) {
         this.expression = expression;
         this.nameAs = nameAs;
+        this.transformer = parser;
         Object.freeze(this);
     }
 
-    private asValue(): Expr<TableRef, string | unknown, any> {
+    private asExpr(): Expr<TableRef, string | unknown, any> {
         return this as any;
     }
 
-    public static create<TableRef, Name, Type>(expression: string, nameAs?: string | unknown | undefined): Expr<TableRef, Name, Type> {
-        return new SqlExpression(expression, nameAs) as any
+    public static create<TableRef, Name, Type>(expression: string, nameAs?: string | unknown | undefined, parser?: Transformer<unknown, Type>): Expr<TableRef, Name, Type> {
+        return new SqlExpression(expression, nameAs, parser) as any
     }
 
     public cast<CastType extends string | number>(): Expr<TableRef, Name, CastType> {
         return this as any;
     }
 
-    public as<T extends string>(name: T): Expr<TableRef, T, Type> {
-        return new SqlExpression<TableRef, T, Type>(this.expression, name) as any;
+    public as<NewName extends string>(name: NewName): Expr<TableRef, NewName, Type> {
+        return new SqlExpression<TableRef, NewName, Type>(this.expression, name, this.transformer) as any;
     }
 
+    public transform<ResultType>(func: (value: Type) => ResultType): Expr<TableRef, Name, ResultType> {
+        return new SqlExpression<TableRef, Name, ResultType>(this.expression, this.nameAs, func) as any
+    }
+
+    public asyncTransform<ResultType>(func: (value: Type) => Promise<ResultType>): Expr<TableRef, Name, ResultType> {
+        return new SqlExpression<TableRef, Name, ResultType>(this.expression, this.nameAs, func) as any
+    }
 
     // -------------------------------------------------------------------
     // BOOLEAN CHECKS
     // -------------------------------------------------------------------
 
     public isNull(): Expr<TableRef, unknown, SQL_BOOL> {
-        return IS_NULL(this.asValue());
+        return IS_NULL(this.asExpr());
     }
 
     public notNull(): Expr<TableRef, unknown, SQL_BOOL> {
-        return NOT_NULL(this.asValue());
+        return NOT_NULL(this.asExpr());
     }
 
     public in<TableRef2 = never>(values: Type[] | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return IN(this.asValue(), values);
+        return IN(this.asExpr(), values);
     }
 
     public eq<TableRef2 = never>(col2: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return COMPARE(this.asValue(), "=", col2);
+        return COMPARE(this.asExpr(), "=", col2);
     }
 
     public compare<TableRef2 = never>(op: COMPARISON_SIGNS, value: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
-        return COMPARE(this.asValue(), op, value)
+        return COMPARE(this.asExpr(), op, value)
     }
 
     public like(value: string): Expr<TableRef, unknown, SQL_BOOL> {
-        return LIKE(this.asValue(), value);
+        return LIKE(this.asExpr(), value);
     }
 
     public contains(value: string): Expr<TableRef, unknown, SQL_BOOL> {
-        return CONTAINS(this.asValue(), value);
+        return CONTAINS(this.asExpr(), value);
     }
 
     public startsWith(value: string): Expr<TableRef, unknown, SQL_BOOL> {
-        return STARTS_WITH(this.asValue(), value);
+        return STARTS_WITH(this.asExpr(), value);
     }
 
     public endsWith(value: string): Expr<TableRef, unknown, SQL_BOOL> {
-        return ENDS_WITH(this.asValue(), value);
+        return ENDS_WITH(this.asExpr(), value);
     }
 
 }

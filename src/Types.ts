@@ -9,6 +9,12 @@ export type SqlQuery<Result> = {
     [SQL_ENTITY]: Result; // This is needed for typescript typing. It is never populated
 
     toString(): string
+
+}
+
+export type SqlSelectQuery<Result> = SqlQuery<Result> & {
+
+    transform<T>(row: T): Promise<T>;
 }
 
 const TAB = "  ";

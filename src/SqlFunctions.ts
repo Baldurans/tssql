@@ -10,6 +10,13 @@ export function VALUE<Type>(value: Type): Expr<never, unknown, Type> {
     return SqlExpression.create(escape(value as any))
 }
 
+export function TRANSFORM<Type>(func: (arg: any) => Type): Expr<never, unknown, Type> {
+    return SqlExpression.create("NULL", undefined, func) as any
+}
+
+export function TRANSFORM_ASYNC<Type>(func: (arg: any) => Promise<Type>): Expr<never, unknown, Type> {
+    return SqlExpression.create("NULL", undefined, func) as any
+}
 
 export function NULL<Name extends string = never>(as?: Name): Expr<never, Name, null> {
     return SqlExpression.create("NULL", as)
