@@ -12,8 +12,6 @@ export interface ExecMethods<Result> extends SqlSelectQuery<Result>, UnionMethod
 
     as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result, NotUsingWithPart>
 
-    toString(lvl?: number): string
-
     /**
      * Example of an executor method.
      * Notice that it can force existence of other arguments in the exec call. In this case forcing ctx to be added.
