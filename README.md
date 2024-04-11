@@ -240,21 +240,23 @@ SQL.update(c)
     .toSqlString()
 ```
 
-## Using as subquery
+## Using as query and subquery
 
 ```typescript
 const c = MyDb.user.as("c");
 const a = MyDb.article.as("a");
 const sub = SQL
-    .uses(c)
     .selectFrom(a)
-    .columns(MAX(a.created).as("lastArticle"))
+    .columns(
+        a.userId,
+        MAX(a.created).as("lastArticle")
+    )
     .groupBy(a.userId)
     .as("sub")
 
 const q3 = SQL
     .update(c)
-    .join(sub)
+    .join(sub, sub.userId.eq(c.id))
     .set({
         lastArticle: sub.lastArticle
     })
