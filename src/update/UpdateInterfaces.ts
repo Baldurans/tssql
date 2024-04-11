@@ -15,7 +15,7 @@ export interface GatewayUpdateOrderByMethods<Entity> extends UpdateLimitMethods 
 
 export interface UpdateSetMethods<Entity, Tables> {
 
-    set<Value>(value: PartialAndCheckExpr<Entity, Tables>): Value
+    set<Value>(value: PartialAndCheckExpr<Entity, Tables>): UpdateWhereMethods<Tables>
 
     join<
         Alias extends string,

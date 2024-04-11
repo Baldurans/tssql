@@ -1,9 +1,9 @@
 import {escape, escapeId} from "../escape";
-import {SQL_ENTITY} from "../Symbols";
+import {SQL_ENTITY, SQL_EXPRESSION} from "../Symbols";
 import {ExecUpdateMethods, GatewayUpdateOrderByMethods, GatewayUpdateWhereMethods, UpdateLimitMethods, UpdateOrderByMethods, UpdateSetMethods, UpdateWhereMethods} from "./UpdateInterfaces";
 import {AnyExpr, SqlExpression} from "../SqlExpression";
 import {OrderByStructure} from "../Types";
-import {orderByStructureToSqlString} from "../SqlFunctions";
+import {orderByStructureToSqlString, toSql} from "../SqlFunctions";
 
 export class UpdateBuilder<Entity, Tables> implements ExecUpdateMethods,
     GatewayUpdateWhereMethods<Entity>,
@@ -16,6 +16,7 @@ export class UpdateBuilder<Entity, Tables> implements ExecUpdateMethods,
     public readonly [SQL_ENTITY]: { affectedRows: number; }; // never used
 
     private _tableName: string;
+    private _joins: string[] = [];
     private _set: string[] = []
     private readonly _where: string[] = [];
     private readonly _orderBy: string[] = [];
@@ -33,13 +34,13 @@ export class UpdateBuilder<Entity, Tables> implements ExecUpdateMethods,
     }
 
     public join(table: any): this {
-
+        this._joins.push(table[SQL_EXPRESSION])
         return this;
     }
 
     public set(obj: any): this {
         for (const prop in obj) {
-            this._set.push(escapeId(prop) + " = " + escape(obj[prop]));
+            this._set.push(escapeId(prop) + " = " + toSql(obj[prop]));
         }
         return this
     }
@@ -86,6 +87,7 @@ export class UpdateBuilder<Entity, Tables> implements ExecUpdateMethods,
 
     public toSqlString() {
         return "UPDATE " + (this._ignore ? "IGNORE " : "") + this._tableName + " " +
+            (this._joins.length > 0 ? ", \n" + this._joins.join(",\n") : "") +
             (this._set.length > 0 ? "SET \n\t" + this._set.join(",\n\t") + " \n" : "") +
             (this._where.length > 0 ? "WHERE " + this._where.join(" AND ") + " \n" : "") +
             (this._orderBy.length > 0 ? "ORDER BY " + this._orderBy.join(", ") + " \n" : "") +

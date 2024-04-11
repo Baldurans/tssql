@@ -15,6 +15,7 @@ test("delete", async () => {
 
     const q2 = SQL.deleteFrom(c).where(c.id.eq(input.userId)).orderBy(c.id).limit(10)
     console.log(q2.toString())
+    
     //SQL.deleteFrom(c).where(c2.id.eq(input.userId)).orderBy(c2.id).limit(10)
 
 });
