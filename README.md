@@ -22,24 +22,24 @@ This library does not execute queries, it only prepares SQL statements.
 ```typescript
 // Your custom query execution function. (libraries: mysql or mysql2 usually)
 function execute<Result>(query: SqlQuery<Result>): Promise<Result[]> {
-    // Execute your query...
+   const sqlString = query.toSqlString();
+   // Execute your query... 
 }
 
 const c = MyDb.user.as("c");
 const rows = await execute(SQL
-    .selectFrom(c)
-    .columns(
-        c.id,
-        c.firstName,
-        COUNT(c.firstName).as("count"),
-        DATE(MAX(c.created)).as("lastCreatedDate")
-    )
-    .where(c.isActive.eq(1))
-    .groupBy(c.firstName)
-    .having(COUNT(c.firstName).eq(3))
-    .orderBy(c.firstName)
-    .limit(20)
-    .toSqlString())
+        .selectFrom(c)
+        .columns(
+                c.id,
+                c.firstName,
+                COUNT(c.firstName).as("count"),
+                DATE(MAX(c.created)).as("lastCreatedDate")
+        )
+        .where(c.isActive.eq(1))
+        .groupBy(c.firstName)
+        .having(COUNT(c.firstName).eq(3))
+        .orderBy(c.firstName)
+        .limit(20))
 
 // rows[0].count - type is number
 
