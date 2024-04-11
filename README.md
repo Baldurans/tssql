@@ -20,12 +20,12 @@ In addition
 This library does not execute queries, it only prepares SQL statements.
 
 ```typescript
-const c = MyDb.user.as("c");
-
+// Your custom query execution function. (libraries: mysql or mysql2 usually)
 function execute<Result>(query: SqlQuery<Result>): Promise<Result[]> {
     // Execute your query...
 }
 
+const c = MyDb.user.as("c");
 const rows = await execute(SQL
     .selectFrom(c)
     .columns(
