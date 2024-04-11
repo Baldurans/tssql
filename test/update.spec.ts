@@ -49,10 +49,10 @@ test("update", async () => {
         .update(c)
         .join(sub)
         .set({
-            age: MAX(c2.age),
-           // age3: 12,
-            //username: "username2",
-            username: 12,
+            age: MAX(c.age),
+            age3: 12,
+            username: "username2",
+            //username: 12,
         })
     //     .where(c.id.eq(input.userId))
     //     .orderBy(c.id)

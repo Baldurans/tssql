@@ -15,7 +15,7 @@ export interface GatewayUpdateOrderByMethods<Entity> extends UpdateLimitMethods 
 
 export interface UpdateSetMethods<Entity, Tables> {
 
-    set<Value>(value: Partial2<Entity, Tables>): Value
+    set<Value>(value: PartialAndCheckExpr<Entity, Tables>): Value
 
     join<
         Alias extends string,
@@ -26,36 +26,7 @@ export interface UpdateSetMethods<Entity, Tables> {
 
 }
 
-type isTableReferencedObj<Tables, Entity, Value> = {
-    [P in keyof Value]: Value[P] extends Expr<infer CheckTables, string, any>
-        ? CheckTables extends string
-            ? CheckTables extends keyof Tables
-                ? _keyExists<P, Entity, Value[P]>
-                : { ___compileError: `Table '${CheckTables}' is not used in this query!` }
-            : never
-        : _keyExists<P, Entity, Value[P]>
-}
-
-type _keyExists<Property, Entity, OUT> = Property extends keyof Entity
-    ? OUT
-    : { ___compileError: `Property '${Property extends string ? Property : "???"}' does not exist on expected object!!` }
-
-
-type isTableReferencedObj2<Tables, Entity, Value> = {
-    [P in keyof Value]: Value[P] extends Expr<infer CheckTables, string, any>
-        ? CheckTables extends string
-            ? CheckTables extends keyof Tables
-                ? Value[P]
-                : { ___compileError: `Table '${CheckTables}' is not used in this query!` }
-            : never
-        : Value[P]
-}
-
-// type Value = { age: Expr<"user as c", "age", number>, age2: Expr<"user as c", "age", number>, other: "haa" }
-// type Tables = Key<"user as c">
-// type Res = isTableReferencedObj<Tables, Value>
-
-type Partial2<Entity, Tables> = {
+type PartialAndCheckExpr<Entity, Tables> = {
     [P in keyof Entity]?: Entity[P] | Expr<keyof Tables, string, Entity[P]>
 };
 
