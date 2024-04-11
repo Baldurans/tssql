@@ -13,11 +13,11 @@ export type WhereArgs<Entity> = {
     [K in keyof Entity]?: Entity[K]
 }
 
-export class MysqlTable<TableName extends string, Entity, EditEntity> {
+export class MysqlTable<TableName extends string, Entity, EditEntity, InsertEntity = InsertRow<EditEntity, Entity>> {
 
     public readonly tableName: TableName;
     private readonly columns: DbTableDefinition<Entity>;
-    private readonly cache: Map<string, AliasedTable<string, `${TableName} as ${string}`, Entity, NotUsingWithPart>> = new Map();
+    private readonly cache: Map<string, AliasedTable<string, `${TableName} as ${string}`, Entity, InsertEntity, NotUsingWithPart>> = new Map();
 
     constructor(tableName: TableName, columns: DbTableDefinition<Entity>) {
         this.tableName = tableName;
@@ -25,11 +25,11 @@ export class MysqlTable<TableName extends string, Entity, EditEntity> {
         Object.freeze(this.columns);
     }
 
-    public as<Alias extends string>(alias: Alias): AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> {
+    public as<Alias extends string>(alias: Alias): AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, InsertEntity, NotUsingWithPart> {
         if (!this.cache.has(alias)) {
-            this.cache.set(alias, MysqlTable.defineDbTable<TableName, Alias, Entity>(escapeId(this.tableName) as TableName, alias, this.columns))
+            this.cache.set(alias, MysqlTable.defineDbTable<TableName, Alias, Entity, InsertEntity>(escapeId(this.tableName) as TableName, alias, this.columns))
         }
-        return this.cache.get(alias) as AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart>
+        return this.cache.get(alias) as any
     }
 
     public deleteWhere(where: Partial<Entity>): GatewayDeleteOrderByMethods<Entity> {
@@ -66,12 +66,12 @@ export class MysqlTable<TableName extends string, Entity, EditEntity> {
     /**
      * Define a table structure with alias.
      */
-    public static defineDbTable<TableName extends string, Alias extends string, Entity>(
+    public static defineDbTable<TableName extends string, Alias extends string, Entity, XEntity>(
         escapedExpression: TableName,
         alias: string,
         columns: DbTableDefinition<Entity>
-    ): AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> {
-        const tbl: AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, NotUsingWithPart> = {
+    ): AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, XEntity, NotUsingWithPart> {
+        const tbl: AliasedTable<Alias, `${TableName} as ${Alias}`, Entity, XEntity, NotUsingWithPart> = {
             [SQL_EXPRESSION]: escapedExpression,
             [SQL_ALIAS]: alias
         } as any;

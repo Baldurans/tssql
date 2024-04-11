@@ -15,7 +15,7 @@ export interface UsesMethods<Aliases, Tables> {
         Alias extends string,
         TableRef extends `${string} as ${Alias}`
     >(
-        table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
+        table: AliasedTable<Alias, TableRef, object, object, string | NotUsingWithPart>
     ): JoinMethods<Aliases & Key<Alias>, {}, Tables & Key<TableRef>>
 
 }

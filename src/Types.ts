@@ -1,5 +1,5 @@
 import {Expr} from "./SqlExpression";
-import {SQL_ALIAS, SQL_ALIAS_FOR_WITH_QUERY, SQL_ENTITY, SQL_EXPRESSION} from "./Symbols";
+import {SQL_ALIAS, SQL_ALIAS_FOR_WITH_QUERY, SQL_EDIT_ENTITY, SQL_ENTITY, SQL_EXPRESSION} from "./Symbols";
 import {ColumnDataType} from "./MysqlTableStructureParser";
 
 export type Key<Alias extends string> = Record<Alias, true>;
@@ -25,16 +25,17 @@ export {DISTINCT, TAB}
 
 // -----------------------------------------------------
 
-export type AliasedTable<Alias extends string, TableRef, Entity, AliasForWithQuery extends string | NotUsingWithPart> = {
+export type AliasedTable<Alias extends string, TableRef, Entity, EditEntity, AliasForWithQuery extends string | NotUsingWithPart> = {
     [SQL_ALIAS]: Alias
     [SQL_EXPRESSION]: TableRef
     [SQL_ALIAS_FOR_WITH_QUERY]: AliasForWithQuery
     [SQL_ENTITY]: Entity
+    [SQL_EDIT_ENTITY]: EditEntity
 } & {
     [K in keyof Entity]: Expr<TableRef, K, Entity[K]>
 }
 
-export type AnyAliasedTableDef = AliasedTable<string, string, {}, string | NotUsingWithPart>
+export type AnyAliasedTableDef = AliasedTable<string, string, {}, {}, string | NotUsingWithPart>
 
 export type DbTableDefinition<T> = {
     [P in keyof T]: { type: ColumnDataType, len?: number, default?: any, isAutoIncrement?: true, isPrimary?: true }

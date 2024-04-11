@@ -167,7 +167,7 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
         return this as any
     }
 
-    public groupByF(func: (res: any | AliasedTable<string, string, Result, any>) => (any | SqlExpression<string, string, any>)[]) {
+    public groupByF(func: (res: any | AliasedTable<string, string, Result, unknown, any>) => (any | SqlExpression<string, string, any>)[]) {
         const proxy: any = new Proxy({}, {
             get(target: {}, p: string, receiver: any): any {
                 return new SqlExpression(p, p)
@@ -185,7 +185,7 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
         return this as any
     }
 
-    public havingF(func: (res: any | AliasedTable<string, string, Result, any>) => (any | SqlExpression<string, string, any>)[]) {
+    public havingF(func: (res: any | AliasedTable<string, string, Result, unknown, any>) => (any | SqlExpression<string, string, any>)[]) {
         const proxy: any = new Proxy({}, {
             get(target: {}, p: string, receiver: any): any {
                 return new SqlExpression(p, p)
@@ -200,7 +200,7 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
         return this as any
     }
 
-    public orderByF(func: (res: any | AliasedTable<string, string, Result, any>) => (any | SqlExpression<string, string, any>)[]) {
+    public orderByF(func: (res: any | AliasedTable<string, string, Result, unknown, any>) => (any | SqlExpression<string, string, any>)[]) {
         const proxy: any = new Proxy({}, {
             get(target: {}, p: string, receiver: any): any {
                 return new SqlExpression(p, p)

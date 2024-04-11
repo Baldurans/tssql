@@ -16,7 +16,7 @@ export interface HavingMethods<Result, Tables> extends OrderByMethods<Result, Ta
         TableRef,
         Columns extends Expr<TableRef, string | unknown, SQL_BOOL>[]
     >(
-        func: (columnsTable: AliasedTable<"(columns)", "(columns)", Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<"(columns)">, Columns>
+        func: (columnsTable: AliasedTable<"(columns)", "(columns)", Result, object, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<"(columns)">, Columns>
     ): OrderByMethods<Result, Tables> & LimitMethods<Result>
 }
 

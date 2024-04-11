@@ -15,7 +15,7 @@ export interface OrderByMethods<Result, Tables> extends LimitMethods<Result>, Ex
         TableRef,
         Columns extends OrderByStructure<Expr<TableRef, string | unknown, string | number>>
     >(
-        func: (columnsTable: AliasedTable<"(columns)", "(columns)", Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<"(columns)">, Columns>
+        func: (columnsTable: AliasedTable<"(columns)", "(columns)", Result, object, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<"(columns)">, Columns>
     ): LimitMethods<Result>
 
 }

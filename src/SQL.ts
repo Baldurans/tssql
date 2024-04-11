@@ -9,12 +9,30 @@ import {WithMethods} from "./select/parts/S0With";
 import {ExecMethods} from "./select/parts/S7Exec";
 import {DeleteBuilder} from "./delete/DeleteBuilder";
 import {DeleteWhereMethods} from "./delete/DeleteInterfaces";
+import {InsertBuilder} from "./insert/InsertBuilder";
+import {InsertSetMethods} from "./insert/InsertInterfaces";
 
 export class SQL {
 
 
-    public static insertInfo() {
+    public static insertInto<
+        Entity,
+        EditEntity,
+        Alias extends string,
+        TableRef extends `${string} as ${Alias}`,
+    >(
+        table: AliasedTable<Alias, TableRef, Entity, EditEntity, NotUsingWithPart>): InsertSetMethods<EditEntity> {
+        return new InsertBuilder().to(table[SQL_EXPRESSION]);
+    }
 
+    public static insertIgnoreInto<
+        Entity,
+        EditEntity,
+        Alias extends string,
+        TableRef extends `${string} as ${Alias}`,
+    >(
+        table: AliasedTable<Alias, TableRef, Entity, EditEntity, NotUsingWithPart>): InsertSetMethods<EditEntity> {
+        return new InsertBuilder().to(table[SQL_EXPRESSION]).ignore();
     }
 
     public static update() {
@@ -22,10 +40,10 @@ export class SQL {
     }
 
     public static deleteFrom<
-        Alias extends string = never,
-        TableRef extends `${string} as ${Alias}` = never,
+        Alias extends string,
+        TableRef extends `${string} as ${Alias}`,
     >(
-        table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
+        table: AliasedTable<Alias, TableRef, object, object, string | NotUsingWithPart>
     ): DeleteWhereMethods<Key<TableRef>> {
         return new DeleteBuilder().from(table[SQL_EXPRESSION], table[SQL_ALIAS]);
     }
@@ -34,7 +52,7 @@ export class SQL {
         Alias extends string,
         TableRef extends `${string} as ${Alias}`
     >(
-        table: AliasedTable<Alias, TableRef, object, string | NotUsingWithPart>
+        table: AliasedTable<Alias, TableRef, object, object, string | NotUsingWithPart>
     ): JoinMethods<Key<Alias>, {}, Key<TableRef>> {
         return new SelectBuilder().selectFrom(table)
     }
@@ -52,23 +70,23 @@ export class SQL {
     public static uses<
         Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
     >(
-        table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>
+        table1: AliasedTable<Alias1, TableRef1, object, object, NotUsingWithPart>
     ): UsesMethods<Key<Alias1>, Key<TableRef1>>
     public static uses<
         Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
         Alias2 extends string, TableRef2 extends `${string} as ${Alias2}`,
     >(
-        table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>,
-        table2: AliasedTable<Alias2, TableRef2, object, NotUsingWithPart>,
+        table1: AliasedTable<Alias1, TableRef1, object, object, NotUsingWithPart>,
+        table2: AliasedTable<Alias2, TableRef2, object, object, NotUsingWithPart>,
     ): UsesMethods<Key<Alias1> & Key<Alias2>, Key<TableRef1> & Key<TableRef2>>
     public static uses<
         Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
         Alias2 extends string, TableRef2 extends `${string} as ${Alias2}`,
         Alias3 extends string, TableRef3 extends `${string} as ${Alias3}`
     >(
-        table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>,
-        table2: AliasedTable<Alias2, TableRef2, object, NotUsingWithPart>,
-        table3: AliasedTable<Alias3, TableRef3, object, NotUsingWithPart>,
+        table1: AliasedTable<Alias1, TableRef1, object, object, NotUsingWithPart>,
+        table2: AliasedTable<Alias2, TableRef2, object, object, NotUsingWithPart>,
+        table3: AliasedTable<Alias3, TableRef3, object, object, NotUsingWithPart>,
     ): UsesMethods<Key<Alias1> & Key<Alias2> & Key<Alias3>, Key<TableRef1> & Key<TableRef2> & Key<TableRef3>>
     public static uses<
         Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
@@ -76,10 +94,10 @@ export class SQL {
         Alias3 extends string, TableRef3 extends `${string} as ${Alias3}`,
         Alias4 extends string, TableRef4 extends `${string} as ${Alias4}`,
     >(
-        table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>,
-        table2: AliasedTable<Alias2, TableRef2, object, NotUsingWithPart>,
-        table3: AliasedTable<Alias3, TableRef3, object, NotUsingWithPart>,
-        table4: AliasedTable<Alias4, TableRef4, object, NotUsingWithPart>,
+        table1: AliasedTable<Alias1, TableRef1, object, object, NotUsingWithPart>,
+        table2: AliasedTable<Alias2, TableRef2, object, object, NotUsingWithPart>,
+        table3: AliasedTable<Alias3, TableRef3, object, object, NotUsingWithPart>,
+        table4: AliasedTable<Alias4, TableRef4, object, object, NotUsingWithPart>,
     ): UsesMethods<Key<Alias1> & Key<Alias2> & Key<Alias3> & Key<Alias4>, Key<TableRef1> & Key<TableRef2> & Key<TableRef3> & Key<TableRef4>>
     public static uses(table1: any, table2?: any, table3?: any, table4?: any) {
         return new SelectBuilder();
@@ -100,23 +118,23 @@ export class SQL {
     public static with<
         Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
     >(
-        table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>
+        table1: AliasedTable<Alias1, TableRef1, object, object, NotUsingWithPart>
     ): WithMethods<Key<Alias1>>
     public static with<
         Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
         Alias2 extends string, TableRef2 extends `${string} as ${Alias2}`,
     >(
-        table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>,
-        table2: AliasedTable<Alias2, TableRef2, object, NotUsingWithPart>,
+        table1: AliasedTable<Alias1, TableRef1, object, object, NotUsingWithPart>,
+        table2: AliasedTable<Alias2, TableRef2, object, object, NotUsingWithPart>,
     ): WithMethods<Key<Alias1> & Key<Alias2>>
     public static with<
         Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
         Alias2 extends string, TableRef2 extends `${string} as ${Alias2}`,
         Alias3 extends string, TableRef3 extends `${string} as ${Alias3}`
     >(
-        table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>,
-        table2: AliasedTable<Alias2, TableRef2, object, NotUsingWithPart>,
-        table3: AliasedTable<Alias3, TableRef3, object, NotUsingWithPart>,
+        table1: AliasedTable<Alias1, TableRef1, object, object, NotUsingWithPart>,
+        table2: AliasedTable<Alias2, TableRef2, object, object, NotUsingWithPart>,
+        table3: AliasedTable<Alias3, TableRef3, object, object, NotUsingWithPart>,
     ): WithMethods<Key<Alias1> & Key<Alias2> & Key<Alias3>>
     public static with<
         Alias1 extends string, TableRef1 extends `${string} as ${Alias1}`,
@@ -124,10 +142,10 @@ export class SQL {
         Alias3 extends string, TableRef3 extends `${string} as ${Alias3}`,
         Alias4 extends string, TableRef4 extends `${string} as ${Alias4}`,
     >(
-        table1: AliasedTable<Alias1, TableRef1, object, NotUsingWithPart>,
-        table2: AliasedTable<Alias2, TableRef2, object, NotUsingWithPart>,
-        table3: AliasedTable<Alias3, TableRef3, object, NotUsingWithPart>,
-        table4: AliasedTable<Alias4, TableRef4, object, NotUsingWithPart>,
+        table1: AliasedTable<Alias1, TableRef1, object, object, NotUsingWithPart>,
+        table2: AliasedTable<Alias2, TableRef2, object, object, NotUsingWithPart>,
+        table3: AliasedTable<Alias3, TableRef3, object, object, NotUsingWithPart>,
+        table4: AliasedTable<Alias4, TableRef4, object, object, NotUsingWithPart>,
     ): WithMethods<Key<Alias1> & Key<Alias2> & Key<Alias3> & Key<Alias4>>
     public static with(table: any) {
         return new SelectBuilder().with(table);
@@ -191,8 +209,9 @@ export class SQL {
         Alias extends string,
         TableRef extends `${string} as ${Alias}`,
         Entity,
+        EditEntity,
         NewAlias extends string
-    >(table: AliasedTable<Alias, TableRef, Entity, NotUsingWithPart>, newAlias: NewAlias): AliasedTable<NewAlias, `${Alias} as ${NewAlias}`, Entity, Alias> {
+    >(table: AliasedTable<Alias, TableRef, Entity, EditEntity, NotUsingWithPart>, newAlias: NewAlias): AliasedTable<NewAlias, `${Alias} as ${NewAlias}`, Entity, EditEntity, Alias> {
         const definition: DbTableDefinition<Entity> = {} as any;
         for (const k in table) {
             (definition as any)[k] = (table as any)[k];

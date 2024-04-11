@@ -10,7 +10,7 @@ export interface JoinMethods<Aliases, AliasesFromWith, Tables> extends ColumnsMe
         RefAlias extends NotUsingWithPart | string,
         ColTableRef extends string
     >(
-        table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
+        table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, object, object, RefAlias>>>,
         condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
     ): JoinMethods<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>>
 
@@ -20,7 +20,7 @@ export interface JoinMethods<Aliases, AliasesFromWith, Tables> extends ColumnsMe
         RefAlias extends NotUsingWithPart | string,
         ColTableRef extends string
     >(
-        table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, any, RefAlias>>>,
+        table: isRefAliasInAliasesFromWith<AliasesFromWith, RefAlias, isAliasAlreadyUsed<Aliases & AliasesFromWith, Alias, AliasedTable<Alias, TableRef, object, object, RefAlias>>>,
         condition: isConditionUsingJoinedTable<TableRef, ColTableRef, isTableReferenced<Tables & Key<TableRef>, Key<ColTableRef>, Expr<ColTableRef, unknown, SQL_BOOL>>>
     ): JoinMethods<Aliases & Key<Alias>, AliasesFromWith, Tables & Key<TableRef>>
 

@@ -10,7 +10,7 @@ export interface ExecMethods<Result> extends SqlSelectQuery<Result>, UnionMethod
         alias: Alias & ScalarSubQueryAllowsOnlyOneColumn<Alias, Result> extends never ? "Scalar subquery allows only 1 column!" : Alias
     ): Expr<never, Alias, Result[keyof Result]>
 
-    as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result, NotUsingWithPart>
+    as<Alias extends string>(alias: Alias): AliasedTable<Alias, `(SUBQUERY) as ${Alias}`, Result, object, NotUsingWithPart>
 
     /**
      * Example of an executor method.

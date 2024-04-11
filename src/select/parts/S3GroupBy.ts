@@ -16,7 +16,7 @@ export interface GroupByMethods<Result, Tables> extends OrderByMethods<Result, T
         TableRef,
         Columns extends Expr<TableRef, string | unknown, any>[]
     >(
-        func: (columnsTable: AliasedTable<"(columns)", "(columns)", Result, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<"(columns)">, Columns>
+        func: (columnsTable: AliasedTable<"(columns)", "(columns)", Result, object, NotUsingWithPart>) => isColumnOkToUse<Tables & Key<"(columns)">, Columns>
     ): HavingMethods<Result, Tables>
 }
 

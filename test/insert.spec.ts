@@ -1,6 +1,7 @@
-import {tUserId} from "./tables/User";
 import {MyDb} from "./tables/MyDb";
 import {SQL} from "../src/SQL";
+import {vDateTime} from "../src";
+import {tUserId} from "./tables/User";
 
 test("update", async () => {
 
@@ -10,26 +11,32 @@ test("update", async () => {
     const c2 = MyDb.user.as("c2")
     String(c2);
 
-    MyDb.user.insert({
+    const insertableRow = {
         username: "",
         age: 0,
         isMan: 20,
         uuid: "",
-        tin: null,
-        created: null
-    });
+        tin: 1,
+        created: "" as vDateTime
+    };
+
+    MyDb.user.insert(insertableRow);
     MyDb.user.insert({
         username: "",
         age: 0
     });
 
-    SQL.insertInto(MyDb.user).set({id: 10, isMan: 20}).onDuplicateKey({})
+    const q1 = SQL.insertInto(c).set(insertableRow)
+    console.log(q1.toSqlString())
 
-    SQL.insertInto(MyDb.user).values([{id: 10, isMan: 20}]).onDuplicateKey({})
+    const q2 = SQL.insertInto(c).values([insertableRow, insertableRow])
+    console.log(q2.toSqlString())
 
-    SQL.insertIgnoreInto(MyDb.user).select(SQL
+    const q3 = SQL.insertIgnoreInto(c).select(SQL
         .selectFrom(c)
-        .columns(c.id, c.username)
+        .columns(c.username, c.age, c.isMan, c.uuid, c.tin, c.created)
         .where(c.id.eq(input.userId))
-    ).onDuplicateKey({})
+        .as("sub")
+    )
+    console.log(q3.toSqlString())
 });
