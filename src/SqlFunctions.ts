@@ -408,6 +408,8 @@ export function toSql(e: unknown | number | string | boolean | PrepareQueryArgum
         return e.expression
     } else if (isPrepareArgument(e)) {
         return e.expression;
+    } else if (Array.isArray(e)) {
+        return e.map(toSql).join(", ")
     } else {
         throw new Error("Invalid argument " + String(e));
     }
