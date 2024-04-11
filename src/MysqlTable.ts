@@ -40,11 +40,11 @@ export class MysqlTable<TableName extends string, Entity, EditEntity, InsertEnti
         return builder
     }
 
-    public insert(row: InsertRow<EditEntity, Entity>): ExecInsertMethods {
+    public insert(row: InsertEntity): ExecInsertMethods {
         return new InsertBuilder().to(this.tableName).set(row)
     }
 
-    public update(row: Partial<InsertRow<EditEntity, Entity>>): GatewayUpdateWhereMethods<Entity> {
+    public update(row: Partial<InsertEntity>): GatewayUpdateWhereMethods<Entity> {
         return new UpdateBuilder().in(this.tableName).set(row)
     }
 

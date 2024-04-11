@@ -23,7 +23,7 @@ test("update", async () => {
     MyDb.user.insert(insertableRow);
     MyDb.user.insert({
         username: "",
-        age: 0
+        age: 0,
     });
 
     const q1 = SQL.insertInto(c).set(insertableRow)

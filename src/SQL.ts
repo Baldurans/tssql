@@ -11,6 +11,8 @@ import {DeleteBuilder} from "./delete/DeleteBuilder";
 import {DeleteWhereMethods} from "./delete/DeleteInterfaces";
 import {InsertBuilder} from "./insert/InsertBuilder";
 import {InsertSetMethods} from "./insert/InsertInterfaces";
+import {UpdateSetMethods} from "./update/UpdateInterfaces";
+import {UpdateBuilder} from "./update/UpdateBuilder";
 
 export class SQL {
 
@@ -31,12 +33,31 @@ export class SQL {
         Alias extends string,
         TableRef extends `${string} as ${Alias}`,
     >(
-        table: AliasedTable<Alias, TableRef, Entity, EditEntity, NotUsingWithPart>): InsertSetMethods<EditEntity> {
+        table: AliasedTable<Alias, TableRef, Entity, EditEntity, NotUsingWithPart>
+    ): InsertSetMethods<EditEntity> {
         return new InsertBuilder().to(table[SQL_EXPRESSION]).ignore();
     }
 
-    public static update() {
+    public static update<
+        Entity,
+        EditEntity,
+        Alias extends string,
+        TableRef extends `${string} as ${Alias}`,
+    >(
+        table: AliasedTable<Alias, TableRef, Entity, EditEntity, NotUsingWithPart>
+    ): UpdateSetMethods<Entity, Key<TableRef>> {
+        return new UpdateBuilder().in(table[SQL_EXPRESSION], table[SQL_ALIAS]);
+    }
 
+    public static updateIgnore<
+        Entity,
+        EditEntity,
+        Alias extends string,
+        TableRef extends `${string} as ${Alias}`,
+    >(
+        table: AliasedTable<Alias, TableRef, Entity, EditEntity, NotUsingWithPart>
+    ): UpdateSetMethods<Entity, Key<TableRef>> {
+        return new UpdateBuilder().in(table[SQL_EXPRESSION], table[SQL_ALIAS]).ignore()
     }
 
     public static deleteFrom<

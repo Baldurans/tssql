@@ -10,41 +10,80 @@ test("update", async () => {
 
     const c = MyDb.user.as("c")
     const c2 = MyDb.user.as("c2")
-    const s = MyDb.user.as("s")
-
-    const IGNORE = "IGNORE";
+    const s = MyDb.company.as("s")
+    String(c2);
+    String(s)
 
     // --------------------
 
-    MyDb.user
-        .update({
-            username: "",
-            age: 2
-        })
-        .where({
-            id: input.userId
-        })
-        .orderBy("id")
-        .noLimit()
-
-    const sub = SQL.selectFrom(c)
-        .columns(c.id)
-        .where(c.isMan.eq(1))
+    // const q1 = MyDb.user
+    //     .update({
+    //         username: "",
+    //         age: 2
+    //     })
+    //     .where({
+    //         id: input.userId
+    //     })
+    //     .orderBy("id")
+    //     .noLimit()
+    // console.log(q1.toSqlString());
+    //
+    // const q2 = SQL.update(c)
+    //     .set({
+    //         username: "username2"
+    //     })
+    //     .where(c.id.eq(input.userId))
+    //     .orderBy(c.id)
+    //     .limit(10)
+    // console.log(q2.toSqlString());
+    //
+    const sub = SQL
+        .uses(c)
+        .selectFrom(s)
+        .columns(s.age)
+        .where(s.name.eq(c.username))
         .noLimit()
         .as("sub")
 
-    SQL.update(c, sub)
+    const q3 = SQL
+        .update(c)
+        .join(sub)
         .set({
-            id: MAX(sub.id),
-            name: "username2"
+            age: MAX(c2.age),
+           // age3: 12,
+            //username: "username2",
+            username: 12,
         })
-        .where(c.id.eq(input.userId))
-        .orderBy(c.id)
-        .limit(10)
-
-    SQL.update(IGNORE, MyDb.user).set({id: 10, isMan: 20}).where({id: input.userId}).limit1();
-
-    SQL.update(IGNORE, c).set({id: 10, isMan: 20}).where(c.id.eq(input.userId)).limit(5)
+    //     .where(c.id.eq(input.userId))
+    //     .orderBy(c.id)
+    //     .limit(10)
+    // console.log(q3.toSqlString());
 
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

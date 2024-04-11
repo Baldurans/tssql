@@ -20,6 +20,7 @@ export class MyDb {
     public static company = new MysqlTable<"company", Company, CompanyForEdit>("company", {
         id: {type: ColumnDataType.INT},
         name: {type: ColumnDataType.VARCHAR},
+        age: {type: ColumnDataType.INT},
     })
 
 }

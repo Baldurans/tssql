@@ -1,42 +1,65 @@
 import {escape, escapeId} from "../escape";
 import {SQL_ENTITY} from "../Symbols";
-import {ExecUpdateMethods, GatewayUpdateOrderByMethods, GatewayUpdateWhereMethods, UpdateLimitMethods} from "./UpdateInterfaces";
+import {ExecUpdateMethods, GatewayUpdateOrderByMethods, GatewayUpdateWhereMethods, UpdateLimitMethods, UpdateOrderByMethods, UpdateSetMethods, UpdateWhereMethods} from "./UpdateInterfaces";
 import {AnyExpr, SqlExpression} from "../SqlExpression";
 import {OrderByStructure} from "../Types";
 import {orderByStructureToSqlString} from "../SqlFunctions";
 
-export class UpdateBuilder<Entity> implements ExecUpdateMethods,
+export class UpdateBuilder<Entity, Tables> implements ExecUpdateMethods,
     GatewayUpdateWhereMethods<Entity>,
     GatewayUpdateOrderByMethods<Entity>,
+    UpdateSetMethods<Entity, Tables>,
+    UpdateWhereMethods<Tables>,
+    UpdateOrderByMethods<Tables>,
     UpdateLimitMethods {
 
-    public readonly [SQL_ENTITY]: undefined; // never used
+    public readonly [SQL_ENTITY]: { affectedRows: number; }; // never used
 
     private _tableName: string;
     private _set: string[] = []
     private readonly _where: string[] = [];
     private readonly _orderBy: string[] = [];
     private _limit: string;
+    private _ignore: boolean = false;
 
-    public in(tableName: string) {
-        this._tableName = tableName;
+    public in(tableName: string, alias?: string) {
+        this._tableName = tableName + (alias ? " as " + escapeId(alias) : "");
         return this;
     }
 
-    public set(obj: any) {
+    public ignore() {
+        this._ignore = true;
+        return this
+    }
+
+    public join(table: any): this {
+
+        return this;
+    }
+
+    public set(obj: any): this {
         for (const prop in obj) {
             this._set.push(escapeId(prop) + " = " + escape(obj[prop]));
         }
-        return this;
+        return this
     }
 
     public where(...cols: any | SqlExpression<any, any, any>): this {
         for (let i = 0; i < cols.length; i++) {
-            if (cols[i]) {
-                this._where.push(cols[i].expression)
+            const col = cols[i];
+            if (col instanceof SqlExpression) {
+                this._where.push(col.expression)
+            } else {
+                for (const k in col) {
+                    this._where.push(escapeId(k) + " = " + escape(col[k]))
+                }
             }
         }
         return this
+    }
+
+    public noWhere() {
+        return this;
     }
 
     public orderBy(...items: any | OrderByStructure<AnyExpr>): this {
@@ -62,10 +85,10 @@ export class UpdateBuilder<Entity> implements ExecUpdateMethods,
     }
 
     public toSqlString() {
-        return "INSERT INTO " + this._tableName + " " +
-            (this._set.length > 0 ? "SET \n " + this._set.join(",\n") + "\n" : "") +
-            (this._where.length > 0 ? " WHERE " + this._where.join(" AND ") + "\n" : "") +
-            (this._orderBy.length > 0 ? " ORDER BY " + this._orderBy.join(", ") + "\n" : "") +
+        return "UPDATE " + (this._ignore ? "IGNORE " : "") + this._tableName + " " +
+            (this._set.length > 0 ? "SET \n\t" + this._set.join(",\n\t") + " \n" : "") +
+            (this._where.length > 0 ? "WHERE " + this._where.join(" AND ") + " \n" : "") +
+            (this._orderBy.length > 0 ? "ORDER BY " + this._orderBy.join(", ") + " \n" : "") +
             (this._limit ? "LIMIT " + this._limit : "")
     }
 }
