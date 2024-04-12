@@ -70,6 +70,22 @@ export class SqlExpression<TableRef, Name extends string | unknown | undefined, 
         return COMPARE(this.asExpr(), "=", col2);
     }
 
+    public lt<TableRef2 = never>(col2: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return COMPARE(this.asExpr(), "<", col2);
+    }
+
+    public gt<TableRef2 = never>(col2: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return COMPARE(this.asExpr(), ">", col2);
+    }
+
+    public lte<TableRef2 = never>(col2: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return COMPARE(this.asExpr(), "<=", col2);
+    }
+
+    public gte<TableRef2 = never>(col2: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return COMPARE(this.asExpr(), ">=", col2);
+    }
+
     public compare<TableRef2 = never>(op: COMPARISON_SIGNS, value: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
         return COMPARE(this.asExpr(), op, value)
     }

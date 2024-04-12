@@ -14,6 +14,10 @@ export function NULL<Name extends string = never>(as?: Name): Expr<never, Name, 
     return SqlExpression.create("NULL", as)
 }
 
+export function BOOL<Name extends string = never>(value: SQL_BOOL, as?: Name): Expr<never, Name, SQL_BOOL> {
+    return SqlExpression.create(value ? "1" : "0", as)
+}
+
 export function SET_TO_ARRAY<TableRef, Name extends string | unknown, Type>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, Type[]> {
     return SqlExpression.create(col.expression, col.nameAs)
 }
@@ -410,7 +414,9 @@ export function toSql(e: unknown | number | string | boolean | PrepareQueryArgum
         return e.expression;
     } else if (Array.isArray(e)) {
         return e.map(toSql).join(", ")
+    } else if (typeof e === "object") {
+        return escape(JSON.stringify(e));
     } else {
-        throw new Error("Invalid argument " + String(e));
+        throw new Error("Invalid argument of type " + (typeof e) + "! toString: " + String(e));
     }
 }
