@@ -10,9 +10,6 @@ interface Ctx {
 
 test("short", async () => {
     const input: { userId: tUserId } = {userId: 10 as tUserId}
-    const c = MyDb.user.as("c")
-    const c2 = MyDb.user.as("c2")
-    String(c2);
 
     const executor = <Result>(sql: string, ctx: Ctx): Promise<Result> => {
         return [{}] as any;
@@ -21,28 +18,26 @@ test("short", async () => {
     const val: "username2" = undefined;
 
     const query = SQL
-        .selectFrom(c)
+        .selectFrom(MyDb.user)
+        .join(MyDb.company, MyDb.company.id.eq(MyDb.user.companyId))
         .distinct()
         .columns(
-            c.username.as("username2"),
+            MyDb.user.username.as("username2"),
             VALUE(10).as("sdfaf")
         )
-        .where(c.id.eq(input.userId))
+        .where(MyDb.user.id.eq(input.userId))
         .groupByF(r => [
             r.username2,
-            c.username,
-            // c2.username // ERROR
+            MyDb.user.username,
         ])
         .havingF(r => [
             r.username2.eq("asdf"),
-            c.username.eq("adsf"),
-            // c2.username.is("adsfafs")  // ERROR
+            MyDb.user.username.eq("adsf"),
         ])
         .orderByF(r => {
             return [
                 r[val], "asc",
-                c.username,
-                // c2.username  // ERROR
+                MyDb.user.username,
             ]
         })
         .noLimit()

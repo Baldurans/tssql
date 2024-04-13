@@ -42,11 +42,7 @@ export class MysqlTable<TableName extends string, Entity, EditEntity, InsertEnti
         return this.cache.get(alias) as any
     }
 
-    public select<
-        Args extends & (keyof Entity)[]
-    >(
-        ...args: Args & (keyof Entity)[]
-    ): GatewayWhereMethods<Entity, Handler<Entity, Args>> {
+    public select<Args extends & (keyof Entity)[]>(...args: Args & (keyof Entity)[]): GatewayWhereMethods<Entity, Handler<Entity, Args>> {
         return new SelectBuilder().selectFrom(this.tableName).columns(...args);
     }
 
@@ -65,7 +61,6 @@ export class MysqlTable<TableName extends string, Entity, EditEntity, InsertEnti
     public update(row: Partial<InsertEntity>): GatewayUpdateWhereMethods<Entity> {
         return new UpdateBuilder().in(this.tableName).set(row)
     }
-
 
     /**
      * Returns query that checks existence of a row. Returns [{res: 1}] if at least one row exists and no rows if it doesn't.

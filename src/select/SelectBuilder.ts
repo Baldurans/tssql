@@ -15,6 +15,7 @@ import {SQL_ALIAS, SQL_ENTITY, SQL_EXPRESSION} from "../Symbols";
 import {AliasedTable, AnyAliasedTableDef, DbTableDefinition, SelectExecutor} from "../Types";
 import {escape, escapeId} from "../escape";
 import {orderByStructureToSqlString} from "../SqlFunctions";
+import {GatewaySelectGroupByMethods, GatewaySelectLimitMethods, GatewaySelectOrderByMethods, GatewayWhereMethods} from "./parts/GatewayWhere";
 
 const TAB = "  ";
 
@@ -28,7 +29,12 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
     HavingMethods<Result, Tables>,
     OrderByMethods<Result, Tables>,
     LimitMethods<Result>,
-    ExecMethods<Result> {
+    ExecMethods<Result>,
+    GatewayWhereMethods<Result, Tables>,
+    GatewaySelectGroupByMethods<Result, Tables>,
+    GatewaySelectOrderByMethods<Result, Tables>,
+    GatewaySelectOrderByMethods<Result, Tables>,
+    GatewaySelectLimitMethods<Result> {
 
     public readonly [SQL_ENTITY]: undefined; // never used
 
@@ -158,7 +164,7 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
         return this as any
     }
 
-    public where(...cols: (any | SqlExpression<string, string, any>)[]) {
+    public where(...cols: (any | undefined | null | "" | object | SqlExpression<string, string, any>)[]) {
         for (let i = 0; i < cols.length; i++) {
             const col = cols[i];
             if (col instanceof SqlExpression) {
