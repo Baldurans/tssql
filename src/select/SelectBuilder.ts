@@ -1,4 +1,4 @@
-import {AnyExpr, Over, SqlExpression, Transformer} from "../SqlExpression";
+import {Over, SqlExpression, Transformer} from "../SqlExpression";
 import {WhereMethods} from "./parts/S2Where";
 import {ColumnsMethods} from "./parts/S2Columns";
 import {JoinMethods} from "./parts/S1Join";
@@ -13,7 +13,7 @@ import {ExecMethods} from "./parts/S7Exec";
 import {MysqlTable} from "../MysqlTable";
 import {SQL_ALIAS, SQL_ENTITY, SQL_EXPRESSION} from "../Symbols";
 import {AliasedTable, AnyAliasedTableDef, DbTableDefinition, SelectExecutor} from "../Types";
-import {escapeId} from "../escape";
+import {escape, escapeId} from "../escape";
 import {orderByStructureToSqlString} from "../SqlFunctions";
 
 const TAB = "  ";
@@ -103,7 +103,12 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
     }
 
     public selectFrom(table: any | AnyAliasedTableDef) {
-        this._from = table[SQL_EXPRESSION] + " as " + escapeId(table[SQL_ALIAS]);
+        if (typeof table === "string") {
+            this._from = escapeId(table);
+        } else {
+            this._from = table[SQL_EXPRESSION] + " as " + escapeId(table[SQL_ALIAS]);
+        }
+
         return this
     }
 
@@ -133,13 +138,17 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
         return this
     }
 
-    public columns(...cols: (any | SqlExpression<string, string, any>)[]) {
+    public columns(...cols: (any | string | SqlExpression<string, string, any>)[]) {
         for (let i = 0; i < cols.length; i++) {
             const col = cols[i];
-            this._columns.push(col.expression + (col.nameAs ? " as " + escapeId(col.nameAs) : ""));
-            (this._columnStruct as any)[col.nameAs] = true;
-            if (col.transformer) {
-                this.transformers.push({property: col.nameAs, transformer: col.transformer});
+            if (col instanceof SqlExpression) {
+                this._columns.push(col.expression + (col.nameAs ? " as " + escapeId(col.nameAs) : ""));
+                (this._columnStruct as any)[col.nameAs] = true;
+                if (col.transformer) {
+                    this.transformers.push({property: col.nameAs, transformer: col.transformer});
+                }
+            } else if (typeof col === "string") {
+                this._columns.push(escapeId(col));
             }
         }
         return this
@@ -151,9 +160,17 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
 
     public where(...cols: (any | SqlExpression<string, string, any>)[]) {
         for (let i = 0; i < cols.length; i++) {
-            const col = cols[i] as unknown as AnyExpr;
-            if (col && col.expression) {
-                this._where.push(col.expression)
+            const col = cols[i];
+            if (col instanceof SqlExpression) {
+                this._where.push(col.expression);
+            } else if (typeof col === "object") {
+                for (const prop in col) {
+                    this._where.push(escapeId(prop) + " = " + escape(col[prop]));
+                }
+            } else if (col === undefined || col === null || col === "") {
+                // skip
+            } else {
+                throw new Error("Invalid argument to where! Type: '" + (typeof col) + "' String: '" + String(col) + "'")
             }
         }
         return this as any
@@ -162,7 +179,15 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
     public groupBy(...items: (any | SqlExpression<string, string, any>)[]) {
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
-            this._groupBy.push(typeof item === "string" ? item : item.expression)
+            if (item instanceof SqlExpression) {
+                this._groupBy.push(item.expression);
+            } else if (typeof item === "string") {
+                this._groupBy.push(escapeId(item));
+            } else if (item === undefined || item === null || item === "") {
+                // skip
+            } else {
+                throw new Error("Invalid argument to groupBy! Type: '" + (typeof item) + "' String: '" + String(item) + "'")
+            }
         }
         return this as any
     }
@@ -180,7 +205,15 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
     public having(...items: (any | SqlExpression<string, string, any>)[]) {
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
-            this._having.push(typeof item === "string" ? item : item.expression)
+            if (item instanceof SqlExpression) {
+                this._having.push(item.expression);
+            } else if (typeof item === "string") {
+                this._having.push(escapeId(item));
+            } else if (item === undefined || item === null || item === "") {
+                // skip
+            } else {
+                throw new Error("Invalid argument to having! Type: '" + (typeof item) + "' String: '" + String(item) + "'")
+            }
         }
         return this as any
     }

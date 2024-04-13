@@ -8,10 +8,20 @@ import {InsertBuilder} from "./insert/InsertBuilder";
 import {GatewayDeleteOrderByMethods} from "./delete/DeleteInterfaces";
 import {UpdateBuilder} from "./update/UpdateBuilder";
 import {GatewayUpdateWhereMethods} from "./update/UpdateInterfaces";
+import {SelectBuilder} from "./select/SelectBuilder";
+import {GatewayWhereMethods} from "./select/parts/GatewayWhere";
 
 export type WhereArgs<Entity> = {
     [K in keyof Entity]?: Entity[K]
 }
+
+type UnionToIntersection<U> =
+    (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;
+
+type Handler<Entity, Args extends (keyof Entity)[]> = UnionToIntersection<{
+    [K in keyof Args]: Record<Args[K], Entity[Args[K]]>
+}[number]>;
+
 
 export class MysqlTable<TableName extends string, Entity, EditEntity, InsertEntity = InsertRow<EditEntity, Entity>> {
 
@@ -32,6 +42,14 @@ export class MysqlTable<TableName extends string, Entity, EditEntity, InsertEnti
         return this.cache.get(alias) as any
     }
 
+    public select<
+        Args extends & (keyof Entity)[]
+    >(
+        ...args: Args & (keyof Entity)[]
+    ): GatewayWhereMethods<Entity, Handler<Entity, Args>> {
+        return new SelectBuilder().selectFrom(this.tableName).columns(...args);
+    }
+
     public deleteWhere(where: Partial<Entity>): GatewayDeleteOrderByMethods<Entity> {
         const builder = new DeleteBuilder().from(this.tableName, undefined)
         for (const prop in where) {
@@ -47,6 +65,7 @@ export class MysqlTable<TableName extends string, Entity, EditEntity, InsertEnti
     public update(row: Partial<InsertEntity>): GatewayUpdateWhereMethods<Entity> {
         return new UpdateBuilder().in(this.tableName).set(row)
     }
+
 
     /**
      * Returns query that checks existence of a row. Returns [{res: 1}] if at least one row exists and no rows if it doesn't.

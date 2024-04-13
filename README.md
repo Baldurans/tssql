@@ -77,7 +77,21 @@ Table joined is not defined in the with part of the query (WITH ... SELECT ...)
 
 # SELECT
 
-Uses "result columns" in HAVING and ORDER BY clauses.
+## Using as a gateway
+
+```typescript
+MyDb.user.select("username")
+    .where({id: 10})
+    .toSqlString();
+
+MyDb.user.select("id", "username")
+    .where({birthYear: 1986})
+    .orderBy("username", "asc", "id")
+    .limit([10, 10])
+    .toSqlString();
+```
+
+## Uses "result columns" in HAVING and ORDER BY clauses.
 
 ```typescript
 const c = MyDb.user.as("c");

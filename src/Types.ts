@@ -244,3 +244,5 @@ type _findDifferentPropertyNames<Result, Entity> =
     _valuesToUnion<{ [K in Exclude<keyof Entity, keyof Result>]: `Property '${K extends string ? K : ""}' is missing!` }>
     | _valuesToUnion<{ [K in Exclude<keyof Result, keyof Entity>]: `Property '${K extends string ? K : ""}' should not be listed!` }>
     | _valuesToUnion<{ [K in keyof Result & keyof Entity]: Result[K] extends Entity[K] ? never : `Property '${K extends string ? K : ""}' type does not match!` }>;
+
+// ----------------------------------------------

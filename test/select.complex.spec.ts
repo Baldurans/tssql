@@ -1,5 +1,5 @@
 import {tUserId} from "./tables/User";
-import {DANGEROUS_SQL_EXPRESSION, DATE, EQ, IF, SET_TO_ARRAY} from "../src/SqlFunctions";
+import {DANGEROUS_SQL_EXPRESSION, DATE, EQ, IF} from "../src/SqlFunctions";
 import {MyDb} from "./tables/MyDb";
 import {vDate} from "../src";
 import {SQL} from "../src/SQL";

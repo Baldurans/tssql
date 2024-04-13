@@ -1,6 +1,7 @@
 import {COMPARISON_SIGNS, ComparisonOperandsLookup, DATE_ADD_UNITS, DateAddUnitsLookup, isPrepareArgument, OrderByStructure, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
 import {AnyBoolExpr, AnyExpr, Expr, ExprWithOver, SqlExpression, SqlExpressionWithOver} from "./SqlExpression";
 import {escape} from "./escape";
+import {escapeId} from "sqlstring";
 
 /**
  * Type is the value. (If string "aa" is given, type of the column will be "aa")
@@ -408,18 +409,24 @@ export function orderByStructureToSqlString(items: [] | OrderByStructure<any>): 
     const parts: string[] = [];
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
-        if (item === "asc" || item === "ASC" || item === "desc" || item === "DESC") {
-            parts[parts.length - 1] += " " + item;
-        } else if (typeof item === "string") {
-            parts.push(item)
-        } else if (item !== undefined && item !== null) {
+        if (item === undefined || item === null || item === "") {
+            // skip
+        } else if (item === "asc" || item === "ASC") {
+            parts[parts.length - 1] += " ASC"
+        } else if (item === "desc" || item === "DESC") {
+            parts[parts.length - 1] += " DESC"
+        } else if (item instanceof SqlExpression) {
             parts.push(item.expression)
+        } else if (typeof item === "string") {
+            parts.push(escapeId(item))
+        } else {
+            throw new Error("Invalid argument to having! Type: '" + (typeof item) + "' String: '" + String(item) + "'")
         }
     }
     return parts;
 }
 
-export function toSql(e: unknown | number | string | boolean | PrepareQueryArgument | AnyExpr): string | number {
+export function toSql(e: unknown | number | string | boolean | PrepareQueryArgument | AnyExpr | any): string | number {
     if (typeof e === "string") {
         return escape(e);
     } else if (typeof e === "number") {

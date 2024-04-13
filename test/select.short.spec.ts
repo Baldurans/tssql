@@ -15,8 +15,24 @@ test("short", async () => {
     String(c2);
 
     const executor = <Result>(sql: string, ctx: Ctx): Promise<Result> => {
-        return [] as any;
+        return [{}] as any;
     }
+
+
+    const query1 = MyDb.user
+        .select("username", "id")
+        .where({username: "tere", id: input.userId})
+        .groupBy("username")
+        .limit(1);
+    console.log(query1.toSqlString())
+    const res1 = await query1.execOne(executor, {name: "ha"});
+
+    console.log(
+        res1.username,
+        res1.id
+    )
+
+    const val: "username2" = undefined;
 
     const query = SQL
         .selectFrom(c)
@@ -36,11 +52,13 @@ test("short", async () => {
             c.username.eq("adsf"),
             // c2.username.is("adsfafs")  // ERROR
         ])
-        .orderByF(r => [
-            r.username2, "asc",
-            c.username,
-            // c2.username  // ERROR
-        ])
+        .orderByF(r => {
+            return [
+                r[val], "asc",
+                c.username,
+                // c2.username  // ERROR
+            ]
+        })
         .noLimit()
 
     const res2 = await query.execOne(executor, {name: "ha"})
