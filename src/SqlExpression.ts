@@ -58,6 +58,11 @@ export class SqlExpression<TableRef, Name extends string | unknown | undefined, 
         return IS_NULL(this.asExpr());
     }
 
+    public isNotNull(): Expr<TableRef, unknown, SQL_BOOL> {
+        return NOT_NULL(this.asExpr());
+    }
+
+
     public notNull(): Expr<TableRef, unknown, SQL_BOOL> {
         return NOT_NULL(this.asExpr());
     }

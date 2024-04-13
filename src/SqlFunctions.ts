@@ -1,4 +1,4 @@
-import {COMPARISON_SIGNS, ComparisonOperandsLookup, isPrepareArgument, OrderByStructure, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
+import {COMPARISON_SIGNS, ComparisonOperandsLookup, DATE_ADD_UNITS, DateAddUnitsLookup, isPrepareArgument, OrderByStructure, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
 import {AnyBoolExpr, AnyExpr, Expr, ExprWithOver, SqlExpression, SqlExpressionWithOver} from "./SqlExpression";
 import {escape} from "./escape";
 
@@ -18,8 +18,8 @@ export function BOOL<Name extends string = never>(value: SQL_BOOL, as?: Name): E
     return SqlExpression.create(value ? "1" : "0", as)
 }
 
-export function SET_TO_ARRAY<TableRef, Name extends string | unknown, Type>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, Type[]> {
-    return SqlExpression.create(col.expression, col.nameAs)
+export function ONE(): Expr<never, "one", 1> {
+    return SqlExpression.create("1", "one")
 }
 
 /**
@@ -106,6 +106,14 @@ export function IF<
     col3: Type | Expr<TableRef3, string | unknown, Type> | PrepareQueryArgument
 ): Expr<TableRef1 | TableRef2 | TableRef3, unknown, Type | Type> {
     return SqlExpression.create("IF( " + col.expression + ", " + toSql(col2) + ", " + toSql(col3) + " )")
+}
+
+export function EXISTS<TableRef>(col: Expr<TableRef, string | unknown, any>): Expr<TableRef, unknown, SQL_BOOL> {
+    return SqlExpression.create("EXISTS (" + col.expression + ")")
+}
+
+export function NOT_EXISTS<TableRef>(col: Expr<TableRef, string | unknown, any>): Expr<TableRef, unknown, SQL_BOOL> {
+    return SqlExpression.create("NOT EXISTS (" + col.expression + ")")
 }
 
 export function IS_NULL<TableRef, Name, Type extends string | number>(col: Expr<TableRef, Name, Type>): Expr<TableRef, Name, SQL_BOOL> {
@@ -275,11 +283,25 @@ export function DATE_FORMAT<Name, TableRef = never>(col: vDate | vDateTime | Exp
     return SqlExpression.create("DATE_FORMAT(" + toSql(col) + ", " + escape(format) + ")")
 }
 
-export function DATE_DIFF<TableRef1 = never, TableRef2 = never>(
+export function DATEDIFF<TableRef1 = never, TableRef2 = never>(
     col1: vDate | vDateTime | Expr<TableRef1, string | unknown, vDate | vDateTime> | PrepareQueryArgument,
     col2: vDate | vDateTime | Expr<TableRef2, string | unknown, vDate | vDateTime> | PrepareQueryArgument
 ): Expr<TableRef1 | TableRef2, unknown, number> {
     return SqlExpression.create("DATEDIFF(" + toSql(col1) + ", " + toSql(col2) + ")")
+}
+
+export function DATE_SUB<Name, TableRef = never>(col: vDate | vDateTime | Expr<TableRef, Name, vDate | vDateTime>, interval: string | number, unit: DATE_ADD_UNITS): Expr<TableRef, Name, vDateTime> {
+    if (!DateAddUnitsLookup.has(unit)) {
+        throw new Error("Invalid unit '" + unit + "'")
+    }
+    return SqlExpression.create("DATE_SUB(" + toSql(col) + ", INTERVAL " + escape(interval) + " " + unit + ")")
+}
+
+export function DATE_ADD<Name, TableRef = never>(col: vDate | vDateTime | Expr<TableRef, Name, vDate | vDateTime>, interval: string | number, unit: DATE_ADD_UNITS): Expr<TableRef, Name, vDateTime> {
+    if (!DateAddUnitsLookup.has(unit)) {
+        throw new Error("Invalid unit '" + unit + "'")
+    }
+    return SqlExpression.create("DATE_ADD(" + toSql(col) + ", INTERVAL " + escape(interval) + " " + unit + ")")
 }
 
 // -------------------------------------------------------------------

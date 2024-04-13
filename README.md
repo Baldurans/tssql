@@ -22,24 +22,24 @@ This library does not execute queries, it only prepares SQL statements.
 ```typescript
 // Your custom query execution function. (libraries: mysql or mysql2 usually)
 function execute<Result>(query: SqlQuery<Result>): Promise<Result[]> {
-   const sqlString = query.toSqlString();
-   // Execute your query... 
+    const sqlString = query.toSqlString();
+    // Execute your query... 
 }
 
 const c = MyDb.user.as("c");
 const rows = await execute(SQL
-        .selectFrom(c)
-        .columns(
-                c.id,
-                c.firstName,
-                COUNT(c.firstName).as("count"),
-                DATE(MAX(c.created)).as("lastCreatedDate")
-        )
-        .where(c.isActive.eq(1))
-        .groupBy(c.firstName)
-        .having(COUNT(c.firstName).eq(3))
-        .orderBy(c.firstName)
-        .limit(20))
+    .selectFrom(c)
+    .columns(
+        c.id,
+        c.firstName,
+        COUNT(c.firstName).as("count"),
+        DATE(MAX(c.created)).as("lastCreatedDate")
+    )
+    .where(c.isActive.eq(1))
+    .groupBy(c.firstName)
+    .having(COUNT(c.firstName).eq(3))
+    .orderBy(c.firstName)
+    .limit(20))
 
 // rows[0].count - type is number
 
@@ -291,7 +291,8 @@ Mostly MYSQL functions, but there are some special ones.
 ### Comparison
 
 * (special) VALUE(ARG) - any value you want to exist in the query.
-* (special)  NULL<type>() - If you need a dummy placeholder value in the query.
+* (special) NULL<type>() - If you need a dummy placeholder value in the query.
+* (special) ONE() - Just "1 as one" to simplify certain queries.
 * OR( bool_expr | value, ...)
 * AND( bool_expr | value, ... )
 * IF( bool_expr, expr | value, expr | value )
@@ -301,6 +302,8 @@ Mostly MYSQL functions, but there are some special ones.
 * EQ( expr | value, expr | value )
 * COMPARE( expr | value, operator, expr | value)
 * LIKE( expr )
+* EXISTS( expr )
+* NOT_EXISTS( expr )
 * (special) CONTAINS( expr ) - LIKE %value%
 * (special) STARTS_WITH( expr ) - LIKE value%
 * (special) ENDS_WITH( expr ) - LIKE %value
@@ -321,7 +324,9 @@ Mostly MYSQL functions, but there are some special ones.
 * DATE( expr )
 * DATE_TIME( expr )
 * DATE_FORMAT( expr )
-* DATE_DIFF( expr1 | date, expr2 | date )
+* DATEDIFF( expr1 | date, expr2 | date )
+* DATE_ADD( expr, amount, unit )
+* DATE_SUB( expr, amount, unit )
 
 ### Numbers
 

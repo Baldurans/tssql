@@ -91,7 +91,6 @@ test("complex", async () => {
             IF(c.id.eq(c2.id), c.username, c2.username).cast<string>().as("expr4"),
             withSubSub1.subIdRenamed.as("withSubSub1"),
             withSubSub2.subIdRenamed.as("withSubSub2"),
-            SET_TO_ARRAY(c.username),
 
             IF(c.id.eq(10 as tUserId), c.id, 10 as tUserId).as("X0"),
             SQL.uses(c).selectFrom(s).columns(s.id).where(EQ(c.id, s.id)).noLimit().asScalar("someItem"),

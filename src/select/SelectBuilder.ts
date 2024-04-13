@@ -217,7 +217,7 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
     public limit(limit: number | [number, number]) {
         if (Array.isArray(limit)) {
             this._limit = Number(limit[0]) + "," + Number(limit[1]);
-        } else {
+        } else if (limit !== undefined && limit !== null && String(limit) !== "") {
             this._limit = String(Number(limit));
         }
         return this as any

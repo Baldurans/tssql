@@ -37,7 +37,7 @@ const mysqlReservedKeywords = new Set([
     "UNIQUE", "UNLOCK", "UNSIGNED", "UPDATE", "USAGE", "USE", "USING", "UTC_DATE",
     "UTC_TIME", "UTC_TIMESTAMP", "VALUES", "VARBINARY", "VARCHAR", "VARCHARACTER",
     "VARYING", "WHEN", "WHERE", "WHILE", "WITH", "WRITE", "XOR", "YEAR_MONTH",
-    "ZEROFILL"
+    "ZEROFILL", "ROWS"
 ]);
 
 export function escapeId(value: string): string {
