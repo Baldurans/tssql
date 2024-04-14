@@ -11,17 +11,6 @@ import {GatewayUpdateWhereMethods} from "./update/UpdateInterfaces";
 import {SelectBuilder} from "./select/SelectBuilder";
 import {GatewayWhereMethods} from "./select/parts/GatewayWhere";
 
-export type WhereArgs<Entity> = {
-    [K in keyof Entity]?: Entity[K]
-}
-
-type UnionToIntersection<U> =
-    (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;
-
-type Handler<Entity, Args extends (keyof Entity)[]> = UnionToIntersection<{
-    [K in keyof Args]: Record<Args[K], Entity[Args[K]]>
-}[number]>;
-
 
 export class MysqlTable<TableName extends string, Entity, EditEntity, InsertEntity = InsertRow<EditEntity, Entity>> {
 
@@ -42,7 +31,7 @@ export class MysqlTable<TableName extends string, Entity, EditEntity, InsertEnti
         return this.cache.get(alias) as any
     }
 
-    public select<Args extends & (keyof Entity)[]>(...args: Args & (keyof Entity)[]): GatewayWhereMethods<Entity, Handler<Entity, Args>> {
+    public select<Args extends & (keyof Entity)[]>(...args: Args & (keyof Entity)[]): GatewayWhereMethods<Entity, ArrayOfPropertiesToObject<Entity, Args>> {
         return new SelectBuilder().selectFrom(this.tableName).columns(...args);
     }
 
@@ -95,5 +84,15 @@ export class MysqlTable<TableName extends string, Entity, EditEntity, InsertEnti
         Object.freeze(tbl)
         return tbl
     }
-
 }
+
+type WhereArgs<Entity> = {
+    [K in keyof Entity]?: Entity[K]
+}
+
+type UnionToIntersection<U> =
+    (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;
+
+type ArrayOfPropertiesToObject<Entity, Args extends (keyof Entity)[]> = UnionToIntersection<{
+    [K in keyof Args]: Record<Args[K], Entity[Args[K]]>
+}[number]>;

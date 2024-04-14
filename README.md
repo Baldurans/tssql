@@ -26,22 +26,27 @@ function execute<Result>(query: SqlQuery<Result>): Promise<Result[]> {
     // Execute your query... 
 }
 
-const c = MyDb.user.as("c");
 const rows = await execute(SQL
-    .selectFrom(c)
+    .selectFrom(tUser)
     .columns(
-        c.id,
-        c.firstName,
-        COUNT(c.firstName).as("count"),
-        DATE(MAX(c.created)).as("lastCreatedDate")
+        tUser.id,
+        tUser.firstName,
+        COUNT(tUser.firstName).as("count"),
+        DATE(MAX(tUser.created)).as("lastCreatedDate")
     )
-    .where(c.isActive.eq(1))
-    .groupBy(c.firstName)
-    .having(COUNT(c.firstName).eq(3))
-    .orderBy(c.firstName)
+    .where(tUser.isActive.eq(1))
+    .groupBy(tUser.firstName)
+    .having(COUNT(tUser.firstName).eq(3))
+    .orderBy(tUser.firstName)
     .limit(20))
 
-// rows[0].count - type is number
+// Resulting type is
+const res: {
+    id: number,
+    firstName: string,
+    count: number,
+    lastCreatedDate: string
+} = undefined
 
 ```
 
@@ -94,15 +99,14 @@ MyDb.user.select("id", "username")
 ## Uses "result columns" in HAVING and ORDER BY clauses.
 
 ```typescript
-const c = MyDb.user.as("c");
 SQL
-    .selectFrom(c)
+    .selectFrom(tUser)
     .columns(
-        c.firstName.as("username2"),
-        COUNT(c.firstName).as("count")
+        tUser.firstName.as("username2"),
+        COUNT(tUser.firstName).as("count")
     )
-    .where(c.isMan.eq(1))
-    .groupBy(c.firstName)
+    .where(tUser.isMan.eq(1))
+    .groupBy(tUser.firstName)
     .havingF((r) => [r.count.compare(">", 1)]) // Via argument 'r' you can access properties defined in columns.
     .orderByF((r) => [r.count, "desc"]) // Via argument 'r' you can access properties defined in columns.
     .toSqlString()
@@ -111,34 +115,31 @@ SQL
 ## Using subqueries
 
 ```typescript
-const c = MyDb.user.as("c");
-const a = MyDb.article.as("a");
-
 // Scalar subquery is used to return single value as a column.
 const scalarSub = SQL
-    .uses(c)
-    .selectFrom(a)
-    .columns(MAX(a.created))
-    .where(c.createdBy.eq(10))
+    .uses(tUser)
+    .selectFrom(tArticle)
+    .columns(MAX(tArticle.created))
+    .where(tUser.createdBy.eq(10))
     .asScalar("subColumn");
 
 const joinSub = SQL
-    .uses(c)
-    .selectFrom(a)
-    .columns(a.title, a.createdBy)
+    .uses(tUser)
+    .selectFrom(tArticle)
+    .columns(tArticle.title, tArticle.createdBy)
     .noLimit()
     .as("joinSub")
 
 const query = SQL
-    .selectFrom(c)
-    .join(joinSub, joinSub.createdBy.eq(c.id))
+    .selectFrom(tUser)
+    .join(joinSub, joinSub.createdBy.eq(tUser.id))
     .columns(
-        c.id.as("userId"),
+        tUser.id.as("userId"),
         joinSub.title.as("articleTitle"),
         joinSub.createdBy.as("articleCreatedBy"),
         scalarSub.as("lastArticleCreated"),
     )
-    .where(c.firstName.startsWith("Oliver"))
+    .where(tUser.firstName.startsWith("Oliver"))
     .toSqlString()
 ```
 
@@ -147,11 +148,11 @@ const query = SQL
 ```typescript
 const sub = SQL.selectFrom(c)
     .columns(
-        c.id,
-        c.created,
-        RANK().over(f => f.partitionBy(c.age).orderBy(c.created, "desc")).as("latest"),
+        tUser.id,
+        tUser.created,
+        RANK().over(f => f.partitionBy(tUser.age).orderBy(tUser.created, "desc")).as("latest"),
     )
-    .where(c.keyCheck.in([1, 2, 3, 4] as tUserId[]))
+    .where(tUser.keyCheck.in([1, 2, 3, 4] as tUserId[]))
     .as("sorted")
 
 // Queries always use alias, in this case we need to give an alias to a query defined in the WITH part.
@@ -190,11 +191,10 @@ const exec = (query: string): any[] => {
 }
 
 const preparedQuery = SQL.prepare((args: Args) => {
-    const c = MyDb.user.as("c")
     return SQL
-        .selectFrom(c)
-        .columns(c.id, c.username)
-        .where(c.id.eq(args.id))
+        .selectFrom(tUser)
+        .columns(tUser.id, c.username)
+        .where(tUser.id.eq(args.id))
         .noLimit()
 })
 
@@ -214,17 +214,16 @@ MyDb.user.insert({username: "Oliver", birthYear: "1986"});
 ## Using as query
 
 ```typescript
-const c = MyDb.user.as("c");
 const row = {username: "Oliver", birthYear: "1986"};
 
-SQL.insertInto(c).set(row).toSqlString()
+SQL.insertInto(tUser).set(row).toSqlString()
 
-SQL.insertInto(c).values([row, row]).toSqlString()
+SQL.insertInto(tUser).values([row, row]).toSqlString()
 
-SQL.insertIgnoreInto(c).select(SQL
-    .selectFrom(c)
-    .columns(c.username, c.birthYear)
-    .where(c.birthYear.eq(1986))
+SQL.insertIgnoreInto(tUser).select(SQL
+    .selectFrom(tUser)
+    .columns(tUser.username, tUser.birthYear)
+    .where(tUser.birthYear.eq(1986))
     .as("sub")
 ).toSqlString()
 ```
@@ -245,32 +244,29 @@ MyDb.user
 ## Using as query
 
 ```typescript
-const c = MyDb.user.as("c");
-SQL.update(c)
+SQL.update(tUser)
     .set({
         firstName: input.firstName
     })
-    .where(c.id.eq(input.userId))
+    .where(tUser.id.eq(input.userId))
     .toSqlString()
 ```
 
 ## Using as query and subquery
 
 ```typescript
-const c = MyDb.user.as("c");
-const a = MyDb.article.as("a");
 const sub = SQL
-    .selectFrom(a)
+    .selectFrom(tArticle)
     .columns(
-        a.userId,
-        MAX(a.created).as("lastArticle")
+        tArticle.userId,
+        MAX(tArticle.created).as("lastArticle")
     )
-    .groupBy(a.userId)
+    .groupBy(tArticle.userId)
     .as("sub")
 
 const q3 = SQL
-    .update(c)
-    .join(sub, sub.userId.eq(c.id))
+    .update(tUser)
+    .join(sub, sub.userId.eq(tUser.id))
     .set({
         lastArticle: sub.lastArticle
     })
@@ -289,11 +285,10 @@ MyDb.user.deleteWhere({id: input.userId}).toSqlString();
 ## Using as query
 
 ```typescript
-const c = MyDb.user.as("c");
 SQL
-    .deleteFrom(c)
-    .where(c.id.eq(input.userId))
-    .orderBy(c.id)
+    .deleteFrom(tUser)
+    .where(tUser.id.eq(input.userId))
+    .orderBy(tUser.id)
     .limit(10)
     .toSqlString()
 ```
@@ -430,6 +425,13 @@ export interface UserRow {
 export interface UserRowForInsert {
     username: unknown;
 }
+```
+
+Convenience access constants
+
+```typescript
+const tUser = MyDb.user.as("user");
+const tArticle = MyDb.article.as("article");
 ```
 
 ## 'I want custom types' approach (recommended):
