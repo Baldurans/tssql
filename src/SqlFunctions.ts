@@ -109,6 +109,10 @@ export function IF<
     return SqlExpression.create("IF( " + col.expression + ", " + toSql(col2) + ", " + toSql(col3) + " )")
 }
 
+export function NOT<TableRef>(col: Expr<TableRef, string | unknown, SQL_BOOL>): Expr<TableRef, unknown, SQL_BOOL> {
+    return SqlExpression.create("NOT (" + col.expression + ")")
+}
+
 export function EXISTS<TableRef>(col: Expr<TableRef, string | unknown, any>): Expr<TableRef, unknown, SQL_BOOL> {
     return SqlExpression.create("EXISTS (" + col.expression + ")")
 }

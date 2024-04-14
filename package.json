@@ -1,6 +1,6 @@
 {
   "name": "ts-sql-lang",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Types SQL query writing",
   "author": "Oliver Leisalu",
   "license": "proprietary",

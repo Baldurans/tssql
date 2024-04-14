@@ -304,6 +304,7 @@ Mostly MYSQL functions, but there are some special ones.
 * (special) ONE() - Just "1 as one" to simplify certain queries.
 * OR( bool_expr | value, ...)
 * AND( bool_expr | value, ... )
+* NOT( bool_expr )
 * IF( bool_expr, expr | value, expr | value )
 * IS_NULL( expr )
 * NOT_NULL( expr )

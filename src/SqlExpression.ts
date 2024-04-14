@@ -71,6 +71,10 @@ export class SqlExpression<TableRef, Name extends string | unknown | undefined, 
         return IN(this.asExpr(), values);
     }
 
+    public notEq<TableRef2 = never>(col2: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
+        return COMPARE(this.asExpr(), "!=", col2);
+    }
+
     public eq<TableRef2 = never>(col2: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument): Expr<TableRef | TableRef2, unknown, SQL_BOOL> {
         return COMPARE(this.asExpr(), "=", col2);
     }
