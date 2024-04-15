@@ -20,9 +20,10 @@ export interface ColumnsMethods<Result, Tables> {
 /**
  * Take array of Col-s and convert to Record<key, value> & ... object.
  */
-type ExtractObj<Columns extends Expr<any, string, any>[]> = {
+export type ExtractObj<Columns extends Expr<any, string, any>[]> = {
     [K in Columns[number]['nameAs']]: Extract<Columns[number], { nameAs: K }>['type']
 }
+
 
 // --------------------------------------------------------------------
 

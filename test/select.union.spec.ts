@@ -10,9 +10,20 @@ test("with", async () => {
     const c = MyDb.user.as("c")
 
     const q1 = SQL.selectFrom(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
-    const q2 = SQL.selectFrom(c).columns(c.username, c.id,).where(c.id.eq(input.userId)).noLimit()
-    const q3 = SQL.selectFrom(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
 
+
+    // const q2Mis = SQL.selectFrom(c).columns(c.id).where(c.id.eq(input.userId)).noLimit()
+    // const union1 = q1
+    //     .unionAll(q2Mis) // ___ERROR Missing column 'username' on added union table!
+
+
+    // const q2Extra = SQL.selectFrom(c).columns(c.age, c.username, c.id.cast<number>()).where(c.id.eq(input.userId)).noLimit()
+    // const union2 = q1
+    //     .unionAll(q2Extra) // __ERROR Column "age" does not exist in previous queries!
+
+
+    const q2 = SQL.selectFrom(c).columns(c.username, c.id.cast<number>()).where(c.id.eq(input.userId)).noLimit()
+    const q3 = SQL.selectFrom(c).columns(c.username, c.id).where(c.id.eq(input.userId)).noLimit()
     const union = q1
         .unionAll(q2)
         .unionAll(q3)
@@ -20,7 +31,6 @@ test("with", async () => {
         .orderByF(r => [r.id])
         .limit(10)
         .as("x")
-
 
     const b = SQL.selectFrom(union)
         .columns(union.id, union.username)
