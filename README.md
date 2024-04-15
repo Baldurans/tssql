@@ -80,6 +80,14 @@ Table joined is not defined in the with part of the query (WITH ... SELECT ...)
 
 ----
 
+Union erros, when added table has more or less fields than expected.
+
+1. ![Alt text](/img/union.png)
+
+2. ![Alt text](/img/union2.png)
+
+----
+
 # SELECT
 
 ## Using as a gateway
