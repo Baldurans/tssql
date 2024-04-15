@@ -155,7 +155,15 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
                 }
             } else if (typeof col === "string") {
                 this._columns.push(escapeId(col));
+                (this._columnStruct as any)[col] = true;
             }
+        }
+        return this
+    }
+
+    public allColumnsFrom(table: any | AnyAliasedTableDef) {
+        for (const k in table) {
+            this.columns(table[k])
         }
         return this
     }

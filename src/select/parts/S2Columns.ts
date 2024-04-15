@@ -1,9 +1,12 @@
 import {WhereMethods} from "./S2Where";
 import {Expr} from "../../SqlExpression";
+import {AliasedTable, NotUsingWithPart} from "../../Types";
 
 export interface ColumnsMethods<Result, Tables> {
 
     distinct(): ColumnsMethods<Result, Tables>
+
+    allColumnsFrom<TableRef, Entity, Result2 = Result & Entity>(table: AliasedTable<string, TableRef, Entity, any, NotUsingWithPart>): ColumnsMethods<Result2, Tables> & WhereMethods<Result2, Tables>
 
     columns<
         TableRef,
