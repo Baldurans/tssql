@@ -52,7 +52,7 @@ const res: {
 
 # Error checking
 
-As typescript errors can be sometimes cryptic for complex cases, there are lots of simplified errors used by this library to make understanding where the flaw is easier.
+As typescript errors can be sometimes cryptic for complex cases, there are lots of simplified errors used by this library to make understanding where the issue is easier.
 
 ----
 Can't add columns with same name multiple times to the query
@@ -117,6 +117,22 @@ SQL
     .groupBy(tUser.firstName)
     .havingF((r) => [r.count.compare(">", 1)]) // Via argument 'r' you can access properties defined in columns.
     .orderByF((r) => [r.count, "desc"]) // Via argument 'r' you can access properties defined in columns.
+    .toSqlString()
+```
+
+## Special methods to select columns.
+
+```typescript
+SQL
+    .selectFrom(tUser)
+    .one() // 1 as one
+    .where(tUser.isMan.eq(1))
+    .toSqlString()
+
+SQL
+    .selectFrom(tUser)
+    .allColumnsFrom(tUser)
+    .where(tUser.isMan.eq(1))
     .toSqlString()
 ```
 

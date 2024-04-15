@@ -8,6 +8,8 @@ export interface ColumnsMethods<Result, Tables> {
 
     allColumnsFrom<TableRef, Entity, Result2 = Result & Entity>(table: AliasedTable<string, TableRef, Entity, any, NotUsingWithPart>): ColumnsMethods<Result2, Tables> & WhereMethods<Result2, Tables>
 
+    one(): WhereMethods<Result & { one: 1 }, Tables>
+
     columns<
         TableRef,
         Columns extends Expr<TableRef, string, any>[]

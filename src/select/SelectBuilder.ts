@@ -14,7 +14,7 @@ import {MysqlTable} from "../MysqlTable";
 import {SQL_ALIAS, SQL_ENTITY, SQL_EXPRESSION} from "../Symbols";
 import {AliasedTable, AnyAliasedTableDef, DbTableDefinition, SelectExecutor} from "../Types";
 import {escape, escapeId} from "../escape";
-import {orderByStructureToSqlString} from "../SqlFunctions";
+import {ONE, orderByStructureToSqlString} from "../SqlFunctions";
 import {GatewaySelectGroupByMethods, GatewaySelectLimitMethods, GatewaySelectOrderByMethods, GatewayWhereMethods} from "./parts/GatewayWhere";
 
 const TAB = "  ";
@@ -159,6 +159,11 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
             }
         }
         return this
+    }
+
+    public one() {
+        this.columns(ONE())
+        return this;
     }
 
     public allColumnsFrom(table: any | AnyAliasedTableDef) {
