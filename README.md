@@ -326,8 +326,8 @@ Mostly MYSQL functions, but there are some special ones.
 * (special) VALUE(ARG) - any value you want to exist in the query.
 * (special) NULL<type>() - If you need a dummy placeholder value in the query.
 * (special) ONE() - Just "1 as one" to simplify certain queries.
-* OR( bool_expr | value, ...)
-* AND( bool_expr | value, ... )
+* OR( bool_expr, ...)
+* AND( bool_expr, ... )
 * NOT( bool_expr )
 * IF( bool_expr, expr | value, expr | value )
 * IS_NULL( expr )
@@ -373,6 +373,8 @@ Mostly MYSQL functions, but there are some special ones.
 * SQRT( expr )
 
 ### Aggregate
+
+Aggregate functions have an additional method .over( f => f.partitionBy( expr, ... ).orderBy( expr, "asc" | "desc", ... ))
 
 * MIN( expr )
 * MAX( expr )
