@@ -98,9 +98,13 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
         }
     }
 
-    public with(table: any | AnyAliasedTableDef) {
-        const alias = table[SQL_ALIAS]
-        this._withQueries.set(alias, escapeId(alias) + " AS " + table[SQL_EXPRESSION])
+    public with(...tables: (any | AnyAliasedTableDef)[]) {
+        console.log(tables)
+        for (let i = 0; i < tables.length; i++) {
+            const table = tables[i];
+            const alias = table[SQL_ALIAS]
+            this._withQueries.set(alias, escapeId(alias) + " AS " + table[SQL_EXPRESSION])
+        }
         return this
     }
 

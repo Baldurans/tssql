@@ -168,8 +168,8 @@ export class SQL {
         table3: AliasedTable<Alias3, TableRef3, object, object, NotUsingWithPart>,
         table4: AliasedTable<Alias4, TableRef4, object, object, NotUsingWithPart>,
     ): WithMethods<Key<Alias1> & Key<Alias2> & Key<Alias3> & Key<Alias4>>
-    public static with(table: any) {
-        return new SelectBuilder().with(table);
+    public static with(...tables: any[]) {
+        return new SelectBuilder().with(...tables);
     }
 
     /**

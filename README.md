@@ -330,6 +330,7 @@ Mostly MYSQL functions, but there are some special ones.
 * AND( bool_expr, ... )
 * NOT( bool_expr )
 * IF( bool_expr, expr | value, expr | value )
+* IFNULL( expr | value, expr | value )
 * IS_NULL( expr )
 * NOT_NULL( expr )
 * IN( expr | array )

@@ -105,8 +105,20 @@ export function IF<
     col: Expr<TableRef1, string | unknown, SQL_BOOL>,
     col2: Type | Expr<TableRef2, string | unknown, Type> | PrepareQueryArgument,
     col3: Type | Expr<TableRef3, string | unknown, Type> | PrepareQueryArgument
-): Expr<TableRef1 | TableRef2 | TableRef3, unknown, Type | Type> {
+): Expr<TableRef1 | TableRef2 | TableRef3, unknown, Type> {
     return SqlExpression.create("IF( " + col.expression + ", " + toSql(col2) + ", " + toSql(col3) + " )")
+}
+
+export function IFNULL<
+    Type1 extends string | number,
+    Type2 extends string | number,
+    TableRef1 extends string = never,
+    TableRef2 extends string = never
+>(
+    col1: Type1 | null | Expr<TableRef2, string | unknown, Type1> | PrepareQueryArgument,
+    col2: Type2 | null | Expr<TableRef2, string | unknown, Type2> | PrepareQueryArgument,
+): Expr<TableRef1 | TableRef2, unknown, Type1 | Type2> {
+    return SqlExpression.create("IFNULL( " + toSql(col1) + ", " + toSql(col2) + " )")
 }
 
 export function NOT<TableRef>(col: Expr<TableRef, string | unknown, SQL_BOOL>): Expr<TableRef, unknown, SQL_BOOL> {
