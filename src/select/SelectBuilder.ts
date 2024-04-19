@@ -190,7 +190,7 @@ export class SelectBuilder<Result, Aliases, AliasesFromWith, Tables> implements 
                 for (const prop in col) {
                     this._where.push(escapeId(prop) + " = " + escape(col[prop]));
                 }
-            } else if (col === undefined || col === null || col === "") {
+            } else if (col === undefined || col === null || col === "" || col === false) {
                 // skip
             } else {
                 throw new Error("Invalid argument to where! Type: '" + (typeof col) + "' String: '" + String(col) + "'")
