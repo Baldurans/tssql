@@ -35,6 +35,10 @@ export class MysqlTable<TableName extends string, Entity, EditEntity, InsertEnti
         return new SelectBuilder().selectFrom(this.tableName).columns(...args);
     }
 
+    public selectAll(): GatewayWhereMethods<Entity, Entity> {
+        return new SelectBuilder().selectFrom(this.tableName).columns(SqlExpression.create("*"));
+    }
+
     public deleteWhere(where: Partial<Entity>): GatewayDeleteOrderByMethods<Entity> {
         const builder = new DeleteBuilder().from(this.tableName, undefined)
         for (const prop in where) {

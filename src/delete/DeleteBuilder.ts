@@ -58,7 +58,7 @@ export class DeleteBuilder<Tables, Entity> implements DeleteWhereMethods<Tables>
     public toSqlString(lvl: number = 0): string {
         const tabs = TAB.repeat(lvl);
         return "DELETE FROM " + this._from + "\n" +
-            (this._where.length > 0 ? tabs + "WHERE " + this._where.join(" AND ") + "\n" : "") +
+            (this._where.length === 0 ? tabs + "WHERE " + this._where.join(" AND ") + "\n" : "WHERE 1=2") +
             (this._orderBy.length > 0 ? tabs + "ORDER BY " + this._orderBy.join(", ") + "\n" : "") +
             (this._limit ? tabs + "LIMIT " + this._limit + "\n" : "")
     }
