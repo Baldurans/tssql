@@ -1,9 +1,10 @@
 {
   "name": "ts-sql-lang",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "Types SQL query writing",
   "author": "Oliver Leisalu",
   "license": "proprietary",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
