@@ -1,7 +1,7 @@
 import {COMPARISON_SIGNS, ComparisonOperandsLookup, DATE_ADD_UNITS, DateAddUnitsLookup, isPrepareArgument, OrderByStructure, PrepareQueryArgument, SQL_BOOL, vDate, vDateTime} from "./Types";
 import {AnyBoolExpr, AnyExpr, Expr, ExprWithOver, SqlExpression, SqlExpressionWithOver} from "./SqlExpression";
 import {escape} from "./escape";
-import {escapeId} from "sqlstring";
+import {escapeId} from "./escape";
 
 /**
  * Type is the value. (If string "aa" is given, type of the column will be "aa")

@@ -1,8 +1,8 @@
 import {PrepareQueryArgument} from "./Types";
-import {escape as libEscape, escapeId as libEscapeId} from "sqlstring";
+import sql from "sqlstring";
 
 export function escape(value: string | number | (string | number)[] | PrepareQueryArgument): string {
-    return libEscape(value);
+    return (sql as any).escape(value);
 }
 
 const mysqlReservedKeywords = new Set([
@@ -47,6 +47,6 @@ export function escapeId(value: string): string {
         && !mysqlReservedKeywords.has(value.toUpperCase())) {
         return value;
     } else {
-        return libEscapeId(value);
+        return (sql as any).escapeId(value);
     }
 }
